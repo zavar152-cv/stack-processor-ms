@@ -1,0 +1,28 @@
+server:
+  port: 8080
+spring:
+  jpa:
+    database: postgresql
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: false
+    properties:
+      hibernate:
+        show_sql: true
+    hibernate:
+      ddl-auto: none
+  datasource:
+    username: user-db
+    password: highload-pass
+    url: jdbc:postgresql://localhost:5432/db-highload
+    driver-class-name: org.postgresql.Driver
+  docker:
+    compose:
+      enabled: true
+      file: dev-compose.yaml
+
+  liquibase:
+    enabled: true
+    drop-first: false
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    default-schema: public

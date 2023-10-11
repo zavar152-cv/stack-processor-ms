@@ -5,10 +5,10 @@ services:
   postgres:
     image: postgres:latest
     environment:
-      POSTGRES_DB: "db-highload"
-      POSTGRES_USER: "user-db"
-      POSTGRES_PASSWORD: "highload-pass"
-      PGDATA: "/var/lib/postgresql/data/pgdata"
+      POSTGRES_DB: db-highload
+      POSTGRES_USER: user_db
+      POSTGRES_PASSWORD: highload
+      PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ../2. Init Database:/docker-entrypoint-initdb.d
       - rdb-data:/var/lib/postgresql/data

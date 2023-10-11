@@ -12,17 +12,17 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-    username: user-db
-    password: highload-pass
+    username: user_db
+    password: highload
     url: jdbc:postgresql://localhost:5432/db-highload
     driver-class-name: org.postgresql.Driver
   docker:
     compose:
-      enabled: true
+      enabled: false
       file: dev-compose.yaml
 
   liquibase:
     enabled: true
     drop-first: false
-    change-log: classpath:db/changelog/db.changelog-master.xml
+    change-log: classpath:db/changelog/master-changelog.xml
     default-schema: public

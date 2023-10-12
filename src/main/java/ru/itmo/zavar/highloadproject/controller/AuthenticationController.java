@@ -19,10 +19,6 @@ public class AuthenticationController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody SignInRequest request) {
-        try {
-            return ResponseEntity.ok(authenticationService.signin(request));
-        } catch (Exception exception) {
-            return ResponseEntity.status(HttpStatusCode.valueOf(401)).body(new MessageResponse(exception.getMessage()));
-        }
+        return ResponseEntity.ok(authenticationService.signin(request));
     }
 }

@@ -29,9 +29,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.User).build();
-        userRepository.save(user);
-        var jwt = jwtService.generateToken(user);
-        return JwtAuthenticationResponse.builder().token(jwt).build();
+        if(userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("User exists");
+        } else {
+            userRepository.save(user);
+            var jwt = jwtService.generateToken(user);
+            return JwtAuthenticationResponse.builder().token(jwt).build();
+        }
     }
 
     @Override
@@ -39,7 +43,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
         var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username or password."));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
         var jwt = jwtService.generateToken(user);
         return JwtAuthenticationResponse.builder().token(jwt).build();
     }

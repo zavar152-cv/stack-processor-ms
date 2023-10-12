@@ -16,18 +16,16 @@ spring:
     password: highload
     url: jdbc:postgresql://localhost:5432/db-highload
     driver-class-name: org.postgresql.Driver
-
-  data:
-    rest:
-      base-path: /api
-
   docker:
     compose:
       enabled: false
       file: dev-compose.yaml
-
   liquibase:
     enabled: true
     drop-first: false
     change-log: classpath:db/changelog/master-changelog.xml
     default-schema: public
+
+token:
+  signing:
+    key: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351

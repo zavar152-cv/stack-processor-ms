@@ -28,7 +28,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var user = UserEntity.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.User).build();
+                .role(Role.ROLE_USER).build();
         if(userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new IllegalArgumentException("User exists");
         } else {

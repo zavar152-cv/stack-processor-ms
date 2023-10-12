@@ -1,6 +1,6 @@
 package ru.itmo.zavar.highloadproject.security;
 
 public enum Role {
-    User,
-    Admin
+    ROLE_USER,
+    ROLE_ADMIN
 }

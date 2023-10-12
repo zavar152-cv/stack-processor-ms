@@ -1,15 +1,7 @@
 package ru.itmo.zavar.highloadproject.dto.request;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class SignInRequest {
-    private String username;
-    private String password;
+public record SignInRequest(String username, String password) {
 }

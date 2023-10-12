@@ -40,12 +40,12 @@ public class UserController {
     @PostMapping("/changeRole")
     public ResponseEntity<?> changeRole(@RequestBody ChangeRoleRequest request) {
         try {
-            Optional<UserEntity> byUsername = userRepository.findByUsername(request.getUsername());
+            Optional<UserEntity> byUsername = userRepository.findByUsername(request.username());
             if(byUsername.isEmpty()) {
                 return ResponseEntity.status(HttpStatusCode.valueOf(400)).body(new MessageResponse("User not found"));
             } else {
                 UserEntity userEntity = byUsername.get();
-                userEntity.setRole(Role.valueOf(request.getRole()));
+                userEntity.setRole(Role.valueOf(request.role()));
                 userRepository.save(userEntity);
                 return ResponseEntity.ok().build();
             }

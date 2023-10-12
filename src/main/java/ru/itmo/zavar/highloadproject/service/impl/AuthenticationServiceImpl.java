@@ -26,8 +26,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public JwtAuthenticationResponse signup(SignUpRequest request) {
         var user = UserEntity.builder()
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
                 .role(Role.ROLE_USER).build();
         if(userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new IllegalArgumentException("User exists");
@@ -41,8 +41,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public JwtAuthenticationResponse signin(SignInRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        var user = userRepository.findByUsername(request.getUsername())
+                new UsernamePasswordAuthenticationToken(request.username(), request.password()));
+        var user = userRepository.findByUsername(request.username())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         var jwt = jwtService.generateToken(user);
         return JwtAuthenticationResponse.builder().token(jwt).build();

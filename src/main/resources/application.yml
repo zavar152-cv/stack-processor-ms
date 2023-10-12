@@ -16,6 +16,11 @@ spring:
     password: highload
     url: jdbc:postgresql://localhost:5432/db-highload
     driver-class-name: org.postgresql.Driver
+
+  data:
+    rest:
+      base-path: /api
+
   docker:
     compose:
       enabled: false

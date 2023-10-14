@@ -24,7 +24,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public JwtAuthenticationResponse signup(SignUpRequest request) {
+    public void addUser(SignUpRequest request) {
         var user = UserEntity.builder()
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
@@ -33,18 +33,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             throw new IllegalArgumentException("User exists");
         } else {
             userRepository.save(user);
-            var jwt = jwtService.generateToken(user);
-            return JwtAuthenticationResponse.builder().token(jwt).build();
         }
     }
 
     @Override
-    public JwtAuthenticationResponse signin(SignInRequest request) {
+    public String signIn(SignInRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.username(), request.password()));
         var user = userRepository.findByUsername(request.username())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        var jwt = jwtService.generateToken(user);
-        return JwtAuthenticationResponse.builder().token(jwt).build();
+        return jwtService.generateToken(user);
     }
 }

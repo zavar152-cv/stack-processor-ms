@@ -29,7 +29,7 @@ public class UserController {
     @PostMapping("/addUser")
     public ResponseEntity<?> addUser(@RequestBody SignUpRequest request) {
         try {
-            authenticationService.signup(request);
+            authenticationService.addUser(request);
             return ResponseEntity.ok().build();
         } catch (Exception exception) {
             return ResponseEntity.status(HttpStatusCode.valueOf(401)).body(new MessageResponse(exception.getMessage()));

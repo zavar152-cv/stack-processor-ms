@@ -2,10 +2,9 @@ package ru.itmo.zavar.highloadproject.service;
 
 import ru.itmo.zavar.highloadproject.dto.request.SignInRequest;
 import ru.itmo.zavar.highloadproject.dto.request.SignUpRequest;
-import ru.itmo.zavar.highloadproject.dto.response.JwtAuthenticationResponse;
 
 public interface AuthenticationService {
-    JwtAuthenticationResponse signup(SignUpRequest request);
+    void addUser(SignUpRequest request);
 
-    JwtAuthenticationResponse signin(SignInRequest request);
+    String signIn(SignInRequest request);
 }

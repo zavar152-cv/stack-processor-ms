@@ -1,9 +1,9 @@
 package ru.itmo.zavar.highloadproject.entity.security;
 
 import jakarta.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +12,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import ru.itmo.zavar.highloadproject.security.Role;
+import ru.itmo.zavar.highloadproject.security.ValidPassword;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,13 +27,11 @@ import java.util.List;
 public final class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private Long id;
     @NotBlank
     @Size(min = 5, max = 25)
     private String username;
     @NotBlank
-    @Size(min = 8, max = 30)
     private String password;
     @Enumerated(EnumType.STRING)
     @NotNull

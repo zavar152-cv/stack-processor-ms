@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import ru.itmo.zavar.highloadproject.repo.UserRepository;
 import ru.itmo.zavar.highloadproject.security.Role;
 import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 
+import jakarta.validation.Valid;
 import java.util.Optional;
 
 @RestController
@@ -29,7 +31,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/addUser")
-    public ResponseEntity<?> addUser(@RequestBody SignUpRequest request) {
+    public ResponseEntity<?> addUser(@Valid @RequestBody SignUpRequest request) {
         try {
             authenticationService.addUser(request);
             return ResponseEntity.ok().build();
@@ -40,7 +42,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/changeRole")
-    public ResponseEntity<?> changeRole(@RequestBody ChangeRoleRequest request) {
+    public ResponseEntity<?> changeRole(@Valid @RequestBody ChangeRoleRequest request) {
         try {
             Optional<UserEntity> byUsername = userRepository.findByUsername(request.username());
             if (byUsername.isEmpty()) {

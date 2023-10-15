@@ -1,5 +1,6 @@
 package ru.itmo.zavar.highloadproject.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/signIn")
-    public ResponseEntity<JwtAuthenticationResponse> signIn(@RequestBody SignInRequest request) {
+    public ResponseEntity<JwtAuthenticationResponse> signIn(@Valid @RequestBody SignInRequest request) {
         try {
             JwtAuthenticationResponse response = JwtAuthenticationResponse.builder().token(authenticationService.signIn(request)).build();
             return ResponseEntity.ok(response);

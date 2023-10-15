@@ -1,8 +1,8 @@
 package ru.itmo.zavar.highloadproject.security;
 
 import com.google.common.base.Joiner;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.passay.*;
 
 import java.util.Arrays;

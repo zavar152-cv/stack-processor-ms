@@ -1,6 +1,7 @@
 package ru.itmo.zavar.highloadproject.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +29,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @Value("${admin.username}")
+    private String adminUsername;
+
+    @Value("${admin.password}")
+    private String adminPassword;
+
     @PostConstruct
     @Transactional
     public void init() {
@@ -43,8 +50,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 throw new IllegalArgumentException("Role not found");
             }
             UserEntity admin = UserEntity.builder()
-                    .username("admin")
-                    .password(passwordEncoder.encode("admin"))
+                    .username(adminUsername)
+                    .password(passwordEncoder.encode(adminPassword))
                     .roles(Set.of(roleAdmin.get())).build();
             userRepository.save(admin);
         }

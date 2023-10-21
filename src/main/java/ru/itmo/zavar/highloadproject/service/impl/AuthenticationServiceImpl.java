@@ -5,6 +5,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.zavar.highloadproject.dto.request.SignInRequest;
 import ru.itmo.zavar.highloadproject.dto.request.SignUpRequest;
 import ru.itmo.zavar.highloadproject.entity.security.RoleEntity;
@@ -28,7 +29,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     @PostConstruct
+    @Transactional
     public void init() {
+        if(roleRepository.findByName("ROLE_VIP").isEmpty())
+            roleRepository.save(new RoleEntity(1L, "ROLE_VIP"));
+        if(roleRepository.findByName("ROLE_USER").isEmpty())
+            roleRepository.save(new RoleEntity(2L, "ROLE_USER"));
+        if(roleRepository.findByName("ROLE_ADMIN").isEmpty())
+            roleRepository.save(new RoleEntity(0L, "ROLE_ADMIN"));
         if(userRepository.findByUsername("admin").isEmpty()) {
             Optional<RoleEntity> roleAdmin = roleRepository.findByName("ROLE_ADMIN");
             if(roleAdmin.isEmpty()) {

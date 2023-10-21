@@ -27,9 +27,6 @@ spring:
     drop-first: false
     change-log: classpath:db/changelog/master-changelog.xml
     default-schema: public
-  sql:
-    init:
-      mode: embedded
 
 token:
   expire: 24

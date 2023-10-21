@@ -35,3 +35,6 @@ token:
 admin:
   username: admin
   password: admin
+test:
+  username: justdan
+  password: 8_Apasspass

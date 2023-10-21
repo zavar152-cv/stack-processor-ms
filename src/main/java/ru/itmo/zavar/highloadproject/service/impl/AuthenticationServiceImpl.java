@@ -42,17 +42,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             roleRepository.save(new RoleEntity(1L, "ROLE_VIP"));
         if(roleRepository.findByName("ROLE_USER").isEmpty())
             roleRepository.save(new RoleEntity(2L, "ROLE_USER"));
-        if(roleRepository.findByName("ROLE_ADMIN").isEmpty())
-            roleRepository.save(new RoleEntity(0L, "ROLE_ADMIN"));
+        Optional<RoleEntity> optionalRoleEntity = roleRepository.findByName("ROLE_ADMIN");
+        RoleEntity adminRole = optionalRoleEntity.orElseGet(() -> roleRepository.save(new RoleEntity(0L, "ROLE_ADMIN")));
         if(userRepository.findByUsername("admin").isEmpty()) {
-            Optional<RoleEntity> roleAdmin = roleRepository.findByName("ROLE_ADMIN");
-            if(roleAdmin.isEmpty()) {
-                throw new IllegalArgumentException("Role not found");
-            }
             UserEntity admin = UserEntity.builder()
                     .username(adminUsername)
                     .password(passwordEncoder.encode(adminPassword))
-                    .roles(Set.of(roleAdmin.get())).build();
+                    .roles(Set.of(adminRole)).build();
             userRepository.save(admin);
         }
     }

@@ -22,19 +22,20 @@ public class CompilerOutEntity {
 
     @OneToOne
     @JoinColumn(name = "request_id")
+    @NotNull
     private RequestEntity request;
 
     @ManyToOne
     @JoinColumn(name = "processor_out_id")
     private ProcessorOutEntity processorOut;
 
-    @ElementCollection(targetClass = Byte.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "compiler_out_program", joinColumns = @JoinColumn(name = "compiler_out_id"))
     @NotNull
-    private List<Byte[]> program;
+    private List<Long> program;
 
-    @ElementCollection(targetClass = Byte.class, fetch = FetchType.EAGER)
+    @ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "compiler_out_data", joinColumns = @JoinColumn(name = "compiler_out_id"))
     @NotNull
-    private List<Byte[]> data;
+    private List<Long> data;
 }

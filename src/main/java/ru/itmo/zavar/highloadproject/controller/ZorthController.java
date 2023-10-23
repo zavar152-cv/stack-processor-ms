@@ -6,6 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.highloadproject.dto.request.CompileRequest;
+import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
+import ru.itmo.zavar.highloadproject.repo.CompilerOutRepository;
+import ru.itmo.zavar.highloadproject.repo.DebugMessagesRepository;
+import ru.itmo.zavar.highloadproject.repo.ProcessorOutRepository;
+import ru.itmo.zavar.highloadproject.repo.RequestRepository;
 import ru.itmo.zavar.highloadproject.service.ZorthTranslatorService;
 
 import java.util.NoSuchElementException;
@@ -17,7 +22,6 @@ import java.util.Optional;
 public class ZorthController {
 
     private final ZorthTranslatorService zorthTranslatorService;
-
     @PostMapping("/compile")
     public ResponseEntity<?> compile(@RequestBody CompileRequest compileRequest) {
         try {

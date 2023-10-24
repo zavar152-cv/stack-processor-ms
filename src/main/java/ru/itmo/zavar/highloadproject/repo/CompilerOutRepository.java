@@ -11,5 +11,7 @@ import java.util.Optional;
 public interface CompilerOutRepository extends JpaRepository<CompilerOutEntity, Long> {
     Optional<CompilerOutEntity> findById(Long id);
 
+    Optional<CompilerOutEntity> findByRequest(RequestEntity requestEntity);
+
     void deleteByRequest(RequestEntity requestEntity);
 }

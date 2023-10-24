@@ -2,6 +2,8 @@ package ru.itmo.zavar.highloadproject.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.zavar.highloadproject.entity.security.RoleEntity;
@@ -40,7 +42,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         RequestEntity request = RequestEntity.builder().debug(debug).text(text).build();
         RoleEntity roleUser = roleRepository.findByName("ROLE_USER").orElseThrow();
         requestRepository.save(request);
-        if(userEntity.getRoles().size() == 1 && userEntity.getRoles().contains(roleUser)) {
+        if (userEntity.getRoles().size() == 1 && userEntity.getRoles().contains(roleUser)) {
             RequestEntity requestEntity = userEntity.getRequests().get(0);
             compilerOutRepository.deleteByRequest(requestEntity);
             debugMessagesRepository.deleteByRequest(requestEntity);
@@ -49,7 +51,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         }
         userEntity.getRequests().add(request);
         userRepository.save(userEntity);
-        if(debug) {
+        if (debug) {
             DebugMessagesEntity debugMessagesEntity = DebugMessagesEntity.builder()
                     .request(request)
                     .text(String.join("\n", translator.getDebugMessages()))
@@ -81,8 +83,30 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
     }
 
     @Override
+    public Page<CompilerOutEntity> getAllCompilerOutput(Integer offset, Integer limit) {
+        return compilerOutRepository.findAll(PageRequest.of(offset, limit));
+    }
+
+    @Override
+    public Optional<CompilerOutEntity> getCompilerOutputByRequestId(Long id) {
+        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow();
+        return compilerOutRepository.findByRequest(requestEntity);
+    }
+
+    @Override
     public Optional<DebugMessagesEntity> getDebugMessages(Long id) {
         return debugMessagesRepository.findById(id);
+    }
+
+    @Override
+    public Page<DebugMessagesEntity> getAllDebugMessages(Integer offset, Integer limit) {
+        return debugMessagesRepository.findAll(PageRequest.of(offset, limit));
+    }
+
+    @Override
+    public Optional<DebugMessagesEntity> getDebugMessagesByRequestId(Long id) {
+        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow();
+        return debugMessagesRepository.findByRequest(requestEntity);
     }
 
     @Override

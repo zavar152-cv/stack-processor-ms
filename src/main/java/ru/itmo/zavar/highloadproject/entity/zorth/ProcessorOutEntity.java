@@ -24,8 +24,7 @@ public class ProcessorOutEntity {
     @NotBlank
     private String input;
 
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "processor_out_tick_logs", joinColumns = @JoinColumn(name = "compiler_out_id"))
+    @Lob
     @NotNull
-    private List<String> tickLogs;
+    private byte[] tickLogs;
 }

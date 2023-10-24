@@ -25,17 +25,15 @@ public class CompilerOutEntity {
     @NotNull
     private RequestEntity request;
 
-    @ManyToOne
+    @ManyToOne //TODO nullable or move it to ProcessorOutEntity
     @JoinColumn(name = "processor_out_id")
     private ProcessorOutEntity processorOut;
 
-    @ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "compiler_out_program", joinColumns = @JoinColumn(name = "compiler_out_id"))
+    @Lob
     @NotNull
-    private List<Long> program;
+    private byte[] program;
 
-    @ElementCollection(targetClass = Long.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "compiler_out_data", joinColumns = @JoinColumn(name = "compiler_out_id"))
+    @Lob
     @NotNull
-    private List<Long> data;
+    private byte[] data;
 }

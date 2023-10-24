@@ -1,13 +1,11 @@
 package ru.itmo.zavar.highloadproject.entity.zorth;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -24,8 +22,7 @@ public class DebugMessagesEntity {
     @JoinColumn(name = "request_id")
     private RequestEntity request;
 
-    @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "debug_messages_text", joinColumns = @JoinColumn(name = "debug_messages_id"))
-    @NotNull
-    private List<String> text;
+    @Lob
+    @NotBlank
+    private String text;
 }

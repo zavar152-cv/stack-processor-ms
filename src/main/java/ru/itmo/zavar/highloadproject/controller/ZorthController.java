@@ -33,8 +33,13 @@ public class ZorthController {
     }
 
 
-    @GetMapping("/getDebugMessages")
-    public ResponseEntity<?> getDebugMessages() {
-        return ResponseEntity.of(Optional.ofNullable(zorthTranslatorService.getDebugMessages()));
+    @GetMapping("/getDebugMessages/{id}")
+    public ResponseEntity<?> getDebugMessages(@PathVariable Long id) {
+        return ResponseEntity.of(zorthTranslatorService.getDebugMessages(id));
+    }
+
+    @GetMapping("/getCompilerOut/{id}")
+    public ResponseEntity<?> getCompilerOut(@PathVariable Long id) {
+        return ResponseEntity.of(zorthTranslatorService.getCompilerOutput(id));
     }
 }

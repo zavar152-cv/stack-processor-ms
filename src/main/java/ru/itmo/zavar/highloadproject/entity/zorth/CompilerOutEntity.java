@@ -25,10 +25,6 @@ public class CompilerOutEntity {
     @NotNull
     private RequestEntity request;
 
-    @ManyToOne //TODO nullable or move it to ProcessorOutEntity
-    @JoinColumn(name = "processor_out_id")
-    private ProcessorOutEntity processorOut;
-
     @Lob
     @NotNull
     private byte[] program;

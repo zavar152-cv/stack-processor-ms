@@ -2,11 +2,8 @@ package ru.itmo.zavar.highloadproject.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.itmo.zavar.InstructionCode;
 import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.DebugMessagesEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.RequestEntity;
@@ -19,7 +16,8 @@ import ru.itmo.zavar.zorth.ProgramAndDataDto;
 import ru.itmo.zavar.zorth.ZorthTranslator;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +31,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
     private final ProcessorOutRepository processorOutRepository;
 
     @Override
-    @Transactional
+    @Transactional //TODO change text to blob in entity
     public void compileAndLinkage(boolean debug, String text) {
         translator.compileFromString(debug, text);
         translator.linkage(debug);
@@ -42,28 +40,35 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         requestRepository.save(request);
         DebugMessagesEntity debugMessagesEntity = DebugMessagesEntity.builder()
                 .request(request)
-                .text(translator.getDebugMessages())
+                .text(String.join("\n", translator.getDebugMessages()))
                 .build();
         debugMessagesRepository.save(debugMessagesEntity);
-        ArrayList<Long> data = new ArrayList<>();
-        out.data().forEach(bInst -> data.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bInst))));
-        ArrayList<Long> program = new ArrayList<>();
-        out.program().forEach(bInst -> program.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bInst))));
+
+        ArrayList<Byte> data = new ArrayList<>();
+        out.data().forEach(bytes -> data.addAll(Arrays.stream(bytes).toList()));
+        Byte[] dataArray = new Byte[data.size()];
+        data.toArray(dataArray);
+
+        ArrayList<Byte> program = new ArrayList<>();
+        out.program().forEach(bytes -> program.addAll(Arrays.stream(bytes).toList()));
+        Byte[] programArray = new Byte[program.size()];
+        program.toArray(programArray);
+
         CompilerOutEntity compilerOutEntity = CompilerOutEntity.builder()
                 .request(request)
-                .data(data)
-                .program(program)
+                .data(ArrayUtils.toPrimitive(dataArray))
+                .program(ArrayUtils.toPrimitive(programArray))
                 .build();
         compilerOutRepository.save(compilerOutEntity);
     }
 
     @Override
-    public ProgramAndDataDto getCompilerOutput() {
-        return translator.getCompiledProgramAndDataInBytes();
+    public Optional<CompilerOutEntity> getCompilerOutput(Long id) {
+        return compilerOutRepository.findById(id);
     }
 
     @Override
-    public List<String> getDebugMessages() {
-        return translator.getDebugMessages();
+    public Optional<DebugMessagesEntity> getDebugMessages(Long id) {
+        return debugMessagesRepository.findById(id);
     }
 }

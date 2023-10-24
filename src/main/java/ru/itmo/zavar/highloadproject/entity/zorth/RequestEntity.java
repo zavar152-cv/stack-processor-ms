@@ -18,8 +18,11 @@ public class RequestEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Lob
     @NotBlank
     private String text;
+
     @NotNull
     private Boolean debug;
 }

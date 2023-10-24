@@ -21,8 +21,13 @@ public class ProcessorOutEntity {
     @Id
     private Long id;
 
+    @Lob
     @NotBlank
     private String input;
+
+    @ManyToOne
+    @JoinColumn(name = "compiler_out_id")
+    private CompilerOutEntity compilerOut;
 
     @Lob
     @NotNull

@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/changeRole")
+    @PostMapping("/changeRole") //TODO move to service
     public ResponseEntity<?> changeRole(@Valid @RequestBody ChangeRoleRequest request) {
         try {
             Optional<UserEntity> byUsername = userRepository.findByUsername(request.username());

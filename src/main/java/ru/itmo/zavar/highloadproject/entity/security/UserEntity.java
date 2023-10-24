@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import ru.itmo.zavar.highloadproject.entity.zorth.RequestEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +41,12 @@ public final class UserEntity implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "roles_id"))
     @NotNull
     private Set<RoleEntity> roles;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_requests",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "requests_id"))
+    private List<RequestEntity> requests;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -21,6 +21,8 @@ public interface ZorthTranslatorService {
 
     Optional<CompilerOutEntity> getCompilerOutputByRequestId(Long id);
 
+    boolean checkRequestOwnedByUser(UserEntity userEntity, Long requestId);
+
     Optional<DebugMessagesEntity> getDebugMessages(Long id);
 
     Page<DebugMessagesEntity> getAllDebugMessages(Integer offset, Integer limit);

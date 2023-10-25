@@ -92,6 +92,12 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
     }
 
     @Override
+    public boolean checkRequestOwnedByUser(UserEntity userEntity, Long requestId) {
+        RequestEntity requestEntity = requestRepository.findById(requestId).orElseThrow();
+        return userEntity.getRequests().contains(requestEntity);
+    }
+
+    @Override
     public Optional<DebugMessagesEntity> getDebugMessages(Long id) {
         return debugMessagesRepository.findById(id);
     }

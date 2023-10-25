@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -93,7 +94,7 @@ public class ZorthController {
     @GetMapping("/getAllCompilerOut")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Page<CompilerOutResponse>> getAllCompilerOut(@RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
-                                                                       @RequestParam(value = "limit", defaultValue = "3") @Min(1) @Max(100) Integer limit) {
+                                                                       @RequestParam(value = "limit", defaultValue = "3") @Min(1) @Max(50) Integer limit) {
         ArrayList<CompilerOutResponse> list = new ArrayList<>();
         zorthTranslatorService.getAllCompilerOutput(offset, limit).forEach(compilerOutEntity -> {
             ArrayList<Long> program = new ArrayList<>();
@@ -115,9 +116,15 @@ public class ZorthController {
 
     @GetMapping("/getAllDebugMessages")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<Page<DebugMessagesEntity>> getAllDebugMessages(@RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
-                                                                         @RequestParam(value = "limit", defaultValue = "3") @Min(1) @Max(100) Integer limit) {
-        return ResponseEntity.ok(zorthTranslatorService.getAllDebugMessages(offset, limit));
+    public ResponseEntity<Page<DebugMessagesResponse>> getAllDebugMessages(@RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
+                                                                           @RequestParam(value = "limit", defaultValue = "3") @Min(1) @Max(50) Integer limit) {
+        ArrayList<DebugMessagesResponse> list = new ArrayList<>();
+        zorthTranslatorService.getAllDebugMessages(offset, limit).forEach(debugMessagesEntity -> {
+            list.add(new DebugMessagesResponse(debugMessagesEntity.getId(), debugMessagesEntity.getText().split("\n")));
+        });
+
+        Page<DebugMessagesResponse> page = new PageImpl<>(list);
+        return ResponseEntity.ok(page);
     }
 
     @GetMapping("/getAllRequests/{id}")
@@ -129,7 +136,9 @@ public class ZorthController {
             allRequestsByUserId.forEach(requestEntity -> {
                 requestResponses.add(new RequestResponse(requestEntity.getId(), requestEntity.getText().split("\n"), requestEntity.getDebug()));
             });
-            return ResponseEntity.ok(requestResponses);
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Requests-Count", String.valueOf(requestResponses.size()));
+            return ResponseEntity.ok().headers(responseHeaders).body(requestResponses);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
@@ -145,7 +154,9 @@ public class ZorthController {
             allRequestsByUserId.forEach(requestEntity -> {
                 requestResponses.add(new RequestResponse(requestEntity.getId(), requestEntity.getText().split("\n"), requestEntity.getDebug()));
             });
-            return ResponseEntity.ok(requestResponses);
+            HttpHeaders responseHeaders = new HttpHeaders();
+            responseHeaders.set("Requests-Count", String.valueOf(requestResponses.size()));
+            return ResponseEntity.ok().headers(responseHeaders).body(requestResponses);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

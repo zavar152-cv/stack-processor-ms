@@ -1,10 +1,14 @@
 package ru.itmo.zavar.highloadproject.controller;
 
+import com.google.gson.Gson;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpHeaders;
@@ -12,29 +16,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.InstructionCode;
+import ru.itmo.zavar.exception.ControlUnitException;
 import ru.itmo.zavar.exception.ZorthException;
-import ru.itmo.zavar.highloadproject.dto.request.CompileRequest;
-import ru.itmo.zavar.highloadproject.dto.request.GetCompilerOutRequest;
-import ru.itmo.zavar.highloadproject.dto.request.GetDebugMessagesRequest;
+import ru.itmo.zavar.highloadproject.dto.request.*;
 import ru.itmo.zavar.highloadproject.dto.response.CompilerOutResponse;
 import ru.itmo.zavar.highloadproject.dto.response.DebugMessagesResponse;
+import ru.itmo.zavar.highloadproject.dto.response.ProcessorOutResponse;
 import ru.itmo.zavar.highloadproject.dto.response.RequestResponse;
 import ru.itmo.zavar.highloadproject.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.DebugMessagesEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.RequestEntity;
-import ru.itmo.zavar.highloadproject.repo.CompilerOutRepository;
-import ru.itmo.zavar.highloadproject.repo.DebugMessagesRepository;
-import ru.itmo.zavar.highloadproject.repo.ProcessorOutRepository;
-import ru.itmo.zavar.highloadproject.repo.RequestRepository;
+import ru.itmo.zavar.highloadproject.service.ZorthProcessorService;
 import ru.itmo.zavar.highloadproject.service.ZorthTranslatorService;
 import ru.itmo.zavar.highloadproject.util.ZorthUtil;
 
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -46,6 +45,7 @@ import java.util.Optional;
 public class ZorthController {
 
     private final ZorthTranslatorService zorthTranslatorService;
+    private final ZorthProcessorService zorthProcessorService;
 
     @PostMapping("/compile")
     public ResponseEntity<?> compile(@Valid @RequestBody CompileRequest compileRequest, Authentication authentication) {
@@ -57,6 +57,54 @@ public class ZorthController {
         }
     }
 
+    @PostMapping("/execute")
+    public ResponseEntity<?> execute(@Valid @RequestBody ExecuteRequest executeRequest, Authentication authentication) {
+        try {
+            if(!zorthTranslatorService.checkRequestOwnedByUser((UserEntity) authentication.getPrincipal(), executeRequest.requestId())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't access this request");
+            }
+            Optional<CompilerOutEntity> optionalCompilerOut = zorthTranslatorService.getCompilerOutputByRequestId(executeRequest.requestId());
+            if(optionalCompilerOut.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found");
+            } else {
+                CompilerOutEntity compilerOut = optionalCompilerOut.get();
+                ArrayList<Long> program = new ArrayList<>();
+                ArrayList<Long> data = new ArrayList<>();
+
+                byte[] bytesProg = compilerOut.getProgram();
+                List<Byte[]> instructions = ZorthUtil.splitArray(ArrayUtils.toObject(bytesProg));
+                instructions.forEach(bInst -> program.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bInst))));
+
+                byte[] bytesData = compilerOut.getData();
+                List<Byte[]> datas = ZorthUtil.splitArray(ArrayUtils.toObject(bytesData));
+                datas.forEach(bData -> data.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bData))));
+
+                Gson gson = new Gson();
+                String json = gson.toJson(executeRequest.input());
+                JSONParser jsonParser = new JSONParser();
+                JSONArray input = (JSONArray) jsonParser.parse(json);
+
+                zorthProcessorService.startProcessorAndGetLogs(program, data, input, compilerOut.getId());
+            }
+            return ResponseEntity.ok().build();
+        } catch (ControlUnitException | NoSuchElementException | ParseException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        }
+    }
+
+    @GetMapping("/getAllProcessorOut")
+    public ResponseEntity<ArrayList<ProcessorOutResponse>> getAllProcessorOut(@Valid @RequestBody GetProcessorOutRequest processorOutRequest, Authentication authentication) {
+        if(!zorthTranslatorService.checkRequestOwnedByUser((UserEntity) authentication.getPrincipal(), processorOutRequest.requestId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You can't access this request");
+        }
+        ArrayList<ProcessorOutResponse> processorOutResponses = new ArrayList<>();
+        zorthProcessorService.getAllProcessorOutByRequest(processorOutRequest.requestId()).forEach(processorOut -> {
+            processorOutResponses.add(new ProcessorOutResponse(processorOut.getId(), processorOut.getInput(), processorOut.getTickLogs().split("\n")));
+        });
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("Requests-Count", String.valueOf(processorOutResponses.size()));
+        return ResponseEntity.ok().headers(responseHeaders).body(processorOutResponses);
+    }
 
     @GetMapping("/getDebugMessages/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")

@@ -54,14 +54,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void addUser(SignUpRequest request) throws IllegalArgumentException {
+    public void addUser(String username, String password) throws IllegalArgumentException {
         Optional<RoleEntity> roleUser = roleRepository.findByName("ROLE_USER");
         if(roleUser.isEmpty()) {
             throw new IllegalArgumentException("Role not found");
         }
         var user = UserEntity.builder()
-                .username(request.username())
-                .password(passwordEncoder.encode(request.password()))
+                .username(username)
+                .password(passwordEncoder.encode(password))
                 .roles(Set.of(roleUser.get())).build();
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new IllegalArgumentException("User exists");
@@ -71,9 +71,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public String signIn(SignInRequest request) throws IllegalArgumentException {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.username(), request.password()));
-        var user = userRepository.findByUsername(request.username())
+    public String signIn(String username, String password) throws IllegalArgumentException {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        var user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         return jwtService.generateToken(user);
     }

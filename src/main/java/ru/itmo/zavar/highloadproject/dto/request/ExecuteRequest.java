@@ -5,5 +5,5 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record CompileRequest(@NotNull boolean debug, @NotBlank String text) {
+public record ExecuteRequest(@NotNull String[] input, @NotNull Long requestId) {
 }

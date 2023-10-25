@@ -19,6 +19,7 @@ import java.util.List;
 @Table(name = "processor_out")
 public class ProcessorOutEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Lob
@@ -31,5 +32,6 @@ public class ProcessorOutEntity {
 
     @Lob
     @NotNull
-    private byte[] tickLogs;
+    @Column(name = "tick_logs")
+    private String tickLogs;
 }

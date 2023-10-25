@@ -22,7 +22,7 @@ public class AuthenticationController {
     @PostMapping("/signIn")
     public ResponseEntity<JwtAuthenticationResponse> signIn(@Valid @RequestBody SignInRequest request) {
         try {
-            JwtAuthenticationResponse response = JwtAuthenticationResponse.builder().token(authenticationService.signIn(request)).build();
+            JwtAuthenticationResponse response = JwtAuthenticationResponse.builder().token(authenticationService.signIn(request.username(), request.password())).build();
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, exception.getMessage());

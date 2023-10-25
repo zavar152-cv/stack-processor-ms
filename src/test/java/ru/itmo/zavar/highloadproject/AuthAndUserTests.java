@@ -97,7 +97,7 @@ public class AuthAndUserTests {
     @Test
     @Order(1)
     public void signInAdminWithValidCredentials() {
-        String adminToken = authenticationService.signIn(new SignInRequest(adminUsername, adminPassword));
+        String adminToken = authenticationService.signIn(adminUsername, adminPassword);
         UserDetails userDetails = userService.userDetailsService().loadUserByUsername(adminUsername);
         Assertions.assertAll(
                 () -> Assertions.assertEquals(jwtService.extractUserName(adminToken), adminUsername),
@@ -109,7 +109,7 @@ public class AuthAndUserTests {
     @Order(2)
     public void signInAdminWithBadCredentials() {
         Assertions.assertThrows(BadCredentialsException.class, () -> {
-            authenticationService.signIn(new SignInRequest(adminUsername, adminPassword + "pass"));
+            authenticationService.signIn(adminUsername, adminPassword + "pass");
         });
     }
 
@@ -117,14 +117,14 @@ public class AuthAndUserTests {
     @Order(3)
     public void signInAdminWithUnknownUsername() {
         Assertions.assertThrows(BadCredentialsException.class, () -> {
-            authenticationService.signIn(new SignInRequest("invalid", "passpass"));
+            authenticationService.signIn("invalid", "passpass");
         });
     }
 
     @Test
     @Order(4)
     public void addUserWithValidCredentialsFromAdmin() {
-        String adminToken = authenticationService.signIn(new SignInRequest(adminUsername, adminPassword));
+        String adminToken = authenticationService.signIn(adminUsername, adminPassword);
 
         ExtractableResponse<Response> response = given()
                 .header("Content-type", "application/json")
@@ -147,8 +147,8 @@ public class AuthAndUserTests {
     @Test
     @Order(5)
     public void addUserWithValidCredentialsNotFromAdmin() {
-        authenticationService.addUser(new SignUpRequest(testUsername, testPassword));
-        String token = authenticationService.signIn(new SignInRequest(testUsername, testPassword));
+        authenticationService.addUser(testUsername, testPassword);
+        String token = authenticationService.signIn(testUsername, testPassword);
 
         ExtractableResponse<Response> response = given()
                 .header("Content-type", "application/json")
@@ -171,7 +171,7 @@ public class AuthAndUserTests {
     @Test
     @Order(6)
     public void addUserWithInvalidCredentials() {
-        String adminToken = authenticationService.signIn(new SignInRequest(adminUsername, adminPassword));
+        String adminToken = authenticationService.signIn(adminUsername, adminPassword);
 
         ExtractableResponse<Response> response = given()
                 .header("Content-type", "application/json")
@@ -193,8 +193,8 @@ public class AuthAndUserTests {
     @Test
     @Order(7)
     public void addUserWithSameName() {
-        authenticationService.addUser(new SignUpRequest(testUsername, testPassword));
-        String adminToken = authenticationService.signIn(new SignInRequest(adminUsername, adminPassword));
+        authenticationService.addUser(testUsername, testPassword);
+        String adminToken = authenticationService.signIn(adminUsername, adminPassword);
 
         ExtractableResponse<Response> response = given()
                 .header("Content-type", "application/json")
@@ -254,8 +254,8 @@ public class AuthAndUserTests {
     @Test
     @Order(9)
     public void changeRoleFromAdmin() {
-        authenticationService.addUser(new SignUpRequest(testUsername, testPassword));
-        String adminToken = authenticationService.signIn(new SignInRequest(adminUsername, adminPassword));
+        authenticationService.addUser(testUsername, testPassword);
+        String adminToken = authenticationService.signIn(adminUsername, adminPassword);
         String role = "ROLE_ADMIN";
 
         ExtractableResponse<Response> response = given()
@@ -291,7 +291,7 @@ public class AuthAndUserTests {
     @Test
     @Order(10)
     public void changeRoleForInvalidUserFromAdmin() {
-        String adminToken = authenticationService.signIn(new SignInRequest(adminUsername, adminPassword));
+        String adminToken = authenticationService.signIn(adminUsername, adminPassword);
         String role = "ROLE_ADMIN";
 
         ExtractableResponse<Response> response = given()

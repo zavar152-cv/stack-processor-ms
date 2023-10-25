@@ -4,7 +4,7 @@ import ru.itmo.zavar.highloadproject.dto.request.SignInRequest;
 import ru.itmo.zavar.highloadproject.dto.request.SignUpRequest;
 
 public interface AuthenticationService {
-    void addUser(SignUpRequest request);
+    void addUser(String username, String password);
 
-    String signIn(SignInRequest request);
+    String signIn(String username, String password);
 }

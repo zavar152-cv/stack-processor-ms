@@ -35,7 +35,7 @@ public class UserController {
     @PostMapping("/addUser")
     public ResponseEntity<?> addUser(@Valid @RequestBody SignUpRequest request) {
         try {
-            authenticationService.addUser(request);
+            authenticationService.addUser(request.username(), request.password());
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());

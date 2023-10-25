@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.itmo.zavar.exception.ZorthException;
 import ru.itmo.zavar.highloadproject.entity.security.RoleEntity;
 import ru.itmo.zavar.highloadproject.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
@@ -17,10 +18,7 @@ import ru.itmo.zavar.zorth.ProgramAndDataDto;
 import ru.itmo.zavar.zorth.ZorthTranslator;
 
 import javax.management.relation.Role;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
 
     @Override
     @Transactional
-    public void compileAndLinkage(boolean debug, String text, UserEntity userEntity) {
+    public void compileAndLinkage(boolean debug, String text, UserEntity userEntity) throws NoSuchElementException, IllegalArgumentException, ZorthException {
         ZorthTranslator translator = new ZorthTranslator(null, null, true);
         translator.compileFromString(debug, text);
         translator.linkage(debug);

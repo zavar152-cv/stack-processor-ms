@@ -15,6 +15,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.InstructionCode;
+import ru.itmo.zavar.exception.ZorthException;
 import ru.itmo.zavar.highloadproject.dto.request.CompileRequest;
 import ru.itmo.zavar.highloadproject.dto.request.GetCompilerOutRequest;
 import ru.itmo.zavar.highloadproject.dto.request.GetDebugMessagesRequest;
@@ -50,8 +51,8 @@ public class ZorthController {
         try {
             zorthTranslatorService.compileAndLinkage(compileRequest.debug(), compileRequest.text(), (UserEntity) authentication.getPrincipal());
             return ResponseEntity.ok().build();
-        } catch (NoSuchElementException exception) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
+        } catch (NoSuchElementException | ZorthException | IllegalArgumentException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
         }
     }
 
@@ -61,7 +62,7 @@ public class ZorthController {
     public ResponseEntity<DebugMessagesResponse> getDebugMessages(@PathVariable Long id) {
         Optional<DebugMessagesEntity> optionalDebugMessages = zorthTranslatorService.getDebugMessages(id);
         if (optionalDebugMessages.isPresent()) {
-            return ResponseEntity.ok(new DebugMessagesResponse(optionalDebugMessages.get().getId(), optionalDebugMessages.get().getText()));
+            return ResponseEntity.ok(new DebugMessagesResponse(optionalDebugMessages.get().getId(), optionalDebugMessages.get().getText().split("\n")));
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
@@ -126,7 +127,7 @@ public class ZorthController {
             List<RequestEntity> allRequestsByUserId = zorthTranslatorService.getAllRequestsByUserId(id);
             ArrayList<RequestResponse> requestResponses = new ArrayList<>();
             allRequestsByUserId.forEach(requestEntity -> {
-                requestResponses.add(new RequestResponse(requestEntity.getId(), requestEntity.getText(), requestEntity.getDebug()));
+                requestResponses.add(new RequestResponse(requestEntity.getId(), requestEntity.getText().split("\n"), requestEntity.getDebug()));
             });
             return ResponseEntity.ok(requestResponses);
         } catch (IllegalArgumentException e) {
@@ -142,7 +143,7 @@ public class ZorthController {
             List<RequestEntity> allRequestsByUserId = zorthTranslatorService.getAllRequestsByUserId(principal.getId());
             ArrayList<RequestResponse> requestResponses = new ArrayList<>();
             allRequestsByUserId.forEach(requestEntity -> {
-                requestResponses.add(new RequestResponse(requestEntity.getId(), requestEntity.getText(), requestEntity.getDebug()));
+                requestResponses.add(new RequestResponse(requestEntity.getId(), requestEntity.getText().split("\n"), requestEntity.getDebug()));
             });
             return ResponseEntity.ok(requestResponses);
         } catch (IllegalArgumentException e) {
@@ -152,7 +153,7 @@ public class ZorthController {
 
     @GetMapping("/getCompilerOutOfRequest")
     @PreAuthorize("hasRole('ROLE_VIP')")
-    public ResponseEntity<?> getCompilerOutOfRequest(@Valid @RequestBody GetCompilerOutRequest request) {
+    public ResponseEntity<CompilerOutResponse> getCompilerOutOfRequest(@Valid @RequestBody GetCompilerOutRequest request) {
         Optional<CompilerOutEntity> optionalCompilerOut = zorthTranslatorService.getCompilerOutputByRequestId(request.id());
         if (optionalCompilerOut.isPresent()) {
             ArrayList<Long> program = new ArrayList<>();
@@ -174,10 +175,10 @@ public class ZorthController {
 
     @GetMapping("/getDebugMessagesOfRequest")
     @PreAuthorize("hasRole('ROLE_VIP')")
-    public ResponseEntity<?> getDebugMessagesOfRequest(@Valid @RequestBody GetDebugMessagesRequest request) {
+    public ResponseEntity<DebugMessagesResponse> getDebugMessagesOfRequest(@Valid @RequestBody GetDebugMessagesRequest request) {
         Optional<DebugMessagesEntity> optionalDebugMessages = zorthTranslatorService.getDebugMessagesByRequestId(request.id());
         if (optionalDebugMessages.isPresent()) {
-            return ResponseEntity.ok(new DebugMessagesResponse(optionalDebugMessages.get().getId(), optionalDebugMessages.get().getText()));
+            return ResponseEntity.ok(new DebugMessagesResponse(optionalDebugMessages.get().getId(), optionalDebugMessages.get().getText().split("\n")));
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

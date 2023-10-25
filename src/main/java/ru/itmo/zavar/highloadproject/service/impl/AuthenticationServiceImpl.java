@@ -2,13 +2,14 @@ package ru.itmo.zavar.highloadproject.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.itmo.zavar.highloadproject.dto.request.SignInRequest;
-import ru.itmo.zavar.highloadproject.dto.request.SignUpRequest;
+import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.highloadproject.entity.security.RoleEntity;
 import ru.itmo.zavar.highloadproject.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.repo.RoleRepository;
@@ -17,6 +18,7 @@ import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 import ru.itmo.zavar.highloadproject.service.JwtService;
 
 import javax.annotation.PostConstruct;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -38,13 +40,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @PostConstruct
     @Transactional
     public void init() {
-        if(roleRepository.findByName("ROLE_VIP").isEmpty())
+        if (roleRepository.findByName("ROLE_VIP").isEmpty())
             roleRepository.save(new RoleEntity(1L, "ROLE_VIP"));
-        if(roleRepository.findByName("ROLE_USER").isEmpty())
+        if (roleRepository.findByName("ROLE_USER").isEmpty())
             roleRepository.save(new RoleEntity(2L, "ROLE_USER"));
         Optional<RoleEntity> optionalRoleEntity = roleRepository.findByName("ROLE_ADMIN");
         RoleEntity adminRole = optionalRoleEntity.orElseGet(() -> roleRepository.save(new RoleEntity(0L, "ROLE_ADMIN")));
-        if(userRepository.findByUsername("admin").isEmpty()) {
+        if (userRepository.findByUsername("admin").isEmpty()) {
             UserEntity admin = UserEntity.builder()
                     .username(adminUsername)
                     .password(passwordEncoder.encode(adminPassword))
@@ -56,7 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void addUser(String username, String password) throws IllegalArgumentException {
         Optional<RoleEntity> roleUser = roleRepository.findByName("ROLE_USER");
-        if(roleUser.isEmpty()) {
+        if (roleUser.isEmpty()) {
             throw new IllegalArgumentException("Role not found");
         }
         var user = UserEntity.builder()
@@ -76,5 +78,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         return jwtService.generateToken(user);
+    }
+
+    @Override
+    public void changeRole(String username, String role) {
+        Optional<UserEntity> optionalUserEntity = userRepository.findByUsername(username);
+        UserEntity userEntity = optionalUserEntity.orElseThrow();
+        Optional<RoleEntity> optionalRoleEntity = roleRepository.findByName(role);
+        RoleEntity roleEntity = optionalRoleEntity.orElseThrow();
+        userEntity.getRoles().clear();
+        userEntity.getRoles().add(roleEntity);
+        userRepository.save(userEntity);
     }
 }

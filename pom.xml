@@ -257,6 +257,7 @@
                     <excludes>
                         <exclude>ru/itmo/zavar/highloadproject/dto/**</exclude>
                         <exclude>ru/itmo/zavar/highloadproject/entity/**</exclude>
+                        <exclude>ru/itmo/zavar/highloadproject/util/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

@@ -20,6 +20,7 @@ import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 import jakarta.validation.Valid;
 
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -43,25 +44,12 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/changeRole") //TODO move to service
+    @PostMapping("/changeRole")
     public ResponseEntity<?> changeRole(@Valid @RequestBody ChangeRoleRequest request) {
         try {
-            Optional<UserEntity> byUsername = userRepository.findByUsername(request.username());
-            if (byUsername.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found");
-            } else {
-                Optional<RoleEntity> role = roleRepository.findByName(request.role());
-                if(role.isEmpty()) {
-                    throw new IllegalArgumentException("Role not found");
-                }
-                UserEntity userEntity = byUsername.get();
-                Set<RoleEntity> roles = new HashSet<>();
-                roles.add(role.get());
-                userEntity.setRoles(roles);
-                userRepository.save(userEntity);
-                return ResponseEntity.ok().build();
-            }
-        } catch (Exception exception) {
+            authenticationService.changeRole(request.username(), request.role());
+            return ResponseEntity.ok().build();
+        } catch (NoSuchElementException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
         }
     }

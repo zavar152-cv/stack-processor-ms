@@ -68,23 +68,13 @@ public class ZorthController {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found");
             } else {
                 CompilerOutEntity compilerOut = optionalCompilerOut.get();
-                ArrayList<Long> program = new ArrayList<>();
-                ArrayList<Long> data = new ArrayList<>();
-
-                byte[] bytesProg = compilerOut.getProgram();
-                List<Byte[]> instructions = ZorthUtil.splitArray(ArrayUtils.toObject(bytesProg));
-                instructions.forEach(bInst -> program.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bInst))));
-
-                byte[] bytesData = compilerOut.getData();
-                List<Byte[]> datas = ZorthUtil.splitArray(ArrayUtils.toObject(bytesData));
-                datas.forEach(bData -> data.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bData))));
 
                 Gson gson = new Gson();
                 String json = gson.toJson(executeRequest.input());
                 JSONParser jsonParser = new JSONParser();
                 JSONArray input = (JSONArray) jsonParser.parse(json);
 
-                zorthProcessorService.startProcessorAndGetLogs(program, data, input, compilerOut.getId());
+                zorthProcessorService.startProcessorAndGetLogs(input, compilerOut);
             }
             return ResponseEntity.ok().build();
         } catch (ControlUnitException | NoSuchElementException | ParseException exception) {

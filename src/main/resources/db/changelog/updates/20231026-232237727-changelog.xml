@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+   <changeSet author="user_db (generated)" id="1698362574382-1">
+      <createTable tableName="compiler_out">
+         <column autoIncrement="true" name="id" type="BIGINT">
+            <constraints nullable="false" primaryKey="true" primaryKeyName="compiler_outPK"/>
+         </column>
+         <column name="data" type="OID">
+            <constraints nullable="false"/>
+         </column>
+         <column name="program" type="OID">
+            <constraints nullable="false"/>
+         </column>
+         <column name="request_id" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-2">
+      <createTable tableName="debug_messages">
+         <column autoIncrement="true" name="id" type="BIGINT">
+            <constraints nullable="false"
+                         primaryKey="true"
+                         primaryKeyName="debug_messagesPK"/>
+         </column>
+         <column name="text" type="OID"/>
+         <column name="request_id" type="BIGINT"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-3">
+      <createTable tableName="processor_out">
+         <column autoIncrement="true" name="id" type="BIGINT">
+            <constraints nullable="false" primaryKey="true" primaryKeyName="processor_outPK"/>
+         </column>
+         <column name="input" type="OID"/>
+         <column name="tick_logs" type="OID">
+            <constraints nullable="false"/>
+         </column>
+         <column name="compiler_out_id" type="BIGINT"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-4">
+      <createTable tableName="requests">
+         <column autoIncrement="true" name="id" type="BIGINT">
+            <constraints nullable="false" primaryKey="true" primaryKeyName="requestsPK"/>
+         </column>
+         <column name="debug" type="BOOLEAN">
+            <constraints nullable="false"/>
+         </column>
+         <column name="text" type="OID"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-5">
+      <createTable tableName="roles">
+         <column autoIncrement="true" name="id" type="BIGINT">
+            <constraints nullable="false" primaryKey="true" primaryKeyName="rolesPK"/>
+         </column>
+         <column name="name" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-6">
+      <createTable tableName="users">
+         <column autoIncrement="true" name="id" type="BIGINT">
+            <constraints nullable="false" primaryKey="true" primaryKeyName="usersPK"/>
+         </column>
+         <column name="password" type="VARCHAR(255)"/>
+         <column name="username" type="VARCHAR(25)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-7">
+      <createTable tableName="users_requests">
+         <column name="user_id" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="requests_id" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-8">
+      <createTable tableName="users_roles">
+         <column name="user_entity_id" type="BIGINT">
+            <constraints nullable="false" primaryKey="true" primaryKeyName="users_rolesPK"/>
+         </column>
+         <column name="roles_id" type="BIGINT">
+            <constraints nullable="false" primaryKey="true" primaryKeyName="users_rolesPK"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-9">
+      <addUniqueConstraint columnNames="request_id"
+                           constraintName="UC_COMPILER_OUTREQUEST_ID_COL"
+                           tableName="compiler_out"/>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-10">
+      <addUniqueConstraint columnNames="request_id"
+                           constraintName="UC_DEBUG_MESSAGESREQUEST_ID_COL"
+                           tableName="debug_messages"/>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-11">
+      <addUniqueConstraint columnNames="name"
+                           constraintName="UC_ROLESNAME_COL"
+                           tableName="roles"/>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-12">
+      <addForeignKeyConstraint baseColumnNames="user_entity_id"
+                               baseTableName="users_roles"
+                               constraintName="FK7v417qhe0i2m9h8njggvciv00"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               referencedColumnNames="id"
+                               referencedTableName="users"
+                               validate="true"/>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-13">
+      <addForeignKeyConstraint baseColumnNames="roles_id"
+                               baseTableName="users_roles"
+                               constraintName="FKa62j07k5mhgifpp955h37ponj"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               referencedColumnNames="id"
+                               referencedTableName="roles"
+                               validate="true"/>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-14">
+      <addForeignKeyConstraint baseColumnNames="user_id"
+                               baseTableName="users_requests"
+                               constraintName="FKa7n7kbuu8vjwbxu847t5e6vqo"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               referencedColumnNames="id"
+                               referencedTableName="users"
+                               validate="true"/>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-15">
+      <addForeignKeyConstraint baseColumnNames="compiler_out_id"
+                               baseTableName="processor_out"
+                               constraintName="FKb3cwhtr6iyq9jtdbqs9dqy45s"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               referencedColumnNames="id"
+                               referencedTableName="compiler_out"
+                               validate="true"/>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-16">
+      <addForeignKeyConstraint baseColumnNames="request_id"
+                               baseTableName="compiler_out"
+                               constraintName="FKgjap7mt7dkxo5iypmrorqfnd2"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               referencedColumnNames="id"
+                               referencedTableName="requests"
+                               validate="true"/>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-17">
+      <addForeignKeyConstraint baseColumnNames="request_id"
+                               baseTableName="debug_messages"
+                               constraintName="FKo0ea5dw90moxw554lqtfsy4cj"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               referencedColumnNames="id"
+                               referencedTableName="requests"
+                               validate="true"/>
+   </changeSet>
+   <changeSet author="user_db (generated)" id="1698362574382-18">
+      <addForeignKeyConstraint baseColumnNames="requests_id"
+                               baseTableName="users_requests"
+                               constraintName="FKt6dhamk7f07iayu04ycvec0yu"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               referencedColumnNames="id"
+                               referencedTableName="requests"
+                               validate="true"/>
+   </changeSet>
+</databaseChangeLog>

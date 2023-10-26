@@ -225,11 +225,15 @@ public class ZorthController {
     @GetMapping("/getDebugMessagesOfRequest")
     @PreAuthorize("hasRole('ROLE_VIP')")
     public ResponseEntity<DebugMessagesResponse> getDebugMessagesOfRequest(@Valid @RequestBody GetDebugMessagesRequest request) {
-        Optional<DebugMessagesEntity> optionalDebugMessages = zorthTranslatorService.getDebugMessagesByRequestId(request.id());
-        if (optionalDebugMessages.isPresent()) {
-            return ResponseEntity.ok(new DebugMessagesResponse(optionalDebugMessages.get().getId(), optionalDebugMessages.get().getText().split("\n")));
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        try {
+            Optional<DebugMessagesEntity> optionalDebugMessages = zorthTranslatorService.getDebugMessagesByRequestId(request.id());
+            if (optionalDebugMessages.isPresent()) {
+                return ResponseEntity.ok(new DebugMessagesResponse(optionalDebugMessages.get().getId(), optionalDebugMessages.get().getText().split("\n")));
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Debug messages not found");
+            }
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found");
         }
     }
 }

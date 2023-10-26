@@ -35,6 +35,22 @@
                 <updatePolicy>always</updatePolicy>
             </snapshots>
         </repository>
+        <repository>
+            <id>stack-processor-mvn-repo-parent</id>
+            <url>https://raw.github.com/zavar152/stack-processor-mvn-repo/mvn-repo-parent/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>stack-processor-mvn-repo-common</id>
+            <url>https://raw.github.com/zavar152/stack-processor-mvn-repo/mvn-repo-common/</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+        </repository>
     </repositories>
 
     <dependencies>

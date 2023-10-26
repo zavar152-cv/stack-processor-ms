@@ -40,7 +40,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         RequestEntity request = RequestEntity.builder().debug(debug).text(text).build();
         RoleEntity roleUser = roleRepository.findByName("ROLE_USER").orElseThrow();
         requestRepository.save(request);
-        if (userEntity.getRoles().size() == 1 & userEntity.getRoles().contains(roleUser) & userEntity.getRequests().size() == 1) {
+        if (userEntity.getRoles().size() == 1 & userEntity.getRoles().contains(roleUser) & !userEntity.getRequests().isEmpty()) {
             RequestEntity requestEntity = userEntity.getRequests().get(0);
             compilerOutRepository.deleteByRequest(requestEntity);
             debugMessagesRepository.deleteByRequest(requestEntity);

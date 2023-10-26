@@ -31,7 +31,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=user_db
       - SPRING_DATASOURCE_PASSWORD=highload
       - SPRING_JPA_HIBERNATE_DDL_AUTO=none
-      - SPRING_LIQUIBASE_ENABLED=FALSE
+      - SPRING_LIQUIBASE_ENABLED=TRUE
     restart: always
     depends_on:
       - postgres

@@ -1,7 +1,8 @@
 package ru.itmo.zavar.highloadproject.dto.request;
 
-import lombok.Builder;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import ru.itmo.zavar.highloadproject.security.ValidPassword;
 
-@Builder
-public record SignUpRequest(String username, String password) {
+public record SignUpRequest(@NotBlank @Size(min = 5, max = 25) String username, @ValidPassword @NotBlank String password) {
 }

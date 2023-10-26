@@ -1,5 +1,7 @@
 server:
-  port: 8080
+  port: 25565
+  error:
+    include-message: always
 spring:
   jpa:
     database: postgresql
@@ -27,5 +29,12 @@ spring:
     default-schema: public
 
 token:
+  expire: 24
   signing:
     key: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351
+admin:
+  username: admin
+  password: admin
+test:
+  username: justdan
+  password: 8_Apasspass

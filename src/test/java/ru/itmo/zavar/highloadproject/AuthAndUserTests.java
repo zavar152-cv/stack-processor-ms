@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.hasSize;
 
 import io.restassured.RestAssured;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 import ru.itmo.zavar.highloadproject.dto.request.ChangeRoleRequest;
 import ru.itmo.zavar.highloadproject.dto.request.SignInRequest;
@@ -42,12 +44,13 @@ import java.util.Optional;
                 "spring.liquibase.enabled=false"
         }
 )
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthAndUserTests {
 
     @LocalServerPort
     private Integer port;
 
-    private static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:latest"
     );
 

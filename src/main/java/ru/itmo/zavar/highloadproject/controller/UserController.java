@@ -29,8 +29,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserController {
     private final AuthenticationService authenticationService;
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/addUser")

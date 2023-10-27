@@ -1,8 +1,11 @@
 package ru.itmo.zavar.highloadproject.service.impl;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Service;
 import ru.itmo.zavar.InstructionCode;
 import ru.itmo.zavar.comp.ControlUnit;
@@ -28,7 +31,12 @@ public class ZorthProcessorServiceImpl implements ZorthProcessorService {
     private final RequestRepository requestRepository;
 
     @Override
-    public ProcessorOutEntity startProcessorAndGetLogs(JSONArray input, CompilerOutEntity compilerOutEntity) throws ControlUnitException {
+    public ProcessorOutEntity startProcessorAndGetLogs(String[] input, CompilerOutEntity compilerOutEntity) throws ControlUnitException, ParseException {
+        Gson gson = new Gson();
+        String json = gson.toJson(input);
+        JSONParser jsonParser = new JSONParser();
+        JSONArray inputJson = (JSONArray) jsonParser.parse(json);
+
         ArrayList<Long> program = new ArrayList<>();
         ArrayList<Long> data = new ArrayList<>();
 
@@ -40,7 +48,7 @@ public class ZorthProcessorServiceImpl implements ZorthProcessorService {
         List<Byte[]> datas = ZorthUtil.splitArray(ArrayUtils.toObject(bytesData));
         datas.forEach(bData -> data.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bData))));
 
-        ControlUnit controlUnit = new ControlUnit(program, data, input, true);
+        ControlUnit controlUnit = new ControlUnit(program, data, inputJson, true);
         controlUnit.start();
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -51,7 +59,7 @@ public class ZorthProcessorServiceImpl implements ZorthProcessorService {
         ProcessorOutEntity processorOutEntity = ProcessorOutEntity.builder()
                 .tickLogs(stringBuilder.toString())
                 .compilerOut(compilerOutEntity)
-                .input(input.toString())
+                .input(inputJson.toString())
                 .build();
         return processorOutRepository.save(processorOutEntity);
     }

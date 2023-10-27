@@ -25,7 +25,6 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
     private final CompilerOutRepository compilerOutRepository;
     private final DebugMessagesRepository debugMessagesRepository;
     private final RequestRepository requestRepository;
-    private final ProcessorOutRepository processorOutRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 

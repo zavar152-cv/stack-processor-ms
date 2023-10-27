@@ -68,13 +68,7 @@ public class ZorthController {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found");
             } else {
                 CompilerOutEntity compilerOut = optionalCompilerOut.get();
-
-                Gson gson = new Gson();
-                String json = gson.toJson(executeRequest.input());
-                JSONParser jsonParser = new JSONParser();
-                JSONArray input = (JSONArray) jsonParser.parse(json);
-
-                zorthProcessorService.startProcessorAndGetLogs(input, compilerOut);
+                zorthProcessorService.startProcessorAndGetLogs(executeRequest.input(), compilerOut);
             }
             return ResponseEntity.ok().build();
         } catch (ControlUnitException | NoSuchElementException | ParseException exception) {
@@ -103,7 +97,7 @@ public class ZorthController {
         if (optionalDebugMessages.isPresent()) {
             return ResponseEntity.ok(new DebugMessagesResponse(optionalDebugMessages.get().getId(), optionalDebugMessages.get().getText().split("\n")));
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Debug messages not found");
         }
     }
 
@@ -112,20 +106,14 @@ public class ZorthController {
     public ResponseEntity<CompilerOutResponse> getCompilerOut(@PathVariable Long id) {
         Optional<CompilerOutEntity> optionalCompilerOut = zorthTranslatorService.getCompilerOutput(id);
         if (optionalCompilerOut.isPresent()) {
+            CompilerOutEntity compilerOutEntity = optionalCompilerOut.get();
             ArrayList<Long> program = new ArrayList<>();
             ArrayList<Long> data = new ArrayList<>();
-
-            byte[] bytesProg = optionalCompilerOut.get().getProgram();
-            List<Byte[]> instructions = ZorthUtil.splitArray(ArrayUtils.toObject(bytesProg));
-            instructions.forEach(bInst -> program.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bInst))));
-
-            byte[] bytesData = optionalCompilerOut.get().getData();
-            List<Byte[]> datas = ZorthUtil.splitArray(ArrayUtils.toObject(bytesData));
-            datas.forEach(bData -> data.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bData))));
-
-            return ResponseEntity.ok(new CompilerOutResponse(optionalCompilerOut.get().getId(), program, data));
+            ZorthUtil.fromByteArrayToLongList(program, compilerOutEntity.getProgram());
+            ZorthUtil.fromByteArrayToLongList(data, compilerOutEntity.getData());
+            return ResponseEntity.ok(new CompilerOutResponse(compilerOutEntity.getId(), program, data));
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compiler output not found");
         }
     }
 
@@ -137,15 +125,8 @@ public class ZorthController {
         zorthTranslatorService.getAllCompilerOutput(offset, limit).forEach(compilerOutEntity -> {
             ArrayList<Long> program = new ArrayList<>();
             ArrayList<Long> data = new ArrayList<>();
-
-            byte[] bytesProg = compilerOutEntity.getProgram();
-            List<Byte[]> instructions = ZorthUtil.splitArray(ArrayUtils.toObject(bytesProg));
-            instructions.forEach(bInst -> program.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bInst))));
-
-            byte[] bytesData = compilerOutEntity.getData();
-            List<Byte[]> datas = ZorthUtil.splitArray(ArrayUtils.toObject(bytesData));
-            datas.forEach(bData -> data.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bData))));
-
+            ZorthUtil.fromByteArrayToLongList(program, compilerOutEntity.getProgram());
+            ZorthUtil.fromByteArrayToLongList(data, compilerOutEntity.getData());
             list.add(new CompilerOutResponse(compilerOutEntity.getId(), program, data));
         });
         Page<CompilerOutResponse> page = new PageImpl<>(list);
@@ -205,20 +186,14 @@ public class ZorthController {
     public ResponseEntity<CompilerOutResponse> getCompilerOutOfRequest(@Valid @RequestBody GetCompilerOutRequest request) {
         Optional<CompilerOutEntity> optionalCompilerOut = zorthTranslatorService.getCompilerOutputByRequestId(request.id());
         if (optionalCompilerOut.isPresent()) {
+            CompilerOutEntity compilerOutEntity = optionalCompilerOut.get();
             ArrayList<Long> program = new ArrayList<>();
             ArrayList<Long> data = new ArrayList<>();
-
-            byte[] bytesProg = optionalCompilerOut.get().getProgram();
-            List<Byte[]> instructions = ZorthUtil.splitArray(ArrayUtils.toObject(bytesProg));
-            instructions.forEach(bInst -> program.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bInst))));
-
-            byte[] bytesData = optionalCompilerOut.get().getData();
-            List<Byte[]> datas = ZorthUtil.splitArray(ArrayUtils.toObject(bytesData));
-            datas.forEach(bData -> data.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(bData))));
-
-            return ResponseEntity.ok(new CompilerOutResponse(optionalCompilerOut.get().getId(), program, data));
+            ZorthUtil.fromByteArrayToLongList(program, compilerOutEntity.getProgram());
+            ZorthUtil.fromByteArrayToLongList(data, compilerOutEntity.getData());
+            return ResponseEntity.ok(new CompilerOutResponse(compilerOutEntity.getId(), program, data));
         } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compiler output not found");
         }
     }
 

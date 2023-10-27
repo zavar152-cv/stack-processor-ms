@@ -27,7 +27,7 @@ public class UserController {
     public ResponseEntity<?> addUser(@Valid @RequestBody SignUpRequest request) {
         try {
             authenticationService.addUser(request.username(), request.password());
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
         }

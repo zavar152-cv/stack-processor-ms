@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 public interface ZorthTranslatorService {
-    void compileAndLinkage(boolean debug, String text, UserEntity userEntity) throws NoSuchElementException, ZorthException;
+    RequestEntity compileAndLinkage(boolean debug, String text, UserEntity userEntity) throws NoSuchElementException, ZorthException;
 
     Optional<CompilerOutEntity> getCompilerOutput(Long id);
 

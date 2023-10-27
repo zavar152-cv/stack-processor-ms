@@ -47,6 +47,24 @@ public class ZorthController {
     private final ZorthTranslatorService zorthTranslatorService;
     private final ZorthProcessorService zorthProcessorService;
 
+    @PostMapping("/pipeline")
+    public ResponseEntity<?> pipeline(@Valid @RequestBody PipelineRequest pipelineRequest, Authentication authentication) {
+        try {
+            RequestEntity requestEntity = zorthTranslatorService.compileAndLinkage(pipelineRequest.debug(), pipelineRequest.text(), (UserEntity) authentication.getPrincipal());
+            Optional<CompilerOutEntity> optionalCompilerOut = zorthTranslatorService.getCompilerOutputByRequestId(requestEntity.getId());
+            if(optionalCompilerOut.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compiler out found");
+            } else {
+                CompilerOutEntity compilerOut = optionalCompilerOut.get();
+                zorthProcessorService.startProcessorAndGetLogs(pipelineRequest.input(), compilerOut);
+            }
+            return ResponseEntity.ok().build();
+        } catch (NoSuchElementException | ZorthException | IllegalArgumentException
+                 | ControlUnitException | ParseException exception) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        }
+    }
+
     @PostMapping("/compile")
     public ResponseEntity<?> compile(@Valid @RequestBody CompileRequest compileRequest, Authentication authentication) {
         try {
@@ -65,7 +83,7 @@ public class ZorthController {
             }
             Optional<CompilerOutEntity> optionalCompilerOut = zorthTranslatorService.getCompilerOutputByRequestId(executeRequest.requestId());
             if(optionalCompilerOut.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Request not found");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compiler out found");
             } else {
                 CompilerOutEntity compilerOut = optionalCompilerOut.get();
                 zorthProcessorService.startProcessorAndGetLogs(executeRequest.input(), compilerOut);

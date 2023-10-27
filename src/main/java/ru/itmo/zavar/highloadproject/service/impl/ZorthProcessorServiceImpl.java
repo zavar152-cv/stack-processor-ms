@@ -13,10 +13,7 @@ import ru.itmo.zavar.exception.ControlUnitException;
 import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.ProcessorOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.RequestEntity;
-import ru.itmo.zavar.highloadproject.repo.CompilerOutRepository;
-import ru.itmo.zavar.highloadproject.repo.ProcessorOutRepository;
-import ru.itmo.zavar.highloadproject.repo.RequestRepository;
-import ru.itmo.zavar.highloadproject.service.ZorthProcessorService;
+import ru.itmo.zavar.highloadproject.service.*;
 import ru.itmo.zavar.highloadproject.util.ZorthUtil;
 
 import java.util.ArrayList;
@@ -25,10 +22,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ZorthProcessorServiceImpl implements ZorthProcessorService {
-
-    private final ProcessorOutRepository processorOutRepository;
-    private final CompilerOutRepository compilerOutRepository;
-    private final RequestRepository requestRepository;
+    private final ProcessorOutService processorOutService;
+    private final CompilerOutService compilerOutService;
+    private final RequestService requestService;
 
     @Override
     public ProcessorOutEntity startProcessorAndGetLogs(String[] input, CompilerOutEntity compilerOutEntity) throws ControlUnitException, ParseException {
@@ -61,13 +57,13 @@ public class ZorthProcessorServiceImpl implements ZorthProcessorService {
                 .compilerOut(compilerOutEntity)
                 .input(inputJson.toString())
                 .build();
-        return processorOutRepository.save(processorOutEntity);
+        return processorOutService.saveProcessorOut(processorOutEntity);
     }
 
     @Override
     public List<ProcessorOutEntity> getAllProcessorOutByRequest(Long requestId) {
-        RequestEntity requestEntity = requestRepository.findById(requestId).orElseThrow();
-        CompilerOutEntity compilerOutEntity = compilerOutRepository.findByRequest(requestEntity).orElseThrow();
-        return processorOutRepository.findAllByCompilerOut(compilerOutEntity);
+        RequestEntity requestEntity = requestService.findById(requestId).orElseThrow();
+        CompilerOutEntity compilerOutEntity = compilerOutService.findByRequest(requestEntity).orElseThrow();
+        return processorOutService.findAllByCompilerOut(compilerOutEntity);
     }
 }

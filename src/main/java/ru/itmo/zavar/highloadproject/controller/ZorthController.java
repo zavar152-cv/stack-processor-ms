@@ -40,7 +40,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/v1/zorth")
+@RequestMapping("/zorth")
 @RequiredArgsConstructor
 public class ZorthController {
 

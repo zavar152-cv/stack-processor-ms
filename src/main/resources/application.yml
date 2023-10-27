@@ -2,6 +2,8 @@ server:
   port: 25565
   error:
     include-message: always
+  servlet:
+    context-path: /api/v1
 spring:
   jpa:
     database: postgresql

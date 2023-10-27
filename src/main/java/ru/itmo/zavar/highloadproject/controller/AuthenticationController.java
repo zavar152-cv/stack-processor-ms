@@ -14,7 +14,7 @@ import ru.itmo.zavar.highloadproject.dto.response.JwtAuthenticationResponse;
 import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;

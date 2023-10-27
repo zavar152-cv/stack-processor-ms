@@ -1,5 +1,6 @@
 package ru.itmo.zavar.highloadproject.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,18 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.highloadproject.dto.request.ChangeRoleRequest;
 import ru.itmo.zavar.highloadproject.dto.request.SignUpRequest;
-import ru.itmo.zavar.highloadproject.entity.security.RoleEntity;
-import ru.itmo.zavar.highloadproject.entity.security.UserEntity;
-import ru.itmo.zavar.highloadproject.repo.RoleRepository;
-import ru.itmo.zavar.highloadproject.repo.UserRepository;
 import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 
-import jakarta.validation.Valid;
-
-import java.util.HashSet;
 import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/user")

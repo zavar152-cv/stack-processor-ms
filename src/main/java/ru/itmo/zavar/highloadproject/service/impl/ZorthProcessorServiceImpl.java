@@ -15,7 +15,6 @@ import ru.itmo.zavar.highloadproject.repo.ProcessorOutRepository;
 import ru.itmo.zavar.highloadproject.repo.RequestRepository;
 import ru.itmo.zavar.highloadproject.service.ZorthProcessorService;
 import ru.itmo.zavar.highloadproject.util.ZorthUtil;
-import ru.itmo.zavar.log.TickLog;
 
 import java.util.ArrayList;
 import java.util.List;

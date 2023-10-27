@@ -2,14 +2,11 @@ package ru.itmo.zavar.highloadproject.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.highloadproject.entity.security.RoleEntity;
 import ru.itmo.zavar.highloadproject.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.repo.RoleRepository;
@@ -18,7 +15,6 @@ import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 import ru.itmo.zavar.highloadproject.service.JwtService;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 

@@ -7,7 +7,6 @@ import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.ProcessorOutEntity;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @Transactional

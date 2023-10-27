@@ -4,9 +4,7 @@ import org.json.simple.JSONArray;
 import ru.itmo.zavar.exception.ControlUnitException;
 import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.ProcessorOutEntity;
-import ru.itmo.zavar.log.TickLog;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface ZorthProcessorService {

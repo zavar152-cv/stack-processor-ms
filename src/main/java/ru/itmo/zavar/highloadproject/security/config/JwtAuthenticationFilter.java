@@ -1,6 +1,5 @@
 package ru.itmo.zavar.highloadproject.security.config;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

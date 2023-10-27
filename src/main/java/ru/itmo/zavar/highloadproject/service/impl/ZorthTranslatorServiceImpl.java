@@ -17,7 +17,6 @@ import ru.itmo.zavar.highloadproject.service.ZorthTranslatorService;
 import ru.itmo.zavar.zorth.ProgramAndDataDto;
 import ru.itmo.zavar.zorth.ZorthTranslator;
 
-import javax.management.relation.Role;
 import java.util.*;
 
 @Service

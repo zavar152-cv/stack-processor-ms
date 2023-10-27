@@ -6,7 +6,6 @@ import ru.itmo.zavar.highloadproject.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.DebugMessagesEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.RequestEntity;
-import ru.itmo.zavar.zorth.ProgramAndDataDto;
 
 import java.util.List;
 import java.util.NoSuchElementException;

@@ -1,10 +1,6 @@
 package ru.itmo.zavar.highloadproject;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasSize;
-
 import io.restassured.RestAssured;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.parsing.Parser;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -19,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.web.context.WebApplicationContext;
 import org.testcontainers.containers.PostgreSQLContainer;
 import ru.itmo.zavar.highloadproject.dto.request.ChangeRoleRequest;
 import ru.itmo.zavar.highloadproject.dto.request.SignInRequest;
@@ -34,6 +29,8 @@ import ru.itmo.zavar.highloadproject.service.JwtService;
 import ru.itmo.zavar.highloadproject.service.UserService;
 
 import java.util.Optional;
+
+import static io.restassured.RestAssured.given;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(

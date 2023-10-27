@@ -17,7 +17,7 @@ import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
     private final AuthenticationService authenticationService;

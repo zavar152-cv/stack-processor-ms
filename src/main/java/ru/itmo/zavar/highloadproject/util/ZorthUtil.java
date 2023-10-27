@@ -1,5 +1,8 @@
 package ru.itmo.zavar.highloadproject.util;
 
+import org.apache.commons.lang3.ArrayUtils;
+import ru.itmo.zavar.InstructionCode;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,5 +27,10 @@ public final class ZorthUtil {
             list.add(Arrays.copyOfRange(array, start, (start + remainder)));
         }
         return list;
+    }
+
+    public static void fromByteArrayToLongList(ArrayList<Long> list, byte[] bytes) {
+        List<Byte[]> temp = splitArray(ArrayUtils.toObject(bytes));
+        temp.forEach(t -> list.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(t))));
     }
 }

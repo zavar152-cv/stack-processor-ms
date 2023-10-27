@@ -27,6 +27,7 @@ import ru.itmo.zavar.highloadproject.repo.UserRepository;
 import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 import ru.itmo.zavar.highloadproject.service.JwtService;
 import ru.itmo.zavar.highloadproject.service.UserService;
+import ru.itmo.zavar.highloadproject.util.RoleConstants;
 
 import java.util.Optional;
 
@@ -139,7 +140,7 @@ public class AuthAndUserTests {
         Optional<UserEntity> userbyUsername = userRepository.findByUsername(testUsername);
         Assertions.assertAll(
                 () -> Assertions.assertTrue(userbyUsername.isPresent()),
-                () -> Assertions.assertEquals(HttpStatus.OK.value(), response.response().getStatusCode())
+                () -> Assertions.assertEquals(HttpStatus.CREATED.value(), response.response().getStatusCode())
         );
         userRepository.deleteById(userbyUsername.get().getId());
     }
@@ -256,7 +257,7 @@ public class AuthAndUserTests {
     public void changeRoleFromAdmin() {
         authenticationService.addUser(testUsername, testPassword);
         String adminToken = authenticationService.signIn(adminUsername, adminPassword);
-        String role = "ROLE_ADMIN";
+        String role = RoleConstants.ADMIN;
 
         ExtractableResponse<Response> response = given()
                 .header("Content-type", "application/json")
@@ -292,7 +293,7 @@ public class AuthAndUserTests {
     @Order(10)
     public void changeRoleForInvalidUserFromAdmin() {
         String adminToken = authenticationService.signIn(adminUsername, adminPassword);
-        String role = "ROLE_ADMIN";
+        String role = RoleConstants.ADMIN;
 
         ExtractableResponse<Response> response = given()
                 .header("Content-type", "application/json")

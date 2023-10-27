@@ -21,6 +21,7 @@ import ru.itmo.zavar.InstructionCode;
 import ru.itmo.zavar.highloadproject.dto.request.ExecuteRequest;
 import ru.itmo.zavar.highloadproject.dto.request.GetDebugMessagesRequest;
 import ru.itmo.zavar.highloadproject.dto.request.GetProcessorOutRequest;
+import ru.itmo.zavar.highloadproject.dto.request.PipelineRequest;
 import ru.itmo.zavar.highloadproject.dto.response.CompilerOutResponse;
 import ru.itmo.zavar.highloadproject.dto.response.DebugMessagesResponse;
 import ru.itmo.zavar.highloadproject.entity.security.UserEntity;
@@ -610,6 +611,40 @@ public class ZorthTests {
                 .then()
                 .extract();
         Assertions.assertEquals(404, response.response().statusCode());
+    }
+
+    @Test
+    @Order(23)
+    public void pipelineWithValidData() throws IOException {
+        String program = IOUtils.toString(
+                Objects.requireNonNull(this.getClass().getResourceAsStream("var.zorth")),
+                StandardCharsets.UTF_8
+        );
+        String adminToken = authenticationService.signIn(adminUsername, adminPassword);
+        UserEntity adminEntity = userRepository.findByUsername(adminUsername).orElseThrow();
+
+
+        ExtractableResponse<Response> response = given()
+                .header("Content-type", "application/json")
+                .and()
+                .header("Authorization", "Bearer " + adminToken)
+                .and()
+                .body(new PipelineRequest(true, program, new String[]{"k", "2", "3"}))
+                .when()
+                .post("/api/v1/zorth/pipeline")
+                .then()
+                .extract();
+        Assertions.assertEquals(200, response.response().statusCode());
+
+
+        RequestEntity requestEntity = adminEntity.getRequests().get(adminEntity.getRequests().size() - 1);
+        DebugMessagesEntity debugMessagesEntity = debugMessagesRepository.findByRequest(requestEntity).orElseThrow();
+        CompilerOutEntity compilerOutEntity = compilerOutRepository.findByRequest(requestEntity).orElseThrow();
+        Assertions.assertAll(
+                () -> Assertions.assertEquals(debugOutputToCompare, debugMessagesEntity.getText()),
+                () -> Assertions.assertArrayEquals(dataToCompare, compilerOutEntity.getData()),
+                () -> Assertions.assertArrayEquals(programToCompare, compilerOutEntity.getProgram())
+        );
     }
 
 }

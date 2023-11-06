@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import ru.itmo.zavar.highloadproject.dto.request.ChangeRoleRequest;
-import ru.itmo.zavar.highloadproject.dto.request.SignUpRequest;
+import ru.itmo.zavar.highloadproject.dto.outer.request.ChangeRoleRequest;
+import ru.itmo.zavar.highloadproject.dto.outer.request.SignUpRequest;
 import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 
 import java.util.NoSuchElementException;

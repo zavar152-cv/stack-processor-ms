@@ -13,22 +13,26 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import ru.itmo.zavar.InstructionCode;
-import ru.itmo.zavar.highloadproject.dto.request.ExecuteRequest;
-import ru.itmo.zavar.highloadproject.dto.request.GetDebugMessagesRequest;
-import ru.itmo.zavar.highloadproject.dto.request.GetProcessorOutRequest;
-import ru.itmo.zavar.highloadproject.dto.request.PipelineRequest;
-import ru.itmo.zavar.highloadproject.dto.response.CompilerOutResponse;
-import ru.itmo.zavar.highloadproject.dto.response.DebugMessagesResponse;
+import ru.itmo.zavar.highloadproject.clients.RequestServiceClient;
+import ru.itmo.zavar.highloadproject.dto.inner.response.RequestServiceResponse;
+import ru.itmo.zavar.highloadproject.dto.outer.request.ExecuteRequest;
+import ru.itmo.zavar.highloadproject.dto.outer.request.GetDebugMessagesRequest;
+import ru.itmo.zavar.highloadproject.dto.outer.request.GetProcessorOutRequest;
+import ru.itmo.zavar.highloadproject.dto.outer.request.PipelineRequest;
+import ru.itmo.zavar.highloadproject.dto.outer.response.CompilerOutResponse;
+import ru.itmo.zavar.highloadproject.dto.outer.response.DebugMessagesResponse;
 import ru.itmo.zavar.highloadproject.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.DebugMessagesEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.ProcessorOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.RequestEntity;
+import ru.itmo.zavar.highloadproject.mapper.RequestEntityMapper;
 import ru.itmo.zavar.highloadproject.repo.*;
 import ru.itmo.zavar.highloadproject.service.AuthenticationService;
 import ru.itmo.zavar.highloadproject.service.ZorthTranslatorService;
@@ -124,11 +128,13 @@ public class ZorthTests {
     @Autowired
     private DebugMessagesRepository debugMessagesRepository;
     @Autowired
-    private RequestRepository requestRepository;
-    @Autowired
     private ProcessorOutRepository processorOutRepository;
     @Autowired
     private AuthenticationService authenticationService;
+    @Autowired
+    private RequestServiceClient requestServiceClient;
+    @Autowired
+    private RequestEntityMapper mapper;
 
     @Value("${admin.username}")
     private String adminUsername;
@@ -325,7 +331,11 @@ public class ZorthTests {
         String adminToken = authenticationService.signIn(adminUsername, adminPassword);
         UserEntity adminEntity = userRepository.findByUsername(adminUsername).orElseThrow();
         Long id = adminEntity.getRequests().get(0).getId();
-        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow();
+        ResponseEntity<RequestServiceResponse> responseAfterGet = requestServiceClient.get(id);
+        if (responseAfterGet.getStatusCode().isError()) {
+            throw new NoSuchElementException();
+        }
+        RequestEntity requestEntity = mapper.fromResponse(responseAfterGet.getBody());
         CompilerOutEntity compilerOutEntity = compilerOutRepository.findByRequest(requestEntity).orElseThrow();
         List<ProcessorOutEntity> allByCompilerOut = processorOutRepository.findAllByCompilerOut(compilerOutEntity);
 
@@ -351,7 +361,11 @@ public class ZorthTests {
         String adminToken = authenticationService.signIn(adminUsername, adminPassword);
         UserEntity adminEntity = userRepository.findByUsername(testUsername).orElseThrow();
         Long id = adminEntity.getRequests().get(0).getId();
-        RequestEntity requestEntity = requestRepository.findById(id).orElseThrow();
+        ResponseEntity<RequestServiceResponse> responseAfterGet = requestServiceClient.get(id);
+        if (responseAfterGet.getStatusCode().isError()) {
+            throw new NoSuchElementException();
+        }
+        RequestEntity requestEntity = mapper.fromResponse(responseAfterGet.getBody());
         CompilerOutEntity compilerOutEntity = compilerOutRepository.findByRequest(requestEntity).orElseThrow();
         List<ProcessorOutEntity> allByCompilerOut = processorOutRepository.findAllByCompilerOut(compilerOutEntity);
 

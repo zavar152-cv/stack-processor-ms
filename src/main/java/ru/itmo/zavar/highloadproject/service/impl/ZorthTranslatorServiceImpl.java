@@ -3,14 +3,19 @@ package ru.itmo.zavar.highloadproject.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.itmo.zavar.exception.ZorthException;
+import ru.itmo.zavar.highloadproject.clients.RequestServiceClient;
+import ru.itmo.zavar.highloadproject.dto.inner.request.RequestServiceRequest;
+import ru.itmo.zavar.highloadproject.dto.inner.response.RequestServiceResponse;
 import ru.itmo.zavar.highloadproject.entity.security.RoleEntity;
 import ru.itmo.zavar.highloadproject.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.DebugMessagesEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.RequestEntity;
+import ru.itmo.zavar.highloadproject.mapper.RequestEntityMapper;
 import ru.itmo.zavar.highloadproject.service.*;
 import ru.itmo.zavar.zorth.ProgramAndDataDto;
 import ru.itmo.zavar.zorth.ZorthTranslator;
@@ -22,9 +27,10 @@ import java.util.*;
 public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
     private final CompilerOutService compilerOutService;
     private final DebugMessagesService debugMessagesService;
-    private final RequestService requestService;
+    private final RequestServiceClient requestServiceClient;
     private final UserService userService;
     private final RoleService roleService;
+    private final RequestEntityMapper mapper;
 
     @Override
     @Transactional
@@ -33,21 +39,28 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         translator.compileFromString(debug, text);
         translator.linkage(debug);
         ProgramAndDataDto out = translator.getCompiledProgramAndDataInBytes();
-        RequestEntity request = RequestEntity.builder().debug(debug).text(text).build();
+        RequestServiceRequest request = RequestServiceRequest.builder().debug(debug).text(text).build();
         RoleEntity roleUser = roleService.getUserRole().orElseThrow();
-        RequestEntity requestToReturn = requestService.saveRequest(request);
+        ResponseEntity<RequestServiceResponse> responseAfterSave = requestServiceClient.save(request);
+        if (responseAfterSave.getStatusCode().isError()) {
+            throw new NoSuchElementException();
+        }
+        RequestEntity requestToReturn = mapper.fromResponse(responseAfterSave.getBody());
         if (userEntity.getRoles().size() == 1 & userEntity.getRoles().contains(roleUser) & !userEntity.getRequests().isEmpty()) {
             RequestEntity requestEntity = userEntity.getRequests().get(0);
             compilerOutService.deleteCompilerOutByRequest(requestEntity);
             debugMessagesService.deleteDebugMessagesByRequest(requestEntity);
-            requestService.deleteRequest(requestEntity);
+            ResponseEntity<?> responseAfterDelete = requestServiceClient.delete(request);
+            if (responseAfterDelete.getStatusCode().isError()) {
+                throw new NoSuchElementException();
+            }
             userEntity.getRequests().clear();
         }
-        userEntity.getRequests().add(request);
+        userEntity.getRequests().add(requestToReturn);
         userService.saveUser(userEntity);
         if (debug) {
             DebugMessagesEntity debugMessagesEntity = DebugMessagesEntity.builder()
-                    .request(request)
+                    .request(requestToReturn)
                     .text(String.join("\n", translator.getDebugMessages()))
                     .build();
             debugMessagesService.saveDebugMessages(debugMessagesEntity);
@@ -64,7 +77,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         program.toArray(programArray);
 
         CompilerOutEntity compilerOutEntity = CompilerOutEntity.builder()
-                .request(request)
+                .request(requestToReturn)
                 .data(ArrayUtils.toPrimitive(dataArray))
                 .program(ArrayUtils.toPrimitive(programArray))
                 .build();
@@ -83,14 +96,22 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
     }
 
     @Override
-    public Optional<CompilerOutEntity> getCompilerOutputByRequestId(Long id) {
-        RequestEntity requestEntity = requestService.findById(id).orElseThrow();
+    public Optional<CompilerOutEntity> getCompilerOutputByRequestId(Long id) throws NoSuchElementException {
+        ResponseEntity<RequestServiceResponse> response = requestServiceClient.get(id);
+        if (response.getStatusCode().isError()) {
+            throw new NoSuchElementException();
+        }
+        RequestEntity requestEntity = mapper.fromResponse(response.getBody());
         return compilerOutService.findByRequest(requestEntity);
     }
 
     @Override
-    public boolean checkRequestOwnedByUser(UserEntity userEntity, Long requestId) {
-        RequestEntity requestEntity = requestService.findById(requestId).orElseThrow();
+    public boolean checkRequestOwnedByUser(UserEntity userEntity, Long requestId) throws NoSuchElementException {
+        ResponseEntity<RequestServiceResponse> response = requestServiceClient.get(requestId);
+        if (response.getStatusCode().isError()) {
+            throw new NoSuchElementException();
+        }
+        RequestEntity requestEntity = mapper.fromResponse(response.getBody());
         return userEntity.getRequests().contains(requestEntity);
     }
 
@@ -105,8 +126,12 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
     }
 
     @Override
-    public Optional<DebugMessagesEntity> getDebugMessagesByRequestId(Long id) {
-        RequestEntity requestEntity = requestService.findById(id).orElseThrow();
+    public Optional<DebugMessagesEntity> getDebugMessagesByRequestId(Long id) throws NoSuchElementException {
+        ResponseEntity<RequestServiceResponse> response = requestServiceClient.get(id);
+        if (response.getStatusCode().isError()) {
+            throw new NoSuchElementException();
+        }
+        RequestEntity requestEntity = mapper.fromResponse(response.getBody());
         return debugMessagesService.findByRequest(requestEntity);
     }
 

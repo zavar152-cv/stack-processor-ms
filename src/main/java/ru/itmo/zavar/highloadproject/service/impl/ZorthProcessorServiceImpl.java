@@ -6,25 +6,31 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.itmo.zavar.InstructionCode;
 import ru.itmo.zavar.comp.ControlUnit;
 import ru.itmo.zavar.exception.ControlUnitException;
+import ru.itmo.zavar.highloadproject.clients.RequestServiceClient;
+import ru.itmo.zavar.highloadproject.dto.inner.response.RequestServiceResponse;
 import ru.itmo.zavar.highloadproject.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.ProcessorOutEntity;
 import ru.itmo.zavar.highloadproject.entity.zorth.RequestEntity;
+import ru.itmo.zavar.highloadproject.mapper.RequestEntityMapper;
 import ru.itmo.zavar.highloadproject.service.*;
 import ru.itmo.zavar.highloadproject.util.ZorthUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
 public class ZorthProcessorServiceImpl implements ZorthProcessorService {
     private final ProcessorOutService processorOutService;
     private final CompilerOutService compilerOutService;
-    private final RequestService requestService;
+    private final RequestServiceClient requestServiceClient;
+    private final RequestEntityMapper mapper;
 
     @Override
     public ProcessorOutEntity startProcessorAndGetLogs(String[] input, CompilerOutEntity compilerOutEntity) throws ControlUnitException, ParseException {
@@ -61,8 +67,12 @@ public class ZorthProcessorServiceImpl implements ZorthProcessorService {
     }
 
     @Override
-    public List<ProcessorOutEntity> getAllProcessorOutByRequest(Long requestId) {
-        RequestEntity requestEntity = requestService.findById(requestId).orElseThrow();
+    public List<ProcessorOutEntity> getAllProcessorOutByRequest(Long requestId) throws NoSuchElementException {
+        ResponseEntity<RequestServiceResponse> response = requestServiceClient.get(requestId);
+        if (response.getStatusCode().isError()) {
+            throw new NoSuchElementException();
+        }
+        RequestEntity requestEntity = mapper.fromResponse(response.getBody());
         CompilerOutEntity compilerOutEntity = compilerOutService.findByRequest(requestEntity).orElseThrow();
         return processorOutService.findAllByCompilerOut(compilerOutEntity);
     }

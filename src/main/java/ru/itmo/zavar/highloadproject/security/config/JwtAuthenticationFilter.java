@@ -7,16 +7,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.itmo.zavar.highloadproject.clients.UserServiceClient;
+import ru.itmo.zavar.highloadproject.dto.inner.response.UserServiceResponse;
+import ru.itmo.zavar.highloadproject.mapper.UserEntityMapper;
 import ru.itmo.zavar.highloadproject.service.JwtService;
-import ru.itmo.zavar.highloadproject.service.UserService;
 
 import java.io.IOException;
 
@@ -24,7 +29,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final UserService userService;
+    private final UserServiceClient userServiceClient;
+    private final UserEntityMapper userEntityMapper;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
@@ -45,8 +51,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         if (StringUtils.isNotEmpty(username)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.userDetailsService()
-                    .loadUserByUsername(username);
+            ResponseEntity<UserServiceResponse> userServiceResponse = userServiceClient.getByUsername(username);
+            if (userServiceResponse.getStatusCode().isError()) {
+                throw new UsernameNotFoundException("User not found");
+            }
+            UserDetails userDetails = userEntityMapper.fromResponse(userServiceResponse.getBody());
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

@@ -111,7 +111,7 @@ authorities: ROLE_ADMIN
 ### AddUser as admin via gateway (should be ok)
 POST http://localhost:8765/user/add
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU2ODYyOCwiZXhwIjoxNjk5NTcwMDY4fQ.CagHsW4cJBKSmziDT-1dYfvlthY1ghHxjVvs5Q-MVgY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU3MTM4OCwiZXhwIjoxNjk5NTcyODI4fQ.sGOLL53sWr0Row4tmNUmgbXhjRPlyTb4XdUyrjuSkbE
 username: admin
 authorities: ROLE_USER
 

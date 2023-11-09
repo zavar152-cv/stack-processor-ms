@@ -4,6 +4,8 @@ server:
     include-message: always
     whitelabel:
       enabled: false
+  servlet:
+    context-path: /api/v1
 
 spring:
   application:
@@ -12,12 +14,18 @@ spring:
     gateway:
       default-filters:
         - StripPrefix=1
-        - RewritePath=/(?<path>.*), /api/v1/$\{path}
+        - RewritePath=/(?<path>.*), ${server.servlet.context-path}/$\{path}
       routes:
         - id: auth
-          uri: lb://auth/api/v1/signIn
+          uri: lb://auth
           predicates:
             - Path=/auth/signIn
+        - id: user
+          uri: lb://user
+          predicates:
+            - Path=/user/add,/user/changeRole
+          filters:
+            - AuthenticationFilter
         - id: highload
           uri: lb://highload
           predicates:

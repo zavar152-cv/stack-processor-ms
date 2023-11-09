@@ -1,4 +1,13 @@
-### SignIn via gateway (should be ok)
+### SignIn as user via gateway (should be ok)
+POST http://localhost:8765/auth/signIn
+Content-Type: application/json
+
+{
+  "username": "adminn",
+  "password": "Adm1n---"
+}
+
+### SignIn as admin via gateway (should be ok)
 POST http://localhost:8765/auth/signIn
 Content-Type: application/json
 
@@ -79,4 +88,45 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU0N
 {
   "debug": true,
   "text": "variable p\n3 p\n! p @"
+}
+
+### GetUserByName via gateway (should fail)
+GET http://localhost:8765/user/getByUsername/admin
+
+### GetUserByName direct (should fail)
+GET http://localhost:8765/user/api/v1/getByUsername/admin
+
+### AddUser as user via gateway (should fail)
+POST http://localhost:8765/user/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbm4iLCJpYXQiOjE2OTk1NjgyNjksImV4cCI6MTY5OTU2OTcwOX0.rvasgvx4iH713OQbka68FKZ4cPLlDLQ74w5gkdqvY7M
+username: admin
+authorities: ROLE_ADMIN
+
+{
+  "username": "adminnn",
+  "password": "Adm1n---"
+}
+
+### AddUser as admin via gateway (should be ok)
+POST http://localhost:8765/user/add
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU2ODYyOCwiZXhwIjoxNjk5NTcwMDY4fQ.CagHsW4cJBKSmziDT-1dYfvlthY1ghHxjVvs5Q-MVgY
+username: admin
+authorities: ROLE_USER
+
+{
+  "username": "adminnnnn",
+  "password": "Adm1n---"
+}
+
+### AddUser direct (should fail)
+POST http://localhost:8765/user/api/v1/add
+Content-Type: application/json
+username: admin
+authorities: ROLE_ADMIN
+
+{
+  "username": "adminnn",
+  "password": "Adm1n---"
 }

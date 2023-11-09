@@ -1,4 +1,4 @@
-package ru.itmo.zavar.highloadprojectuserservice.dto.inner.response;
+package ru.itmo.zavar.highloadprojectuserservice.dto.inner.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,5 +10,5 @@ import java.util.List;
 import java.util.Set;
 
 @Builder
-public record UserServiceResponse(@NotNull Long id, @NotBlank String username, @NotBlank String password, @NotNull Set<RoleEntity> roles, @NotNull List<RequestEntity> requests) {
+public record UserEntityRequest(Long id, @NotBlank String username, @NotBlank String password, @NotNull Set<RoleEntity> roles, List<RequestEntity> requests) {
 }

@@ -28,3 +28,6 @@ eureka:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
   instance:
     instance-id: ${spring.application.name}:${random.value}
+admin:
+  username: admin
+  password: admin

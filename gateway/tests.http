@@ -1,0 +1,82 @@
+### SignIn via gateway (should be ok)
+POST http://localhost:8765/auth/signIn
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+### SignIn direct (should fail)
+POST http://localhost:8765/auth/api/v1/signIn
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+### ValidateToken via gateway (should fail)
+POST http://localhost:8765/auth/validateToken
+Content-Type: application/json
+
+{
+  "jwtToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU0MDg5MywiZXhwIjoxNjk5NTQyMzMzfQ.4bpdqowYRq6RFh77Gyk-ty0XKjweIf8zzNmrJ7WDXsI"
+}
+
+### ValidateToken direct (should fail)
+POST http://localhost:8765/auth/api/v1/validateToken
+Content-Type: application/json
+
+{
+  "jwtToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU0MDg5MywiZXhwIjoxNjk5NTQyMzMzfQ.4bpdqowYRq6RFh77Gyk-ty0XKjweIf8zzNmrJ7WDXsI"
+}
+
+### ZorthCompile with no Authorization via gateway (should fail)
+POST http://localhost:8765/highload/zorth/compile
+Content-Type: application/json
+
+{
+  "debug": true,
+  "text": "variable p\n3 p\n! p @"
+}
+
+### ZorthCompile with no JWT via gateway (should fail)
+POST http://localhost:8765/highload/zorth/compile
+Content-Type: application/json
+Authorization: Bearer
+
+{
+  "debug": true,
+  "text": "variable p\n3 p\n! p @"
+}
+
+### ZorthCompile with expired JWT via gateway (should fail)
+POST http://localhost:8765/highload/zorth/compile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5ODMzODE5MiwiZXhwIjoxNjk4MzM5NjMyfQ.gFbzG86VToANpwfqH1SvCLeglCVikgaIUsCAavorgVI
+
+{
+  "debug": true,
+  "text": "variable p\n3 p\n! p @"
+}
+
+### ZorthCompile with valid JWT via gateway (should be ok)
+POST http://localhost:8765/highload/zorth/compile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU0ODQ3OSwiZXhwIjoxNjk5NTQ5OTE5fQ.01l1eSnfnC_t2dHuNDKGbqVXn2EFDw2vPIrW2M_Nk-s
+
+{
+  "debug": true,
+  "text": "variable p\n3 p\n! p @"
+}
+
+### ZorthCompile with valid JWT direct (should fail)
+POST http://localhost:8765/highload/api/v1/zorth/compile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU0NjI1OCwiZXhwIjoxNjk5NTQ3Njk4fQ.ozYGR88cBqa3kog9kF0212zQf2XrFh66UHfvLNGhAEk
+
+{
+  "debug": true,
+  "text": "variable p\n3 p\n! p @"
+}

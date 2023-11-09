@@ -1,20 +1,30 @@
 server:
   port: 8765
+  error:
+    include-message: always
+    whitelabel:
+      enabled: false
+
 spring:
   application:
     name: gateway
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
+      default-filters:
+        - StripPrefix=1
+        - RewritePath=/(?<path>.*), /api/v1/$\{path}
       routes:
+        - id: auth
+          uri: lb://auth/api/v1/signIn
+          predicates:
+            - Path=/auth/signIn
         - id: highload
           uri: lb://highload
           predicates:
-            - Path=/api/v1/*
-            - Method=*
+            - Path=/highload/zorth/compile
+          filters:
+            - AuthenticationFilter
+
 eureka:
   client:
     service-url:

@@ -5,5 +5,5 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record ChangeRoleRequest(@NotBlank @Size(min = 5, max = 25) String username, @NotBlank String role) {
+public record ChangeRoleRequestDTO(@NotBlank @Size(min = 5, max = 25) String username, @NotBlank String role) {
 }

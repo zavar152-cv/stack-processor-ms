@@ -46,15 +46,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity saveUser(UserEntity userEntity) {
-        return userRepository.save(userEntity);
-    }
-
-    public RoleEntity saveRole(RoleEntity roleEntity) {
-        return roleRepository.save(roleEntity);
-    }
-
-    @Override
     public void addUser(String username, String password) throws IllegalArgumentException {
         Optional<RoleEntity> roleUser = roleRepository.findByName(RoleConstants.USER);
         if (roleUser.isEmpty()) {
@@ -80,6 +71,15 @@ public class UserServiceImpl implements UserService {
         userEntity.getRoles().clear();
         userEntity.getRoles().add(roleEntity);
         saveUser(userEntity);
+    }
+
+    @Override
+    public UserEntity saveUser(UserEntity userEntity) {
+        return userRepository.save(userEntity);
+    }
+
+    public RoleEntity saveRole(RoleEntity roleEntity) {
+        return roleRepository.save(roleEntity);
     }
 
     @Override

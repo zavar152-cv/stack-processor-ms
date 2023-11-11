@@ -8,13 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.itmo.zavar.highloadprojectuserservice.dto.inner.request.UserEntityRequest;
-import ru.itmo.zavar.highloadprojectuserservice.dto.inner.response.UserEntityResponse;
-import ru.itmo.zavar.highloadprojectuserservice.dto.outer.request.AddUserRequest;
-import ru.itmo.zavar.highloadprojectuserservice.dto.outer.request.ChangeRoleRequest;
+import ru.itmo.zavar.highloadprojectuserservice.dto.inner.UserDTO;
+import ru.itmo.zavar.highloadprojectuserservice.dto.outer.request.AddUserRequestDTO;
+import ru.itmo.zavar.highloadprojectuserservice.dto.outer.request.ChangeRoleRequestDTO;
 import ru.itmo.zavar.highloadprojectuserservice.entity.security.UserEntity;
 import ru.itmo.zavar.highloadprojectuserservice.mapper.UserEntityMapper;
 import ru.itmo.zavar.highloadprojectuserservice.service.UserService;
+import ru.itmo.zavar.highloadprojectuserservice.util.RoleConstants;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -25,56 +25,56 @@ public class UserServiceController {
     private final UserService userService;
     private final UserEntityMapper userEntityMapper;
 
-    @PostMapping("/save")
-    public ResponseEntity<UserEntityResponse> save(@Valid @RequestBody UserEntityRequest request) {
-        try {
-            UserEntity userEntity = userEntityMapper.fromRequest(request);
-            UserEntityResponse response = userEntityMapper.toResponse(userService.saveUser(userEntity));
-            return ResponseEntity.ok(response);
-        } catch (DataAccessException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Couldn't save user");
-        }
-    }
-
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('" + RoleConstants.ADMIN + "')")
     @PostMapping("/add")
-    public ResponseEntity<?> add(@Valid @RequestBody AddUserRequest request) {
+    public ResponseEntity<?> addUser(@Valid @RequestBody AddUserRequestDTO dto) {
         try {
-            userService.addUser(request.username(), request.password());
+            userService.addUser(dto.username(), dto.password());
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
         }
     }
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('" + RoleConstants.ADMIN + "')")
     @PostMapping("/changeRole")
-    public ResponseEntity<?> changeRole(@Valid @RequestBody ChangeRoleRequest request) {
+    public ResponseEntity<?> changeRoleOfUser(@Valid @RequestBody ChangeRoleRequestDTO dto) {
         try {
-            userService.changeRole(request.username(), request.role());
+            userService.changeRole(dto.username(), dto.role());
             return ResponseEntity.ok().build();
         } catch (NoSuchElementException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
         }
     }
 
+    @PostMapping("/save")
+    public ResponseEntity<UserDTO> saveUser(@Valid @RequestBody UserDTO dto) {
+        try {
+            UserEntity userEntity = userEntityMapper.fromDTO(dto);
+            dto = userEntityMapper.toDTO(userService.saveUser(userEntity));
+            return ResponseEntity.ok(dto);
+        } catch (DataAccessException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Couldn't save user");
+        }
+    }
+
     @GetMapping("/getById/{id}")
-    public ResponseEntity<UserEntityResponse> getById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> findUserById(@PathVariable Long id) {
         Optional<UserEntity> userEntity = userService.findById(id);
         if (userEntity.isPresent()) {
-            UserEntityResponse response = userEntityMapper.toResponse(userEntity.get());
-            return ResponseEntity.ok(response);
+            UserDTO dto = userEntityMapper.toDTO(userEntity.get());
+            return ResponseEntity.ok(dto);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }
     }
 
     @GetMapping("/getByUsername/{username}")
-    public ResponseEntity<UserEntityResponse> getByUsername(@PathVariable String username) {
+    public ResponseEntity<UserDTO> findUserByUsername(@PathVariable String username) {
         Optional<UserEntity> userEntity = userService.findByUsername(username);
         if (userEntity.isPresent()) {
-            UserEntityResponse response = userEntityMapper.toResponse(userEntity.get());
-            return ResponseEntity.ok(response);
+            UserDTO dto = userEntityMapper.toDTO(userEntity.get());
+            return ResponseEntity.ok(dto);
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         }

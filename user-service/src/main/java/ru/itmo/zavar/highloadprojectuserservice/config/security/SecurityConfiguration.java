@@ -36,32 +36,4 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    /* TODO: Понять, нужно или нет
-    @Bean
-    public RoleHierarchy roleHierarchy() {
-        var hierarchy = new RoleHierarchyImpl();
-        hierarchy.setHierarchy(RoleConstants.ADMIN + " > " + RoleConstants.VIP + "\n" +
-                RoleConstants.VIP + " > " + RoleConstants.USER);
-        return hierarchy;
-    }
-
-    @Bean
-    public MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
-        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
-        expressionHandler.setRoleHierarchy(roleHierarchy);
-        return expressionHandler;
-    }
-     */
-
-    /*
-    @Bean
-    protected UserDetailsService userDetailsService() {
-        InMemoryUserDetailsManager userDetailsManager = new InMemoryUserDetailsManager();
-        userDetailsManager.createUser(UserEntity.builder().username().password(encoder.encode(password))
-                .roles(AppRoles.SUPER_ADMIN.name()).authorities(AppRoles.SUPER_ADMIN.getAuthorities()).build());
-
-        return userDetailsManager;
-    }
-     */
-
 }

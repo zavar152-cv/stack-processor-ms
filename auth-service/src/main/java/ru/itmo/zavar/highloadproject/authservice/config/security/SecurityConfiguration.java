@@ -16,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import ru.itmo.zavar.highloadproject.authservice.client.UserServiceClient;
-import ru.itmo.zavar.highloadproject.authservice.dto.inner.response.UserEntityResponse;
+import ru.itmo.zavar.highloadproject.authservice.dto.inner.UserDTO;
 import ru.itmo.zavar.highloadproject.authservice.mapper.UserEntityMapper;
 
 @Configuration
@@ -44,8 +44,8 @@ public class SecurityConfiguration {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(username -> {
-            ResponseEntity<UserEntityResponse> response = userServiceClient.getByUsername(username);
-            return userEntityMapper.fromResponse(response.getBody());
+            ResponseEntity<UserDTO> response = userServiceClient.findUserByUsername(username);
+            return userEntityMapper.fromDTO(response.getBody());
         });
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;

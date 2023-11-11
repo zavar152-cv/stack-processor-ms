@@ -8,10 +8,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 import ru.itmo.zavar.highloadproject.authservice.client.UserServiceClient;
+import ru.itmo.zavar.highloadproject.authservice.dto.inner.UserDTO;
 import ru.itmo.zavar.highloadproject.authservice.mapper.UserEntityMapper;
 import ru.itmo.zavar.highloadproject.authservice.service.AuthenticationService;
 import ru.itmo.zavar.highloadproject.authservice.service.JwtService;
-import ru.itmo.zavar.highloadproject.authservice.dto.inner.response.UserEntityResponse;
 import ru.itmo.zavar.highloadproject.authservice.entity.security.UserEntity;
 
 @Service
@@ -25,15 +25,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String signIn(String username, String password) throws AuthenticationException {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        ResponseEntity<UserEntityResponse> response = userServiceClient.getByUsername(username);
-        return jwtService.generateToken(userEntityMapper.fromResponse(response.getBody()));
+        ResponseEntity<UserDTO> response = userServiceClient.findUserByUsername(username);
+        return jwtService.generateToken(userEntityMapper.fromDTO(response.getBody()));
     }
 
     @Override
     public UserEntity validateToken(String jwtToken) throws JwtException, IllegalArgumentException {
         String username = jwtService.extractUserName(jwtToken);
-        ResponseEntity<UserEntityResponse> response = userServiceClient.getByUsername(username);
-        return userEntityMapper.fromResponse(response.getBody());
+        ResponseEntity<UserDTO> response = userServiceClient.findUserByUsername(username);
+        return userEntityMapper.fromDTO(response.getBody());
     }
 
 }

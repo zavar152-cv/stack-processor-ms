@@ -3,7 +3,7 @@ POST http://localhost:8765/auth/signIn
 Content-Type: application/json
 
 {
-  "username": "adminn",
+  "username": "adminnn",
   "password": "Adm1n---"
 }
 
@@ -99,7 +99,7 @@ GET http://localhost:8765/user/api/v1/getByUsername/admin
 ### AddUser as user via gateway (should fail)
 POST http://localhost:8765/user/add
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbm4iLCJpYXQiOjE2OTk1NjgyNjksImV4cCI6MTY5OTU2OTcwOX0.rvasgvx4iH713OQbka68FKZ4cPLlDLQ74w5gkdqvY7M
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTczNTQ2NywiZXhwIjoxNjk5NzM2OTA3fQ.zHs2yJJPupxaQ3KcDnyN_Obviz9znuHxKPP5ajNFKA4
 username: admin
 authorities: ROLE_ADMIN
 
@@ -129,4 +129,16 @@ authorities: ROLE_ADMIN
 {
   "username": "adminnn",
   "password": "Adm1n---"
+}
+
+### ChangeRole as user via gateway (should fail)
+POST http://localhost:8765/user/changeRole
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbm5uIiwiaWF0IjoxNjk5NzM5NDg0LCJleHAiOjE2OTk3NDA5MjR9.jhMtI-7e_uY28vbAcNX55SziAk5m67MHbsoj4xsYt0g
+username: admin
+authorities: ROLE_ADMIN
+
+{
+  "username": "adminnn",
+  "role": "ROLE_ADMIN"
 }

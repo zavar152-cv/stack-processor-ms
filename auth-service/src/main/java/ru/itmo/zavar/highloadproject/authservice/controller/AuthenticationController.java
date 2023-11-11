@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import ru.itmo.zavar.highloadproject.authservice.dto.inner.request.ValidateTokenRequest;
-import ru.itmo.zavar.highloadproject.authservice.dto.inner.response.ValidateTokenResponse;
-import ru.itmo.zavar.highloadproject.authservice.dto.outer.request.SignInRequest;
-import ru.itmo.zavar.highloadproject.authservice.dto.outer.response.SignInResponse;
+import ru.itmo.zavar.highloadproject.authservice.dto.inner.request.ValidateTokenRequestDTO;
+import ru.itmo.zavar.highloadproject.authservice.dto.inner.response.ValidateTokenResponseDTO;
+import ru.itmo.zavar.highloadproject.authservice.dto.outer.request.SignInRequestDTO;
+import ru.itmo.zavar.highloadproject.authservice.dto.outer.response.SignInResponseDTO;
 import ru.itmo.zavar.highloadproject.authservice.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.authservice.service.AuthenticationService;
 
@@ -26,9 +26,9 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/signIn")
-    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest request) {
+    public ResponseEntity<SignInResponseDTO> signIn(@Valid @RequestBody SignInRequestDTO request) {
         try {
-            SignInResponse response = SignInResponse.builder()
+            SignInResponseDTO response = SignInResponseDTO.builder()
                     .token(authenticationService.signIn(request.username(), request.password()))
                     .build();
             return ResponseEntity.ok(response);
@@ -41,12 +41,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/validateToken")
-    public ResponseEntity<ValidateTokenResponse> validateToken(@Valid @RequestBody ValidateTokenRequest request) {
+    public ResponseEntity<ValidateTokenResponseDTO> validateToken(@Valid @RequestBody ValidateTokenRequestDTO request) {
         try {
             UserEntity user = authenticationService.validateToken(request.jwtToken());
-            return ResponseEntity.ok(ValidateTokenResponse.builder()
+            return ResponseEntity.ok(ValidateTokenResponseDTO.builder()
                     .username(user.getUsername())
-                    .authorities(new ArrayList<>(user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList()))
+                    .authorities(new ArrayList<>(user.getAuthorities().stream()
+                            .map(GrantedAuthority::getAuthority)
+                            .toList()))
                     .build());
         } catch (JwtException | IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, exception.getMessage());

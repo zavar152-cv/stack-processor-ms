@@ -15,8 +15,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import lombok.extern.slf4j.Slf4j;
-import ru.itmo.zavar.highloadproject.gateway.dto.inner.request.ValidateTokenRequest;
-import ru.itmo.zavar.highloadproject.gateway.dto.inner.response.ValidateTokenResponse;
+import ru.itmo.zavar.highloadproject.gateway.dto.inner.request.ValidateTokenRequestDTO;
+import ru.itmo.zavar.highloadproject.gateway.dto.inner.response.ValidateTokenResponseDTO;
 
 @Slf4j
 @Component
@@ -48,9 +48,9 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             return webClientBuilder.build().post()
                     .uri("lb://auth/api/v1/validateToken")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(ValidateTokenRequest.builder().jwtToken(jwtToken).build())
+                    .bodyValue(ValidateTokenRequestDTO.builder().jwtToken(jwtToken).build())
                     .retrieve()
-                    .bodyToMono(ValidateTokenResponse.class)
+                    .bodyToMono(ValidateTokenResponseDTO.class)
                     .flatMap(response -> {
                         exchange.getRequest().mutate()
                                 .header("username", response.username())

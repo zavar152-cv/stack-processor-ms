@@ -22,6 +22,10 @@ spring:
     password: highload
     url: jdbc:postgresql://localhost:5432/db-highload
     driver-class-name: org.postgresql.Driver
+  jackson:
+    time-zone: Europe/Moscow
+  web:
+    locale: en_US
 eureka:
   client:
     service-url:

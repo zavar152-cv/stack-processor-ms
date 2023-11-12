@@ -16,6 +16,8 @@ public final class PasswordConstraintValidator implements ConstraintValidator<Va
     @Override
     public boolean isValid(String password, ConstraintValidatorContext context) {
         if (password == null) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("Password must not be null.").addConstraintViolation();
             return false;
         }
 

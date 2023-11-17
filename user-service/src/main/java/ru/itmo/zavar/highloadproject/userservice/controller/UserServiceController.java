@@ -11,8 +11,8 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.highloadproject.userservice.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.userservice.util.RoleConstants;
 import ru.itmo.zavar.highloadproject.userservice.dto.inner.UserDTO;
-import ru.itmo.zavar.highloadproject.userservice.dto.outer.request.AddUserRequestDTO;
-import ru.itmo.zavar.highloadproject.userservice.dto.outer.request.ChangeRoleRequestDTO;
+import ru.itmo.zavar.highloadproject.userservice.dto.outer.request.AddUserRequest;
+import ru.itmo.zavar.highloadproject.userservice.dto.outer.request.ChangeRoleRequest;
 import ru.itmo.zavar.highloadproject.userservice.mapper.UserEntityMapper;
 import ru.itmo.zavar.highloadproject.userservice.service.UserService;
 
@@ -27,9 +27,9 @@ public class UserServiceController {
 
     @PreAuthorize("hasRole('" + RoleConstants.ADMIN + "')")
     @PostMapping("/add")
-    public ResponseEntity<?> addUser(@Valid @RequestBody AddUserRequestDTO dto) {
+    public ResponseEntity<?> addUser(@Valid @RequestBody AddUserRequest request) {
         try {
-            userService.addUser(dto.username(), dto.password());
+            userService.addUser(request.username(), request.password());
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());
@@ -38,9 +38,9 @@ public class UserServiceController {
 
     @PreAuthorize("hasRole('" + RoleConstants.ADMIN + "')")
     @PostMapping("/changeRole")
-    public ResponseEntity<?> changeRoleOfUser(@Valid @RequestBody ChangeRoleRequestDTO dto) {
+    public ResponseEntity<?> changeRoleOfUser(@Valid @RequestBody ChangeRoleRequest request) {
         try {
-            userService.changeRole(dto.username(), dto.role());
+            userService.changeRole(request.username(), request.role());
             return ResponseEntity.ok().build();
         } catch (NoSuchElementException exception) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, exception.getMessage());

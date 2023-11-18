@@ -3,8 +3,8 @@ POST http://localhost:8765/auth/signIn
 Content-Type: application/json
 
 {
-  "username": "adminnn",
-  "password": "Adm1n---"
+  "username": "vipvip",
+  "password": "V1p-----"
 }
 
 ### SignIn as admin via gateway (should be ok)
@@ -109,15 +109,13 @@ authorities: ROLE_ADMIN
 }
 
 ### AddUser as admin via gateway (should be ok)
-POST http://localhost:8765/user/add
+POST http://localhost:8765/user/users
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU3MTM4OCwiZXhwIjoxNjk5NTcyODI4fQ.sGOLL53sWr0Row4tmNUmgbXhjRPlyTb4XdUyrjuSkbE
-username: admin
-authorities: ROLE_USER
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDMzMDg1MSwiZXhwIjoxNzAwMzMyMjkxfQ.ATrKvZi82ZdMx9oJMzwdNZI3Y5bri8T_LQ_EjfTFGeA
 
 {
-  "username": "adminnnnn",
-  "password": "Adm1n---"
+  "username": "vipvip",
+  "password": "V1p-----"
 }
 
 ### AddUser direct (should fail)
@@ -131,14 +129,15 @@ authorities: ROLE_ADMIN
   "password": "Adm1n---"
 }
 
-### ChangeRole as user via gateway (should fail)
-POST http://localhost:8765/user/changeRole
+### ChangeRole as admin via gateway (should be ok)
+PUT http://localhost:8765/user-service/users/vipvip/roles
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbm5uIiwiaWF0IjoxNjk5NzM5NDg0LCJleHAiOjE2OTk3NDA5MjR9.jhMtI-7e_uY28vbAcNX55SziAk5m67MHbsoj4xsYt0g
-username: admin
-authorities: ROLE_ADMIN
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDMzNTYyNCwiZXhwIjoxNzAwMzM3MDY0fQ.DhxbPsQjfgCpUwQyvxKH5ousjrDlS63qzxaAMHMe1yU
 
 {
-  "username": "adminnn",
-  "role": "ROLE_ADMIN"
+  "role": "ROLE_VIP"
 }
+
+### Get requests as self (should be ok)
+GET http://localhost:8765/user-service/users/vipvip/requests
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDAzMzQyOTMsImV4cCI6MTcwMDMzNTczM30._EDt9RjC7aO7wpoGgtcPDjRvzlv9CGxHPKfnh1I4Lw0

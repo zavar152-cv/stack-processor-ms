@@ -9,6 +9,6 @@ import ru.itmo.zavar.highloadproject.authservice.dto.inner.UserDTO;
 
 @FeignClient(name = "user", configuration = FeignConfiguration.class)
 public interface UserServiceClient {
-    @GetMapping("/api/v1/getByUsername/{username}")
+    @GetMapping("/api/v1/users/{username}")
     ResponseEntity<UserDTO> findUserByUsername(@PathVariable String username);
 }

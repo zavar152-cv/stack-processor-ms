@@ -20,10 +20,17 @@ spring:
           uri: lb://auth
           predicates:
             - Path=/auth/signIn
+        - id: add-user
+          uri: lb://user
+          predicates:
+            - Path=/user-service/users
+            - Method=POST
+          filters:
+            - AuthenticationFilter
         - id: user
           uri: lb://user
           predicates:
-            - Path=/user/add,/user/changeRole
+            - Path=/user-service/users/*/requests,/user-service/users/*/roles
           filters:
             - AuthenticationFilter
         - id: highload

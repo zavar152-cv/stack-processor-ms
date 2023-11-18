@@ -1,17 +1,14 @@
 package ru.itmo.zavar.highloadproject.userservice.service;
 
+import org.springframework.dao.DataAccessException;
 import ru.itmo.zavar.highloadproject.userservice.entity.security.UserEntity;
 
-import java.util.Optional;
-
 public interface UserService {
-    void addUser(String username, String password);
+    void addUser(String username, String password) throws IllegalArgumentException, DataAccessException;
 
-    void changeRole(String username, String role);
+    void changeRole(String username, String role) throws IllegalArgumentException, DataAccessException;
 
-    UserEntity saveUser(UserEntity userEntity);
+    UserEntity saveUser(UserEntity userEntity) throws DataAccessException;
 
-    Optional<UserEntity> findById(Long id);
-
-    Optional<UserEntity> findByUsername(String username);
+    UserEntity findUserByUsername(String username) throws IllegalArgumentException;
 }

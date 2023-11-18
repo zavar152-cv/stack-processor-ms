@@ -1,4 +1,4 @@
-package ru.itmo.zavar.highloadprojectrequestservice.entity.zorth;
+package ru.itmo.zavar.highloadproject.requestservice.entity.zorth;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

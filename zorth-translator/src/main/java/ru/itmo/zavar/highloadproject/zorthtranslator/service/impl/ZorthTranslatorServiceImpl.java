@@ -16,6 +16,7 @@ import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.CompilerOutEnt
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.DebugMessagesEntity;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.RequestEntity;
 import ru.itmo.zavar.highloadproject.zorthtranslator.mapper.RequestEntityMapper;
+import ru.itmo.zavar.highloadproject.zorthtranslator.mapper.RoleEntityMapper;
 import ru.itmo.zavar.highloadproject.zorthtranslator.mapper.UserEntityMapper;
 import ru.itmo.zavar.highloadproject.zorthtranslator.service.CompilerOutService;
 import ru.itmo.zavar.highloadproject.zorthtranslator.service.DebugMessagesService;
@@ -39,6 +40,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
 
     private final RequestEntityMapper requestEntityMapper;
     private final UserEntityMapper userEntityMapper;
+    private final RoleEntityMapper roleEntityMapper;
 
     @Override
     @Transactional
@@ -57,7 +59,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         /* Получаем userEntity из бд, чтобы получить доступ к списку запросов пользователя.
          * Если пользователь обычный, у него может быть только 1 запрос. Надо удалить прошлый, если он есть. */
         UserEntity userEntity = userEntityMapper.fromDTO(userServiceClient.findUserByUsername(username).getBody());
-        RoleEntity roleUser = new RoleEntity(3L, RoleConstants.USER); // TODO: вызов к userService
+        RoleEntity roleUser = roleEntityMapper.fromDTO(userServiceClient.findRoleByName(RoleConstants.USER).getBody());
         if (userEntity.getRoles().size() == 1 && userEntity.getRoles().contains(roleUser) && !userEntity.getRequests().isEmpty()) {
             RequestEntity oldRequestEntity = userEntity.getRequests().get(0);
             compilerOutService.deleteByRequest(oldRequestEntity);

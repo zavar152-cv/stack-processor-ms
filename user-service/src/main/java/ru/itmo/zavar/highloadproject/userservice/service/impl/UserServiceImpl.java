@@ -14,6 +14,7 @@ import ru.itmo.zavar.highloadproject.userservice.repo.UserRepository;
 import ru.itmo.zavar.highloadproject.userservice.service.UserService;
 import ru.itmo.zavar.highloadproject.userservice.util.RoleConstants;
 
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 @Service
@@ -46,7 +47,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addUser(String username, String password) throws IllegalArgumentException, DataAccessException {
+    public void addUser(String username, String password) throws NoSuchElementException, IllegalArgumentException, DataAccessException {
         RoleEntity roleUser = findRoleByName(RoleConstants.USER);
         UserEntity userEntity = UserEntity.builder()
                 .username(username)
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changeRole(String username, String role) throws IllegalArgumentException, DataAccessException {
+    public void changeRole(String username, String role) throws NoSuchElementException, DataAccessException {
         UserEntity userEntity = findUserByUsername(username);
         RoleEntity roleEntity = findRoleByName(role);
         userEntity.getRoles().clear();
@@ -74,15 +75,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity findUserByUsername(String username) throws IllegalArgumentException {
-        return userRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public UserEntity findUserByUsername(String username) throws NoSuchElementException {
+        return userRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 
+    @Override
     public RoleEntity saveRole(RoleEntity roleEntity) throws DataAccessException {
         return roleRepository.save(roleEntity);
     }
 
-    public RoleEntity findRoleByName(String name) throws IllegalArgumentException {
-        return roleRepository.findByName(name).orElseThrow(() -> new IllegalArgumentException("Role not found"));
+    @Override
+    public RoleEntity findRoleByName(String name) throws NoSuchElementException {
+        return roleRepository.findByName(name).orElseThrow(() -> new NoSuchElementException("Role not found"));
     }
 }

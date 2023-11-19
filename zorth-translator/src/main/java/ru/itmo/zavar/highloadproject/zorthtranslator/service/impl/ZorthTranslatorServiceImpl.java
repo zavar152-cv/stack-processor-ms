@@ -33,8 +33,10 @@ import java.util.NoSuchElementException;
 public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
     private final CompilerOutService compilerOutService;
     private final DebugMessagesService debugMessagesService;
+
     private final RequestServiceClient requestServiceClient;
     private final UserServiceClient userServiceClient;
+
     private final RequestEntityMapper requestEntityMapper;
     private final UserEntityMapper userEntityMapper;
 
@@ -96,5 +98,12 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         compilerOutService.save(compilerOutEntity);
 
         return requestEntity;
+    }
+
+    @Override
+    public boolean checkRequestOwnedByUser(String username, Long requestId) throws ResponseStatusException {
+        UserEntity userEntity = userEntityMapper.fromDTO(userServiceClient.findUserByUsername(username).getBody());
+        RequestEntity requestEntity = requestEntityMapper.fromDTO(requestServiceClient.get(requestId).getBody());
+        return userEntity.getRequests().contains(requestEntity);
     }
 }

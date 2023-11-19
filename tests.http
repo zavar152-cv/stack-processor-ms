@@ -29,19 +29,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5ODMzO
 ### ZorthCompile with valid JWT (should be ok)
 POST http://localhost:8765/zorth/compile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQwNzcxMywiZXhwIjoxNzAwNDA5MTUzfQ.D-HZidolMvXTntaIHAVar1O95Kyz69E39X_C0o9CUFc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQyMDA0NiwiZXhwIjoxNzAwNDIxNDg2fQ.ZlSN9Ya8VWhs0mpBzn29O_tkQJZ-8H-HKhobeqXpVU8
 
 {
-  "text": "variable p\n3 p\n! p @"
+  "debug": true,
+  "text": "variable p\n5 p\n! p @"
 }
 
 ### Get compiler-outs (should be ok)
-GET http://localhost:8765/zorth/compiler-outs
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQwNzcxMywiZXhwIjoxNzAwNDA5MTUzfQ.D-HZidolMvXTntaIHAVar1O95Kyz69E39X_C0o9CUFc
+GET http://localhost:8765/zorth/compiler-outs?request-id=3
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDA0MTg3NTYsImV4cCI6MTcwMDQyMDE5Nn0.qbfcQIzDagRTJ5CG0Vn206otVu4Rb5asbT7b3aQfsX8
 
 ### Get debug-messages (should be ok)
 GET http://localhost:8765/zorth/debug-messages
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQwNzcxMywiZXhwIjoxNzAwNDA5MTUzfQ.D-HZidolMvXTntaIHAVar1O95Kyz69E39X_C0o9CUFc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQxNDU1OSwiZXhwIjoxNzAwNDE1OTk5fQ.4Ru6HKNXzcyMtP0sjM9HZOIYFDR4RL_6bS7b9Cj-YWI
 
 
 ### AddUser as user (should fail)

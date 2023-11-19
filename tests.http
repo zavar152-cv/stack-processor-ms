@@ -1,10 +1,19 @@
-### SignIn as user (should be ok)
+### SignIn as vip (should be ok)
 POST http://localhost:8765/auth/signIn
 Content-Type: application/json
 
 {
   "username": "vipvip",
   "password": "V1p-----"
+}
+
+### SignIn as user (should be ok)
+POST http://localhost:8765/auth/signIn
+Content-Type: application/json
+
+{
+  "username": "userr",
+  "password": "Us3r----"
 }
 
 ### SignIn as admin (should be ok)
@@ -29,7 +38,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5ODMzO
 ### ZorthCompile with valid JWT (should be ok)
 POST http://localhost:8765/zorth/compile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQyMDA0NiwiZXhwIjoxNzAwNDIxNDg2fQ.ZlSN9Ya8VWhs0mpBzn29O_tkQJZ-8H-HKhobeqXpVU8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMDQyMzIyNCwiZXhwIjoxNzAwNDI0NjY0fQ.x8QmSJRA8YdXa7f_3CTHGNHeORy1aJj6-eCg99BVvwY
 
 {
   "debug": true,
@@ -58,13 +67,13 @@ authorities: ROLE_ADMIN
 }
 
 ### AddUser as admin (should be ok)
-POST http://localhost:8765/user/users
+POST http://localhost:8765/user-service/users
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDMzMDg1MSwiZXhwIjoxNzAwMzMyMjkxfQ.ATrKvZi82ZdMx9oJMzwdNZI3Y5bri8T_LQ_EjfTFGeA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQyMzEwMywiZXhwIjoxNzAwNDI0NTQzfQ.0Wmmms-fndTj-U4ki_HKLFkRgMxytkfAJtqrThQmmRA
 
 {
-  "username": "vipvip",
-  "password": "V1p-----"
+  "username": "userr",
+  "password": "Us3r----"
 }
 
 ### AddUser (should fail)

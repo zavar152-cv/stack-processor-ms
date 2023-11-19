@@ -19,7 +19,7 @@ public class RequestServiceController {
     private final RequestService requestService;
     private final RequestEntityMapper mapper;
 
-    @PostMapping
+    @PutMapping
     public ResponseEntity<RequestDTO> save(@Valid @RequestBody RequestDTO dto) {
         try {
             RequestEntity requestEntity = mapper.fromDTO(dto);

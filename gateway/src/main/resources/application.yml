@@ -33,6 +33,12 @@ spring:
             - Path=/user-service/users/*/requests,/user-service/users/*/roles
           filters:
             - AuthenticationFilter
+        - id: translator
+          uri: lb://zorth-translator
+          predicates:
+            - Path=/zorth/compile,/zorth/compiler-outs/*,/zorth/debug-messages/*
+          filters:
+            - AuthenticationFilter
         - id: highload
           uri: lb://highload
           predicates:

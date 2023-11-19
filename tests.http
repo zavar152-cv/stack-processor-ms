@@ -1,4 +1,4 @@
-### SignIn as user via gateway (should be ok)
+### SignIn as user (should be ok)
 POST http://localhost:8765/auth/signIn
 Content-Type: application/json
 
@@ -7,7 +7,7 @@ Content-Type: application/json
   "password": "V1p-----"
 }
 
-### SignIn as admin via gateway (should be ok)
+### SignIn as admin (should be ok)
 POST http://localhost:8765/auth/signIn
 Content-Type: application/json
 
@@ -16,52 +16,8 @@ Content-Type: application/json
   "password": "admin"
 }
 
-### SignIn direct (should fail)
-POST http://localhost:8765/auth/api/v1/signIn
-Content-Type: application/json
-
-{
-  "username": "admin",
-  "password": "admin"
-}
-
-### ValidateToken via gateway (should fail)
-POST http://localhost:8765/auth/validateToken
-Content-Type: application/json
-
-{
-  "jwtToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU0MDg5MywiZXhwIjoxNjk5NTQyMzMzfQ.4bpdqowYRq6RFh77Gyk-ty0XKjweIf8zzNmrJ7WDXsI"
-}
-
-### ValidateToken direct (should fail)
-POST http://localhost:8765/auth/api/v1/validateToken
-Content-Type: application/json
-
-{
-  "jwtToken": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU0MDg5MywiZXhwIjoxNjk5NTQyMzMzfQ.4bpdqowYRq6RFh77Gyk-ty0XKjweIf8zzNmrJ7WDXsI"
-}
-
-### ZorthCompile with no Authorization via gateway (should fail)
-POST http://localhost:8765/highload/zorth/compile
-Content-Type: application/json
-
-{
-  "debug": true,
-  "text": "variable p\n3 p\n! p @"
-}
-
-### ZorthCompile with no JWT via gateway (should fail)
-POST http://localhost:8765/highload/zorth/compile
-Content-Type: application/json
-Authorization: Bearer
-
-{
-  "debug": true,
-  "text": "variable p\n3 p\n! p @"
-}
-
-### ZorthCompile with expired JWT via gateway (should fail)
-POST http://localhost:8765/highload/zorth/compile
+### ZorthCompile with expired JWT (should fail)
+POST http://localhost:8765/zorth/compile
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5ODMzODE5MiwiZXhwIjoxNjk4MzM5NjMyfQ.gFbzG86VToANpwfqH1SvCLeglCVikgaIUsCAavorgVI
 
@@ -70,33 +26,25 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5ODMzO
   "text": "variable p\n3 p\n! p @"
 }
 
-### ZorthCompile with valid JWT via gateway (should be ok)
-POST http://localhost:8765/highload/zorth/compile
+### ZorthCompile with valid JWT (should be ok)
+POST http://localhost:8765/zorth/compile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU0ODQ3OSwiZXhwIjoxNjk5NTQ5OTE5fQ.01l1eSnfnC_t2dHuNDKGbqVXn2EFDw2vPIrW2M_Nk-s
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQwNzcxMywiZXhwIjoxNzAwNDA5MTUzfQ.D-HZidolMvXTntaIHAVar1O95Kyz69E39X_C0o9CUFc
 
 {
-  "debug": true,
   "text": "variable p\n3 p\n! p @"
 }
 
-### ZorthCompile with valid JWT direct (should fail)
-POST http://localhost:8765/highload/api/v1/zorth/compile
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTU0NjI1OCwiZXhwIjoxNjk5NTQ3Njk4fQ.ozYGR88cBqa3kog9kF0212zQf2XrFh66UHfvLNGhAEk
+### Get compiler-outs (should be ok)
+GET http://localhost:8765/zorth/compiler-outs
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQwNzcxMywiZXhwIjoxNzAwNDA5MTUzfQ.D-HZidolMvXTntaIHAVar1O95Kyz69E39X_C0o9CUFc
 
-{
-  "debug": true,
-  "text": "variable p\n3 p\n! p @"
-}
+### Get debug-messages (should be ok)
+GET http://localhost:8765/zorth/debug-messages
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQwNzcxMywiZXhwIjoxNzAwNDA5MTUzfQ.D-HZidolMvXTntaIHAVar1O95Kyz69E39X_C0o9CUFc
 
-### GetUserByName via gateway (should fail)
-GET http://localhost:8765/user/getByUsername/admin
 
-### GetUserByName direct (should fail)
-GET http://localhost:8765/user/api/v1/getByUsername/admin
-
-### AddUser as user via gateway (should fail)
+### AddUser as user (should fail)
 POST http://localhost:8765/user/add
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5OTczNTQ2NywiZXhwIjoxNjk5NzM2OTA3fQ.zHs2yJJPupxaQ3KcDnyN_Obviz9znuHxKPP5ajNFKA4
@@ -108,7 +56,7 @@ authorities: ROLE_ADMIN
   "password": "Adm1n---"
 }
 
-### AddUser as admin via gateway (should be ok)
+### AddUser as admin (should be ok)
 POST http://localhost:8765/user/users
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDMzMDg1MSwiZXhwIjoxNzAwMzMyMjkxfQ.ATrKvZi82ZdMx9oJMzwdNZI3Y5bri8T_LQ_EjfTFGeA
@@ -118,7 +66,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDMzM
   "password": "V1p-----"
 }
 
-### AddUser direct (should fail)
+### AddUser (should fail)
 POST http://localhost:8765/user/api/v1/add
 Content-Type: application/json
 username: admin
@@ -129,7 +77,7 @@ authorities: ROLE_ADMIN
   "password": "Adm1n---"
 }
 
-### ChangeRole as admin via gateway (should be ok)
+### ChangeRole as admin (should be ok)
 PUT http://localhost:8765/user-service/users/vipvip/roles
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDMzNTYyNCwiZXhwIjoxNzAwMzM3MDY0fQ.DhxbPsQjfgCpUwQyvxKH5ousjrDlS63qzxaAMHMe1yU
@@ -138,6 +86,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDMzN
   "role": "ROLE_VIP"
 }
 
-### Get requests as self (should be ok)
+### Get requests of self as vip (should be ok)
 GET http://localhost:8765/user-service/users/vipvip/requests
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDAzMzQyOTMsImV4cCI6MTcwMDMzNTczM30._EDt9RjC7aO7wpoGgtcPDjRvzlv9CGxHPKfnh1I4Lw0

@@ -29,8 +29,10 @@ public final class ZorthUtil {
         return list;
     }
 
-    public static void fromByteArrayToLongList(ArrayList<Long> list, byte[] bytes) {
+    public static ArrayList<Long> fromByteArrayToLongList(byte[] bytes) {
+        ArrayList<Long> list = new ArrayList<>();
         List<Byte[]> temp = splitArray(ArrayUtils.toObject(bytes));
         temp.forEach(t -> list.add(InstructionCode.bytesToLong(ArrayUtils.toPrimitive(t))));
+        return list;
     }
 }

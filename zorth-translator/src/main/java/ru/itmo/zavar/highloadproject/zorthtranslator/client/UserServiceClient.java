@@ -7,13 +7,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import ru.itmo.zavar.highloadproject.zorthtranslator.config.feign.FeignConfiguration;
+import ru.itmo.zavar.highloadproject.zorthtranslator.dto.inner.RoleDTO;
 import ru.itmo.zavar.highloadproject.zorthtranslator.dto.inner.UserDTO;
 
-@FeignClient(name = "user", path = "${server.servlet.context-path}/users", configuration = FeignConfiguration.class)
+@FeignClient(name = "user", path = "${server.servlet.context-path}", configuration = FeignConfiguration.class)
 public interface UserServiceClient {
-    @PutMapping
+    @PutMapping("/users")
     ResponseEntity<?> saveUser(@RequestBody UserDTO dto);
 
-    @GetMapping("/{username}")
+    @GetMapping("/users/{username}")
     ResponseEntity<UserDTO> findUserByUsername(@PathVariable String username);
+
+    @GetMapping("/roles/{name}")
+    ResponseEntity<RoleDTO> findRoleByName(@PathVariable String name);
 }

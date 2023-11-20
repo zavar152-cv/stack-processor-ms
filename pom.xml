@@ -19,7 +19,7 @@
         <module>gateway</module>
         <module>auth-service</module>
         <module>user-service</module>
-        <module>request-service</module>
         <module>monolith</module>
+        <module>zorth-translator</module>
     </modules>
 </project>

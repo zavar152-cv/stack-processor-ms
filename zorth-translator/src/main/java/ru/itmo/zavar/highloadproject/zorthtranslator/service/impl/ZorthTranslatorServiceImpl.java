@@ -4,22 +4,19 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.exception.ZorthException;
-import ru.itmo.zavar.highloadproject.zorthtranslator.client.RequestServiceClient;
 import ru.itmo.zavar.highloadproject.zorthtranslator.client.UserServiceClient;
-import ru.itmo.zavar.highloadproject.zorthtranslator.dto.inner.RequestDTO;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.security.RoleEntity;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.security.UserEntity;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.DebugMessagesEntity;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.RequestEntity;
-import ru.itmo.zavar.highloadproject.zorthtranslator.mapper.RequestEntityMapper;
 import ru.itmo.zavar.highloadproject.zorthtranslator.mapper.RoleEntityMapper;
 import ru.itmo.zavar.highloadproject.zorthtranslator.mapper.UserEntityMapper;
 import ru.itmo.zavar.highloadproject.zorthtranslator.service.CompilerOutService;
 import ru.itmo.zavar.highloadproject.zorthtranslator.service.DebugMessagesService;
+import ru.itmo.zavar.highloadproject.zorthtranslator.service.RequestService;
 import ru.itmo.zavar.highloadproject.zorthtranslator.service.ZorthTranslatorService;
 import ru.itmo.zavar.highloadproject.zorthtranslator.util.RoleConstants;
 import ru.itmo.zavar.zorth.ProgramAndDataDto;
@@ -32,18 +29,15 @@ import java.util.NoSuchElementException;
 @Service
 @RequiredArgsConstructor
 public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
+    private final RequestService requestService;
     private final CompilerOutService compilerOutService;
     private final DebugMessagesService debugMessagesService;
 
-    private final RequestServiceClient requestServiceClient;
     private final UserServiceClient userServiceClient;
-
-    private final RequestEntityMapper requestEntityMapper;
     private final UserEntityMapper userEntityMapper;
     private final RoleEntityMapper roleEntityMapper;
 
     @Override
-    @Transactional
     public RequestEntity compileAndLinkage(boolean debug, String text, String username)
             throws ZorthException, NoSuchElementException, DataAccessException, ResponseStatusException {
         /* Вызываем транслятор */
@@ -53,24 +47,8 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         ProgramAndDataDto out = translator.getCompiledProgramAndDataInBytes();
 
         /* Сохраняем запрос в бд */
-        RequestDTO requestDTO = RequestDTO.builder().debug(debug).text(text).build();
-        RequestEntity requestEntity = requestEntityMapper.fromDTO(requestServiceClient.save(requestDTO).getBody());
-
-        /* Получаем userEntity из бд, чтобы получить доступ к списку запросов пользователя.
-         * Если пользователь обычный, у него может быть только 1 запрос. Надо удалить прошлый, если он есть. */
-        UserEntity userEntity = userEntityMapper.fromDTO(userServiceClient.findUserByUsername(username).getBody());
-        RoleEntity roleUser = roleEntityMapper.fromDTO(userServiceClient.findRoleByName(RoleConstants.USER).getBody());
-        if (userEntity.getRoles().size() == 1 && userEntity.getRoles().contains(roleUser) && !userEntity.getRequests().isEmpty()) {
-            RequestEntity oldRequestEntity = userEntity.getRequests().get(0);
-            compilerOutService.deleteByRequest(oldRequestEntity);
-            debugMessagesService.deleteByRequest(oldRequestEntity);
-            requestServiceClient.delete(oldRequestEntity.getId());
-            userEntity.getRequests().clear();
-        }
-
-        /* Добавляем запрос в список запросов пользователя и сохраняем его */
-        userEntity.getRequests().add(requestEntity);
-        userServiceClient.saveUser(userEntityMapper.toDTO(userEntity));
+        RequestEntity requestEntity = RequestEntity.builder().debug(debug).text(text).build();
+        requestEntity = requestService.save(requestEntity);
 
         /* Если debug включен, то сохраняем его в бд */
         if (debug) {
@@ -99,13 +77,30 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
                 .build();
         compilerOutService.save(compilerOutEntity);
 
+        /* Получаем пользователя и роль "USER" из бд. Если пользователь обычный, у него может быть только 1 запрос.
+         * Надо удалить прошлый, если он есть. */
+        UserEntity userEntity = userEntityMapper.fromDTO(userServiceClient.findUserByUsername(username).getBody());
+        RoleEntity roleUser = roleEntityMapper.fromDTO(userServiceClient.findRoleByName(RoleConstants.USER).getBody());
+        if (userEntity.getRoles().size() == 1 && userEntity.getRoles().contains(roleUser) && !userEntity.getRequests().isEmpty()) {
+            RequestEntity oldRequestEntity = userEntity.getRequests().get(0);
+            userEntity.getRequests().clear();
+            userEntity.getRequests().add(requestEntity);
+            compilerOutService.deleteByRequest(oldRequestEntity);
+            debugMessagesService.deleteByRequest(oldRequestEntity);
+            userServiceClient.saveUser(userEntityMapper.toDTO(userEntity)); // в другом порядке не сможем удалить request
+            requestService.delete(oldRequestEntity);
+        } else {
+            userEntity.getRequests().add(requestEntity);
+            userServiceClient.saveUser(userEntityMapper.toDTO(userEntity));
+        }
+
         return requestEntity;
     }
 
     @Override
-    public boolean checkRequestOwnedByUser(String username, Long requestId) throws ResponseStatusException {
+    public boolean checkRequestOwnedByUser(String username, Long requestId) throws ResponseStatusException, NoSuchElementException {
         UserEntity userEntity = userEntityMapper.fromDTO(userServiceClient.findUserByUsername(username).getBody());
-        RequestEntity requestEntity = requestEntityMapper.fromDTO(requestServiceClient.get(requestId).getBody());
+        RequestEntity requestEntity = requestService.findById(requestId);
         return userEntity.getRequests().contains(requestEntity);
     }
 }

@@ -18,15 +18,11 @@ public class CustomErrorDecoder implements ErrorDecoder {
     @Override
     public Exception decode(String s, Response response) {
         HttpStatus status = HttpStatus.valueOf(response.status());
-        if (status.is4xxClientError()) {
-            try (InputStream inputStream = response.body().asInputStream()) {
-                JsonNode message = objectMapper.readTree(inputStream).get("message");
-                return new ResponseStatusException(status, message.asText());
-            } catch (IOException e) {
-                return new ResponseStatusException(status, "No message available");
-            }
-        } else {
-            return new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Service temporarily unavailable. Try later");
+        try (InputStream inputStream = response.body().asInputStream()) {
+            JsonNode message = objectMapper.readTree(inputStream).get("message");
+            return new ResponseStatusException(status, message.asText());
+        } catch (IOException e) {
+            return new ResponseStatusException(status, "No message available");
         }
     }
 }

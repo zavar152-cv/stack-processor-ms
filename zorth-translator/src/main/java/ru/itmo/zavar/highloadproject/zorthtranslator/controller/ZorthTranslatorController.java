@@ -13,7 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.exception.ZorthException;
-import ru.itmo.zavar.highloadproject.zorthtranslator.dto.inner.RequestDTO;
+import ru.itmo.zavar.highloadproject.zorthtranslator.dto.outer.RequestDTO;
 import ru.itmo.zavar.highloadproject.zorthtranslator.dto.outer.request.CompileRequest;
 import ru.itmo.zavar.highloadproject.zorthtranslator.dto.outer.response.GetAllCompilerOutResponse;
 import ru.itmo.zavar.highloadproject.zorthtranslator.dto.outer.response.GetAllDebugMessagesResponse;
@@ -49,7 +49,7 @@ public class ZorthTranslatorController {
         try {
             RequestEntity requestEntity = zorthTranslatorService.compileAndLinkage(compileRequest.debug(), compileRequest.text(), authentication.getName());
             return ResponseEntity.ok(requestEntityMapper.toDTO(requestEntity));
-        } catch (ZorthException | NoSuchElementException | DataAccessException | ResponseStatusException e) {
+        } catch (ZorthException | NoSuchElementException | DataAccessException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }

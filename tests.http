@@ -28,7 +28,7 @@ Content-Type: application/json
 ### ZorthCompile with expired JWT (should fail)
 POST http://localhost:8765/zorth/compile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5ODMzODE5MiwiZXhwIjoxNjk4MzM5NjMyfQ.gFbzG86VToANpwfqH1SvCLeglCVikgaIUsCAavorgVI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQ4NDAwNSwiZXhwIjoxNzAwNDg1NDQ1fQ.mtVikKsE_3Sl3FF0JNOvaiV4lAvHco3qkhytexUi6Dw
 
 {
   "debug": true,
@@ -38,7 +38,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTY5ODMzO
 ### ZorthCompile with valid JWT (should be ok)
 POST http://localhost:8765/zorth/compile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMDQyMzIyNCwiZXhwIjoxNzAwNDI0NjY0fQ.x8QmSJRA8YdXa7f_3CTHGNHeORy1aJj6-eCg99BVvwY
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMDQ4Mzg4MSwiZXhwIjoxNzAwNDg1MzIxfQ.B6h_zCCsvuYBzE77aEBwsuO7TM-WBx_nJI927XO9RiU
 
 {
   "debug": true,
@@ -46,12 +46,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMDQyM
 }
 
 ### Get compiler-outs (should be ok)
-GET http://localhost:8765/zorth/compiler-outs?request-id=3
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDA0MTg3NTYsImV4cCI6MTcwMDQyMDE5Nn0.qbfcQIzDagRTJ5CG0Vn206otVu4Rb5asbT7b3aQfsX8
+GET http://localhost:8765/zorth/compiler-outs?request-id=8
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQ4NDAwNSwiZXhwIjoxNzAwNDg1NDQ1fQ.mtVikKsE_3Sl3FF0JNOvaiV4lAvHco3qkhytexUi6Dw
 
 ### Get debug-messages (should be ok)
-GET http://localhost:8765/zorth/debug-messages
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQxNDU1OSwiZXhwIjoxNzAwNDE1OTk5fQ.4Ru6HKNXzcyMtP0sjM9HZOIYFDR4RL_6bS7b9Cj-YWI
+GET http://localhost:8765/zorth/debug-messages?offset=1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQ4NDAwNSwiZXhwIjoxNzAwNDg1NDQ1fQ.mtVikKsE_3Sl3FF0JNOvaiV4lAvHco3qkhytexUi6Dw
 
 
 ### AddUser as user (should fail)
@@ -69,7 +69,7 @@ authorities: ROLE_ADMIN
 ### AddUser as admin (should be ok)
 POST http://localhost:8765/user-service/users
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQyMzEwMywiZXhwIjoxNzAwNDI0NTQzfQ.0Wmmms-fndTj-U4ki_HKLFkRgMxytkfAJtqrThQmmRA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQ3NzQwNCwiZXhwIjoxNzAwNDc4ODQ0fQ.hgPAJ9lPfndZdOQNp-HZPGTaPOc3tAYrASqS5tB6ios
 
 {
   "username": "userr",
@@ -90,7 +90,7 @@ authorities: ROLE_ADMIN
 ### ChangeRole as admin (should be ok)
 PUT http://localhost:8765/user-service/users/vipvip/roles
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDMzNTYyNCwiZXhwIjoxNzAwMzM3MDY0fQ.DhxbPsQjfgCpUwQyvxKH5ousjrDlS63qzxaAMHMe1yU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDA0Njg1NzQsImV4cCI6MTcwMDQ3MDAxNH0.PSYRlbfpnJX-5oQdYJzYz2iJ8OfqIgs8FZesGoB-QFU
 
 {
   "role": "ROLE_VIP"
@@ -99,3 +99,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDMzN
 ### Get requests of self as vip (should be ok)
 GET http://localhost:8765/user-service/users/vipvip/requests
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDAzMzQyOTMsImV4cCI6MTcwMDMzNTczM30._EDt9RjC7aO7wpoGgtcPDjRvzlv9CGxHPKfnh1I4Lw0
+
+###
+PUT http://localhost:51358/api/v1/users
+Content-Type: application/json
+
+{
+  "id":1,
+  "username":"admin",
+  "password":"$2a$10$TY8AXG7Yo7ADhSZiPUytDuMCHuBpNvBfAPav65MCSZhsW2WgUtCZa",
+  "roles":[{"id":1,"name":"ROLE_ADMIN"}],
+  "requests":[{"id":1,"text":"variable p\n5 p\n! p @","debug":true}]
+}

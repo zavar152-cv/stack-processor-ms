@@ -5,13 +5,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import ru.itmo.zavar.highloadproject.zorthtranslator.client.RequestServiceClient;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.RequestEntity;
-import ru.itmo.zavar.highloadproject.zorthtranslator.mapper.RequestEntityMapper;
 import ru.itmo.zavar.highloadproject.zorthtranslator.repo.CompilerOutRepository;
 import ru.itmo.zavar.highloadproject.zorthtranslator.service.CompilerOutService;
+import ru.itmo.zavar.highloadproject.zorthtranslator.service.RequestService;
 
 import java.util.NoSuchElementException;
 
@@ -19,8 +17,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class CompilerOutServiceImpl implements CompilerOutService {
     private final CompilerOutRepository compilerOutRepository;
-    private final RequestServiceClient requestServiceClient;
-    private final RequestEntityMapper requestEntityMapper;
+    private final RequestService requestService;
 
     @Override
     public CompilerOutEntity save(CompilerOutEntity compilerOutEntity) throws DataAccessException {
@@ -33,8 +30,8 @@ public class CompilerOutServiceImpl implements CompilerOutService {
     }
 
     @Override
-    public CompilerOutEntity findByRequestId(Long requestId) throws NoSuchElementException, ResponseStatusException {
-        RequestEntity requestEntity = requestEntityMapper.fromDTO(requestServiceClient.get(requestId).getBody());
+    public CompilerOutEntity findByRequestId(Long requestId) throws NoSuchElementException {
+        RequestEntity requestEntity = requestService.findById(requestId);
         return compilerOutRepository.findByRequest(requestEntity).orElseThrow(() -> new NoSuchElementException("Compiler output not found"));
     }
 

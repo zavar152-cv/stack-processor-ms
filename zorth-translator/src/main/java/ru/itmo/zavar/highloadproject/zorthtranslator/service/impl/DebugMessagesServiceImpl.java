@@ -5,12 +5,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import ru.itmo.zavar.highloadproject.zorthtranslator.client.RequestServiceClient;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.DebugMessagesEntity;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.RequestEntity;
-import ru.itmo.zavar.highloadproject.zorthtranslator.mapper.RequestEntityMapper;
 import ru.itmo.zavar.highloadproject.zorthtranslator.repo.DebugMessagesRepository;
 import ru.itmo.zavar.highloadproject.zorthtranslator.service.DebugMessagesService;
+import ru.itmo.zavar.highloadproject.zorthtranslator.service.RequestService;
 
 import java.util.NoSuchElementException;
 
@@ -18,8 +17,7 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 public class DebugMessagesServiceImpl implements DebugMessagesService {
     private final DebugMessagesRepository debugMessagesRepository;
-    private final RequestServiceClient requestServiceClient;
-    private final RequestEntityMapper requestEntityMapper;
+    private final RequestService requestService;
 
     @Override
     public DebugMessagesEntity save(DebugMessagesEntity debugMessagesEntity) throws DataAccessException {
@@ -33,7 +31,7 @@ public class DebugMessagesServiceImpl implements DebugMessagesService {
 
     @Override
     public DebugMessagesEntity findByRequestId(Long requestId) throws NoSuchElementException {
-        RequestEntity requestEntity = requestEntityMapper.fromDTO(requestServiceClient.get(requestId).getBody());
+        RequestEntity requestEntity = requestService.findById(requestId);
         return debugMessagesRepository.findByRequest(requestEntity).orElseThrow(() -> new NoSuchElementException("Debug messages not found"));
     }
 

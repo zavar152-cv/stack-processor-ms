@@ -2,7 +2,6 @@ package ru.itmo.zavar.highloadproject.zorthtranslator.service;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.RequestEntity;
 
@@ -13,7 +12,7 @@ public interface CompilerOutService {
 
     CompilerOutEntity findById(Long id) throws NoSuchElementException;
 
-    CompilerOutEntity findByRequestId(Long requestId) throws NoSuchElementException, ResponseStatusException;
+    CompilerOutEntity findByRequestId(Long requestId) throws NoSuchElementException;
 
     Page<CompilerOutEntity> findAllPageable(Integer offset, Integer limit);
 

@@ -1,4 +1,4 @@
-package ru.itmo.zavar.highloadproject.requestservice.dto.inner;
+package ru.itmo.zavar.highloadproject.zorthtranslator.dto.outer;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

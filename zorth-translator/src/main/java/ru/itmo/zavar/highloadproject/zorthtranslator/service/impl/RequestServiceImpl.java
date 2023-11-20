@@ -1,11 +1,13 @@
-package ru.itmo.zavar.highloadproject.requestservice.service.impl;
+package ru.itmo.zavar.highloadproject.zorthtranslator.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
-import ru.itmo.zavar.highloadproject.requestservice.entity.zorth.RequestEntity;
-import ru.itmo.zavar.highloadproject.requestservice.repo.RequestRepository;
-import ru.itmo.zavar.highloadproject.requestservice.service.RequestService;
+import ru.itmo.zavar.highloadproject.zorthtranslator.entity.zorth.RequestEntity;
+import ru.itmo.zavar.highloadproject.zorthtranslator.repo.RequestRepository;
+import ru.itmo.zavar.highloadproject.zorthtranslator.service.RequestService;
+
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -18,9 +20,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public RequestEntity findById(Long id) throws IllegalArgumentException {
-        return requestRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
+    public RequestEntity findById(Long id) throws NoSuchElementException {
+        return requestRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Request not found"));
     }
 
     @Override

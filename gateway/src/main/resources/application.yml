@@ -36,7 +36,7 @@ spring:
         - id: translator
           uri: lb://zorth-translator
           predicates:
-            - Path=/zorth/compile,/zorth/compiler-outs/*,/zorth/debug-messages/*
+            - Path=/zorth/compile,/zorth/compiler-outs/**,/zorth/debug-messages/**
           filters:
             - AuthenticationFilter
         - id: highload

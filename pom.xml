@@ -2,11 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.itmo.zavar</groupId>
-    <artifactId>highload-project</artifactId>
+    <groupId>ru.itmo.zavar.highload</groupId>
+    <artifactId>project</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>highload-project</name>
-    <description>highload-project</description>
     <packaging>pom</packaging>
 
     <properties>
@@ -19,7 +17,6 @@
         <module>gateway</module>
         <module>auth-service</module>
         <module>user-service</module>
-        <module>monolith</module>
         <module>zorth-translator</module>
     </modules>
 </project>

@@ -8,11 +8,9 @@
         <version>3.1.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>ru.itmo.zavar</groupId>
-    <artifactId>highload-project-zorth-translator</artifactId>
+    <groupId>ru.itmo.zavar.highload</groupId>
+    <artifactId>zorth-translator</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>zorth-translator</name>
-    <description>zorth-translator</description>
     <properties>
         <java.version>17</java.version>
         <maven.build.timestamp.format>yyyyMMdd-HHmmssSSS</maven.build.timestamp.format>

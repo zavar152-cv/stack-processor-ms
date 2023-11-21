@@ -60,6 +60,7 @@ public class UserServiceController {
     @PreAuthorize("hasRole('" + RoleConstants.ADMIN + "') || (hasRole('" + RoleConstants.VIP + "') && (#username == authentication.name))")
     @GetMapping("/users/{username}/requests")
     public ResponseEntity<List<RequestEntity>> getRequestsOfUser(@PathVariable String username) {
+        // TODO: change to RequestDTO or whatever
         try {
             UserEntity userEntity = userService.findUserByUsername(username);
             List<RequestEntity> requests = userEntity.getRequests();

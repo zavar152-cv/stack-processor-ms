@@ -1,7 +1,6 @@
 package ru.itmo.zavar.highload.zorthprocessor.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -9,7 +8,6 @@ import ru.itmo.zavar.highload.zorthprocessor.entity.zorth.ProcessorOutEntity;
 import ru.itmo.zavar.highload.zorthprocessor.repo.ProcessorOutRepository;
 import ru.itmo.zavar.highload.zorthprocessor.service.ProcessorOutService;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProcessorOutServiceImpl implements ProcessorOutService {

@@ -11,5 +11,5 @@ public interface ZorthTranslatorService {
     RequestEntity compileAndLinkage(boolean debug, String text, String username)
             throws ZorthException, NoSuchElementException, DataAccessException, ResponseStatusException;
 
-    boolean checkRequestOwnedByUser(String username, Long requestId) throws ResponseStatusException, NoSuchElementException;
+    boolean checkRequestOwnedByUser(String username, Long requestId) throws ResponseStatusException;
 }

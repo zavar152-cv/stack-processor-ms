@@ -5,5 +5,5 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
-public record PipelineRequest(@NotNull boolean debug, @NotBlank String text, @NotNull String[] input) {
+public record PipelineRequest(@NotNull Boolean debug, @NotBlank String text, @NotNull String[] input) {
 }

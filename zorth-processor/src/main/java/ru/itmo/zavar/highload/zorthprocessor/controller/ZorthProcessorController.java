@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -25,36 +24,15 @@ public class ZorthProcessorController {
     private final ProcessorOutEntityMapper processorOutEntityMapper;
 
     @PostMapping("/pipeline")
-    public ResponseEntity<?> pipeline(@Valid @RequestBody PipelineRequest pipelineRequest) {
-        /* TODO: call translator
-        try {
-            RequestEntity requestEntity = zorthTranslatorService.compileAndLinkage(pipelineRequest.debug(), pipelineRequest.text(), (UserEntity) authentication.getPrincipal());
-            Optional<CompilerOutEntity> optionalCompilerOut = zorthTranslatorService.getCompilerOutputByRequestId(requestEntity.getId());
-            if(optionalCompilerOut.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Compiler out found");
-            } else {
-                CompilerOutEntity compilerOut = optionalCompilerOut.get();
-                zorthProcessorService.startProcessorAndGetLogs(pipelineRequest.input(), compilerOut);
-            }
-            return ResponseEntity.ok().build();
-        } catch (NoSuchElementException | ZorthException | IllegalArgumentException
-                 | ControlUnitException | ParseException exception) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
-        }
-         */
-        return ResponseEntity.ok().build();
+    public Mono<ProcessorOutDTO> pipeline(@Valid @RequestBody PipelineRequest request, Authentication authentication) {
+        return zorthProcessorService.pipeline(request.debug(), request.text(), request.input(), authentication)
+                .map(processorOutEntityMapper::toDTO);
     }
 
     @PostMapping("/execute")
-    public Mono<ProcessorOutDTO> execute(@Valid @RequestBody ExecuteRequest executeRequest, Authentication authentication) {
-        try {
-            return zorthProcessorService.startProcessorAndGetLogs(executeRequest.input(), executeRequest.requestId(), authentication)
-                    .map(processorOutEntityMapper::toDTO);
-        } catch (ControlUnitException | ParseException e) {
-            return Mono.error(new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()));
-        } catch (ResponseStatusException e) {
-            return Mono.error(new ResponseStatusException(e.getStatusCode(), e.getMessage()));
-        }
+    public Mono<ProcessorOutDTO> execute(@Valid @RequestBody ExecuteRequest request, Authentication authentication) {
+        return zorthProcessorService.startProcessorAndGetLogs(request.input(), request.requestId(), authentication)
+                .map(processorOutEntityMapper::toDTO);
     }
 
     @GetMapping(value = "/processor-outs", params = "request-id")

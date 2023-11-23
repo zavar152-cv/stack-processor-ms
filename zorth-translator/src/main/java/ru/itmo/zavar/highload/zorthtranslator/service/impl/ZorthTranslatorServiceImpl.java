@@ -3,6 +3,7 @@ package ru.itmo.zavar.highload.zorthtranslator.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import ru.itmo.zavar.exception.ZorthException;
@@ -84,23 +85,24 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         if (userEntity.getRoles().size() == 1 && userEntity.getRoles().contains(roleUser) && !userEntity.getRequests().isEmpty()) {
             RequestEntity oldRequestEntity = userEntity.getRequests().get(0);
             userEntity.getRequests().clear();
-            userEntity.getRequests().add(requestEntity);
-            compilerOutService.deleteByRequest(oldRequestEntity);
-            debugMessagesService.deleteByRequest(oldRequestEntity);
-            userServiceClient.saveUser(userEntityMapper.toDTO(userEntity)); // в другом порядке не сможем удалить request
             requestService.delete(oldRequestEntity);
-        } else {
-            userEntity.getRequests().add(requestEntity);
-            userServiceClient.saveUser(userEntityMapper.toDTO(userEntity));
         }
+
+        /* Сохраняем пользователя в бд */
+        userEntity.getRequests().add(requestEntity);
+        userServiceClient.saveUser(userEntityMapper.toDTO(userEntity));
 
         return requestEntity;
     }
 
     @Override
-    public boolean checkRequestOwnedByUser(String username, Long requestId) throws ResponseStatusException, NoSuchElementException {
-        UserEntity userEntity = userEntityMapper.fromDTO(userServiceClient.findUserByUsername(username).getBody());
-        RequestEntity requestEntity = requestService.findById(requestId);
-        return userEntity.getRequests().contains(requestEntity);
+    public boolean checkRequestOwnedByUser(String username, Long requestId) throws ResponseStatusException {
+        try {
+            UserEntity userEntity = userEntityMapper.fromDTO(userServiceClient.findUserByUsername(username).getBody());
+            RequestEntity requestEntity = requestService.findById(requestId);
+            return userEntity.getRequests().contains(requestEntity);
+        } catch (NoSuchElementException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 }

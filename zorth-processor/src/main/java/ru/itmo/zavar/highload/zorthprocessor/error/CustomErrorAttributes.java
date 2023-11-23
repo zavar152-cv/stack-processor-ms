@@ -3,10 +3,9 @@ package ru.itmo.zavar.highload.zorthprocessor.error;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
@@ -22,7 +21,7 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
     @Override
     public Map<String, Object> getErrorAttributes(ServerRequest webRequest, ErrorAttributeOptions options) {
         Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, options);
-        if (getError(webRequest) instanceof MethodArgumentNotValidException ex) {
+        if (getError(webRequest) instanceof WebExchangeBindException ex) {
             Map<String, List<String>> errors = new HashMap<>();
             ex.getFieldErrors().forEach(fieldError -> {
                 String fieldName = fieldError.getField();

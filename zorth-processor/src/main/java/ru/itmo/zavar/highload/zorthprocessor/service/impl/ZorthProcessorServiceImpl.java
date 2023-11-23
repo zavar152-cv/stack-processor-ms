@@ -14,9 +14,11 @@ import reactor.core.publisher.Mono;
 import ru.itmo.zavar.comp.ControlUnit;
 import ru.itmo.zavar.exception.ControlUnitException;
 import ru.itmo.zavar.highload.zorthprocessor.client.ZorthTranslatorClient;
+import ru.itmo.zavar.highload.zorthprocessor.dto.outer.request.CompileRequest;
 import ru.itmo.zavar.highload.zorthprocessor.entity.zorth.ProcessorOutEntity;
 import ru.itmo.zavar.highload.zorthprocessor.service.ProcessorOutService;
 import ru.itmo.zavar.highload.zorthprocessor.service.ZorthProcessorService;
+import ru.itmo.zavar.highload.zorthprocessor.util.RoleConstants;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -28,8 +30,16 @@ public class ZorthProcessorServiceImpl implements ZorthProcessorService {
     private final ZorthTranslatorClient zorthTranslatorClient;
 
     @Override
-    public Mono<ProcessorOutEntity> startProcessorAndGetLogs(String[] input, Long requestId, Authentication authentication)
-            throws ControlUnitException, ResponseStatusException {
+    public Mono<ProcessorOutEntity> pipeline(boolean debug, String text, String[] input, Authentication authentication) {
+        String username = authentication.getName();
+        String authorities = extractAuthorities(authentication);
+        CompileRequest compileRequest = CompileRequest.builder().debug(debug).text(text).build();
+        return zorthTranslatorClient.compile(compileRequest, username, authorities)
+                .flatMap(dto -> startProcessorAndGetLogs(input, dto.id(), authentication));
+    }
+
+    @Override
+    public Mono<ProcessorOutEntity> startProcessorAndGetLogs(String[] input, Long requestId, Authentication authentication) {
         String username = authentication.getName();
         String authorities = extractAuthorities(authentication);
         return zorthTranslatorClient.getCompilerOutOfRequest(requestId, username, authorities).flatMap(dto -> {
@@ -47,6 +57,7 @@ public class ZorthProcessorServiceImpl implements ZorthProcessorService {
                     stringBuilder.append("\n");
                     stringBuilder.append(tickLog.toString());
                 });
+
                 ProcessorOutEntity processorOutEntity = ProcessorOutEntity.builder()
                         .tickLogs(stringBuilder.toString().getBytes())
                         .compilerOutId(dto.id())
@@ -60,7 +71,7 @@ public class ZorthProcessorServiceImpl implements ZorthProcessorService {
     }
 
     @Override
-    public Flux<ProcessorOutEntity> findAllProcessorOutByRequestId(Long requestId, Authentication authentication) throws NoSuchElementException {
+    public Flux<ProcessorOutEntity> findAllProcessorOutByRequestId(Long requestId, Authentication authentication) {
         String username = authentication.getName();
         String authorities = extractAuthorities(authentication);
         return zorthTranslatorClient.getCompilerOutOfRequest(requestId, username, authorities)
@@ -73,10 +84,10 @@ public class ZorthProcessorServiceImpl implements ZorthProcessorService {
                 .map(GrantedAuthority::getAuthority)
                 .toList());
 
-        /* Нужно, чтобы у обычных пользователей тоже была возможность получить ответ, но только при условии,
-         * что запрос принадлежит им, поэтому добавляем в запрос роль ROLE_VIP. */
-        if ((authoritiesAsList.size() == 1) && authoritiesAsList.contains("ROLE_USER")) {
-            authoritiesAsList.add("ROLE_VIP");
+        /* Чтобы у обычных пользователей тоже была возможность получить ответ, но только при условии,
+         * что запрос принадлежит им, добавляем в запрос роль VIP. */
+        if ((authoritiesAsList.size() == 1) && authoritiesAsList.contains(RoleConstants.USER)) {
+            authoritiesAsList.add(RoleConstants.VIP);
         }
         return authoritiesAsList.stream().reduce("", (a, b) -> a + "," + b);
     }

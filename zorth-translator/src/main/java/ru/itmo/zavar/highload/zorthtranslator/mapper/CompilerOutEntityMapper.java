@@ -2,7 +2,6 @@ package ru.itmo.zavar.highload.zorthtranslator.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.itmo.zavar.highload.zorthtranslator.dto.outer.response.GetAllCompilerOutResponse;
 import ru.itmo.zavar.highload.zorthtranslator.dto.outer.response.GetCompilerOutResponse;
 import ru.itmo.zavar.highload.zorthtranslator.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highload.zorthtranslator.entity.zorth.RequestEntity;
@@ -12,10 +11,8 @@ import java.util.ArrayList;
 
 @Mapper(componentModel = "spring")
 public interface CompilerOutEntityMapper {
-    GetCompilerOutResponse toDTO(CompilerOutEntity entity);
-
     @Mapping(source = "request", target = "requestId")
-    GetAllCompilerOutResponse toDetailedDTO(CompilerOutEntity entity);
+    GetCompilerOutResponse toDTO(CompilerOutEntity entity);
 
     default Long map(RequestEntity request) {
         return request == null ? null : request.getId();

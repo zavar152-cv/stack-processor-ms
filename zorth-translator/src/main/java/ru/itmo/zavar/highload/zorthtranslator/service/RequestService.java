@@ -1,14 +1,12 @@
 package ru.itmo.zavar.highload.zorthtranslator.service;
 
-import org.springframework.dao.DataAccessException;
+import reactor.core.publisher.Mono;
 import ru.itmo.zavar.highload.zorthtranslator.entity.zorth.RequestEntity;
 
-import java.util.NoSuchElementException;
-
 public interface RequestService {
-    RequestEntity save(RequestEntity requestEntity) throws DataAccessException;
+    Mono<RequestEntity> save(RequestEntity requestEntity);
 
-    RequestEntity findById(Long id) throws NoSuchElementException;
+    Mono<RequestEntity> findById(Long id);
 
-    void delete(RequestEntity requestEntity) throws DataAccessException;
+    Mono<Void> delete(RequestEntity requestEntity);
 }

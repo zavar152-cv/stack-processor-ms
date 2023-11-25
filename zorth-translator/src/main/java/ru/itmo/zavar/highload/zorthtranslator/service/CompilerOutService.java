@@ -1,20 +1,15 @@
 package ru.itmo.zavar.highload.zorthtranslator.service;
 
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
+import reactor.core.publisher.Mono;
 import ru.itmo.zavar.highload.zorthtranslator.entity.zorth.CompilerOutEntity;
-import ru.itmo.zavar.highload.zorthtranslator.entity.zorth.RequestEntity;
-
-import java.util.NoSuchElementException;
 
 public interface CompilerOutService {
-    CompilerOutEntity save(CompilerOutEntity compilerOutEntity) throws DataAccessException;
+    Mono<CompilerOutEntity> save(CompilerOutEntity compilerOutEntity);
 
-    CompilerOutEntity findById(Long id) throws NoSuchElementException;
+    Mono<CompilerOutEntity> findById(Long id);
 
-    CompilerOutEntity findByRequestId(Long requestId) throws NoSuchElementException;
+    Mono<CompilerOutEntity> findByRequestId(Long requestId);
 
-    Page<CompilerOutEntity> findAllPageable(Integer offset, Integer limit);
-
-    void deleteByRequest(RequestEntity requestEntity) throws DataAccessException;
+    Mono<Page<CompilerOutEntity>> findAllPageable(Integer offset, Integer limit);
 }

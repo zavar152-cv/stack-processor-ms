@@ -11,9 +11,5 @@ import java.util.Optional;
 @Repository
 @Transactional
 public interface DebugMessagesRepository extends JpaRepository<DebugMessagesEntity, Long> {
-    Optional<DebugMessagesEntity> findById(Long id);
-
     Optional<DebugMessagesEntity> findByRequest(RequestEntity requestEntity);
-
-    void deleteByRequest(RequestEntity requestEntity);
 }

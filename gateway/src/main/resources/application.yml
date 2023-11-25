@@ -4,8 +4,6 @@ server:
     include-message: always
     whitelabel:
       enabled: false
-  servlet:
-    context-path: /api/v1
 
 spring:
   application:
@@ -14,35 +12,39 @@ spring:
     gateway:
       default-filters:
         - StripPrefix=1
-        - RewritePath=/(?<path>.*), ${server.servlet.context-path}/$\{path}
+        - RewritePath=/(?<path>.*), ${context-path}/$\{path}
       routes:
         - id: auth
           uri: lb://auth
           predicates:
-            - Path=/auth/signIn
+            - Path=/auth/sign-in
+
         - id: add-user
-          uri: lb://user
+          uri: lb://user-service
           predicates:
             - Path=/user-service/users
             - Method=POST
           filters:
             - AuthenticationFilter
+
         - id: user
-          uri: lb://user
+          uri: lb://user-service
           predicates:
             - Path=/user-service/users/*/requests,/user-service/users/*/roles
           filters:
             - AuthenticationFilter
+
         - id: translator
           uri: lb://zorth-translator
           predicates:
             - Path=/zorth/compile,/zorth/compiler-outs/**,/zorth/debug-messages/**
           filters:
             - AuthenticationFilter
-        - id: highload
-          uri: lb://highload
+
+        - id: processor
+          uri: lb://zorth-processor
           predicates:
-            - Path=/highload/zorth/compile
+            - Path=/zorth/pipeline,/zorth/execute,/zorth/processor-outs/**
           filters:
             - AuthenticationFilter
 
@@ -50,3 +52,9 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
+logging:
+  level:
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: trace
+
+context-path: /api/v1

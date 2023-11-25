@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import ru.itmo.zavar.highload.authservice.config.feign.FeignConfiguration;
 import ru.itmo.zavar.highload.authservice.dto.inner.UserDTO;
 
-@FeignClient(name = "user", configuration = FeignConfiguration.class)
+@FeignClient(name = "user-service", path = "${server.servlet.context-path}", configuration = FeignConfiguration.class)
 public interface UserServiceClient {
-    @GetMapping("/api/v1/users/{username}")
-    ResponseEntity<UserDTO> findUserByUsername(@PathVariable String username);
+    @GetMapping("/users/{username}")
+    ResponseEntity<UserDTO> getUser(@PathVariable String username);
 }

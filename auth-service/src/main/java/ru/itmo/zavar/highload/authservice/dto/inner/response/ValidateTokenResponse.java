@@ -5,5 +5,5 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record ValidateTokenResponseDTO(String username, List<String> authorities) {
+public record ValidateTokenResponse(String username, List<String> authorities) {
 }

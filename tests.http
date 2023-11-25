@@ -1,5 +1,5 @@
-### SignIn as vip (should be ok)
-POST http://localhost:8765/auth/signIn
+### sign-in as vip (should be ok)
+POST http://localhost:8765/auth/sign-in
 Content-Type: application/json
 
 {
@@ -7,8 +7,8 @@ Content-Type: application/json
   "password": "V1p-----"
 }
 
-### SignIn as user (should be ok)
-POST http://localhost:8765/auth/signIn
+### sign-in as user (should be ok)
+POST http://localhost:8765/auth/sign-in
 Content-Type: application/json
 
 {
@@ -16,8 +16,8 @@ Content-Type: application/json
   "password": "Us3r----"
 }
 
-### SignIn as admin (should be ok)
-POST http://localhost:8765/auth/signIn
+### sign-in as admin (should be ok)
+POST http://localhost:8765/auth/sign-in
 Content-Type: application/json
 
 {
@@ -28,7 +28,7 @@ Content-Type: application/json
 ### ZorthCompile with expired JWT (should fail)
 POST http://localhost:8765/zorth/compile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDQ4NDAwNSwiZXhwIjoxNzAwNDg1NDQ1fQ.mtVikKsE_3Sl3FF0JNOvaiV4lAvHco3qkhytexUi6Dw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDA5MTI5MTEsImV4cCI6MTcwMDkxNDM1MX0.ut7pXTvfyFdcF7lY0AABi634sePkb3OTJqkBPRbHZZc
 
 {
   "debug": true,
@@ -108,7 +108,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMDg2N
 
 ### Get requests of self as vip (should be ok)
 GET http://localhost:8765/user-service/users/vipvip/requests
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDg1ODU5NiwiZXhwIjoxNzAwODYwMDM2fQ.58UAlAaMdU8bPUyw43W4468ADuFqZ7N78GK16uC0HrQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDA5MTI5MTEsImV4cCI6MTcwMDkxNDM1MX0.ut7pXTvfyFdcF7lY0AABi634sePkb3OTJqkBPRbHZZc
 
 ### Execute
 POST http://localhost:52968/api/v1/execute

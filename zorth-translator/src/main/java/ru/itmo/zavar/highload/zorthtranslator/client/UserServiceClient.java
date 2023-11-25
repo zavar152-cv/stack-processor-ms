@@ -12,14 +12,14 @@ import ru.itmo.zavar.highload.zorthtranslator.dto.inner.RoleDTO;
 import ru.itmo.zavar.highload.zorthtranslator.dto.inner.UserDTO;
 
 @Component
-@ReactiveFeignClient(name = "user", path = "${spring.webflux.base-path}", configuration = FeignConfiguration.class)
+@ReactiveFeignClient(name = "user-service", path = "${spring.webflux.base-path}", configuration = FeignConfiguration.class)
 public interface UserServiceClient {
     @PutMapping("/users")
     Mono<Void> saveUser(@RequestBody UserDTO dto);
 
     @GetMapping("/users/{username}")
-    Mono<UserDTO> findUserByUsername(@PathVariable String username);
+    Mono<UserDTO> getUser(@PathVariable String username);
 
     @GetMapping("/roles/{name}")
-    Mono<RoleDTO> findRoleByName(@PathVariable String name);
+    Mono<RoleDTO> getRole(@PathVariable String name);
 }

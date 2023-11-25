@@ -25,15 +25,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String signIn(String username, String password) throws AuthenticationException {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        ResponseEntity<UserDTO> response = userServiceClient.findUserByUsername(username);
+        ResponseEntity<UserDTO> response = userServiceClient.getUser(username);
         return jwtService.generateToken(userEntityMapper.fromDTO(response.getBody()));
     }
 
     @Override
     public UserEntity validateToken(String jwtToken) throws JwtException, IllegalArgumentException {
         String username = jwtService.extractUserName(jwtToken);
-        ResponseEntity<UserDTO> response = userServiceClient.findUserByUsername(username);
+        ResponseEntity<UserDTO> response = userServiceClient.getUser(username);
         return userEntityMapper.fromDTO(response.getBody());
     }
-
 }

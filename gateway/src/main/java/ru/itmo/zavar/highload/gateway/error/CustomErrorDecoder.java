@@ -1,4 +1,4 @@
-package ru.itmo.zavar.highload.authservice.error;
+package ru.itmo.zavar.highload.gateway.error;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

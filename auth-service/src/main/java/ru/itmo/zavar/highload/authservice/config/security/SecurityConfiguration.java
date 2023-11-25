@@ -44,7 +44,7 @@ public class SecurityConfiguration {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(username -> {
-            ResponseEntity<UserDTO> response = userServiceClient.findUserByUsername(username);
+            ResponseEntity<UserDTO> response = userServiceClient.getUser(username);
             return userEntityMapper.fromDTO(response.getBody());
         });
         authProvider.setPasswordEncoder(passwordEncoder());

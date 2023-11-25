@@ -23,7 +23,7 @@ public class JwtServiceImpl implements JwtService {
     private Integer jwtExpiration;
 
     @Override
-    public String extractUserName(String token) {
+    public String extractUserName(String token) throws JwtException, IllegalArgumentException {
         return extractClaim(token, Claims::getSubject);
     }
 

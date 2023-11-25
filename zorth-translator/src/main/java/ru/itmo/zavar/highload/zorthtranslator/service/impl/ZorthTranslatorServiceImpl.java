@@ -76,8 +76,8 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
     }
 
     private Mono<RequestEntity> addRequestToUser(RequestEntity requestEntity, String username) {
-        Mono<RoleEntity> roleUserMono = userServiceClient.findRoleByName(RoleConstants.USER).map(roleEntityMapper::fromDTO);
-        return userServiceClient.findUserByUsername(username)
+        Mono<RoleEntity> roleUserMono = userServiceClient.getRole(RoleConstants.USER).map(roleEntityMapper::fromDTO);
+        return userServiceClient.getUser(username)
                 .map(userEntityMapper::fromDTO)
                 .flatMap(userEntity -> roleUserMono.flatMap(roleUser -> {
                     if (userEntity.getRoles().size() == 1 && userEntity.getRoles().contains(roleUser) && !userEntity.getRequests().isEmpty()) {
@@ -100,7 +100,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
             return Mono.just(true);
         }
         if (authentication.getAuthorities().contains(new SimpleGrantedAuthority(RoleConstants.VIP))) {
-            return userServiceClient.findUserByUsername(authentication.getName())
+            return userServiceClient.getUser(authentication.getName())
                     .map(userEntityMapper::fromDTO)
                     .flatMap(userEntity -> requestService.findById(requestId).map(userEntity.getRequests()::contains))
                     .onErrorMap(NoSuchElementException.class, e -> new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage()));

@@ -11,26 +11,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import ru.itmo.zavar.highload.authservice.dto.inner.response.ValidateTokenResponseDTO;
-import ru.itmo.zavar.highload.authservice.dto.outer.request.SignInRequestDTO;
-import ru.itmo.zavar.highload.authservice.dto.outer.response.SignInResponseDTO;
-import ru.itmo.zavar.highload.authservice.service.AuthenticationService;
-import ru.itmo.zavar.highload.authservice.dto.inner.request.ValidateTokenRequestDTO;
+import ru.itmo.zavar.highload.authservice.dto.inner.request.ValidateTokenRequest;
+import ru.itmo.zavar.highload.authservice.dto.inner.response.ValidateTokenResponse;
+import ru.itmo.zavar.highload.authservice.dto.outer.request.SignInRequest;
+import ru.itmo.zavar.highload.authservice.dto.outer.response.SignInResponse;
 import ru.itmo.zavar.highload.authservice.entity.security.UserEntity;
-
-import java.util.ArrayList;
+import ru.itmo.zavar.highload.authservice.service.AuthenticationService;
 
 @RestController
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/signIn")
-    public ResponseEntity<SignInResponseDTO> signIn(@Valid @RequestBody SignInRequestDTO request) {
+    @PostMapping("/sign-in")
+    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest request) {
         try {
-            SignInResponseDTO response = SignInResponseDTO.builder()
-                    .token(authenticationService.signIn(request.username(), request.password()))
-                    .build();
+            SignInResponse response = new SignInResponse(authenticationService.signIn(request.username(), request.password()));
             return ResponseEntity.ok(response);
         } catch (AuthenticationException exception) {
             if (exception.getCause() instanceof ResponseStatusException) {
@@ -40,16 +36,15 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/validateToken")
-    public ResponseEntity<ValidateTokenResponseDTO> validateToken(@Valid @RequestBody ValidateTokenRequestDTO request) {
+    @PostMapping("/token/validate")
+    public ResponseEntity<ValidateTokenResponse> validateToken(@Valid @RequestBody ValidateTokenRequest request) {
         try {
             UserEntity user = authenticationService.validateToken(request.jwtToken());
-            return ResponseEntity.ok(ValidateTokenResponseDTO.builder()
+            ValidateTokenResponse response = ValidateTokenResponse.builder()
                     .username(user.getUsername())
-                    .authorities(new ArrayList<>(user.getAuthorities().stream()
-                            .map(GrantedAuthority::getAuthority)
-                            .toList()))
-                    .build());
+                    .authorities(user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
+                    .build();
+            return ResponseEntity.ok(response);
         } catch (JwtException | IllegalArgumentException exception) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, exception.getMessage());
         }

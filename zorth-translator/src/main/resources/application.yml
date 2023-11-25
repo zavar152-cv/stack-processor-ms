@@ -2,11 +2,12 @@ server:
   port: 0
   error:
     include-message: always
-  servlet:
-    context-path: /api/v1
+
 spring:
   application:
     name: zorth-translator
+  webflux:
+    base-path: /api/v1
   jpa:
     database: postgresql
     show-sql: true
@@ -26,6 +27,7 @@ spring:
     time-zone: Europe/Moscow
   web:
     locale: en_US
+
 eureka:
   client:
     service-url:

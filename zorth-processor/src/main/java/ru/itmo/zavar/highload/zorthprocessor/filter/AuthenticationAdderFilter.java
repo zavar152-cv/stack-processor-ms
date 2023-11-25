@@ -2,6 +2,7 @@ package ru.itmo.zavar.highload.zorthprocessor.filter;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,8 +18,9 @@ import java.util.HashSet;
 
 @Component
 public class AuthenticationAdderFilter implements WebFilter {
+    @NonNull
     @Override
-    public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+    public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String username = request.getHeaders().getFirst("username");
         String authoritiesAsString = request.getHeaders().getFirst("authorities");

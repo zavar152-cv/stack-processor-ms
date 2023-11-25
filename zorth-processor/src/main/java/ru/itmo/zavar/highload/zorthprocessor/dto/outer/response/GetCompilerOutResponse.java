@@ -1,4 +1,4 @@
-package ru.itmo.zavar.highload.zorthtranslator.dto.outer.response;
+package ru.itmo.zavar.highload.zorthprocessor.dto.outer.response;
 
 import lombok.Builder;
 

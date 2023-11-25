@@ -2,11 +2,11 @@ package ru.itmo.zavar.highload.zorthtranslator.error;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
+import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.reactive.function.server.ServerRequest;
 
 import java.util.*;
 
@@ -15,13 +15,13 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
     @Value("${spring.application.name}")
     private String name;
 
-    @Value("${server.servlet.context-path}")
+    @Value("${spring.webflux.base-path}")
     private String contextPath;
 
     @Override
-    public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+    public Map<String, Object> getErrorAttributes(ServerRequest webRequest, ErrorAttributeOptions options) {
         Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, options);
-        if (getError(webRequest) instanceof MethodArgumentNotValidException ex) {
+        if (getError(webRequest) instanceof WebExchangeBindException ex) {
             Map<String, List<String>> errors = new HashMap<>();
             ex.getFieldErrors().forEach(fieldError -> {
                 String fieldName = fieldError.getField();

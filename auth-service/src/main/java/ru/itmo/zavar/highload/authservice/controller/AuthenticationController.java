@@ -5,7 +5,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,15 +25,14 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/sign-in")
-    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest request) {
+    public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest request) throws Exception {
         try {
             SignInResponse response = new SignInResponse(authenticationService.signIn(request.username(), request.password()));
             return ResponseEntity.ok(response);
-        } catch (AuthenticationException exception) {
-            if (exception.getCause() instanceof ResponseStatusException) {
-                throw (ResponseStatusException) exception.getCause();
-            }
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        } catch (BadCredentialsException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (InternalAuthenticationServiceException e) {
+            throw (Exception) e.getCause();
         }
     }
 
@@ -45,8 +45,8 @@ public class AuthenticationController {
                     .authorities(user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
                     .build();
             return ResponseEntity.ok(response);
-        } catch (JwtException | IllegalArgumentException exception) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, exception.getMessage());
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
 }

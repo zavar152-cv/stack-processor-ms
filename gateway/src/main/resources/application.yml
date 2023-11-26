@@ -5,6 +5,8 @@ server:
     whitelabel:
       enabled: false
 
+context-path: /api/v1
+
 spring:
   application:
     name: gateway
@@ -53,8 +55,13 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
 
+reactive:
+  feign:
+    circuit:
+      breaker:
+        enabled: false
+
 logging:
   level:
     org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: trace
-
-context-path: /api/v1
+    io.github.resilience4j: debug

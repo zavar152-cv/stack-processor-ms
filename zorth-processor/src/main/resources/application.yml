@@ -24,9 +24,12 @@ eureka:
   instance:
     instance-id: ${spring.application.name}:${random.value}
 
+reactive:
+  feign:
+    circuit:
+      breaker:
+        enabled: false
+
 logging:
   level:
-    org:
-      springframework:
-        data:
-          r2dbc: DEBUG
+    org.springframework.data.r2dbc: debug

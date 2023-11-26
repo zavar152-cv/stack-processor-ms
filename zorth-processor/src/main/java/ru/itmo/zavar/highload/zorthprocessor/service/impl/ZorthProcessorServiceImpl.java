@@ -8,11 +8,9 @@ import org.json.simple.parser.ParseException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import ru.itmo.zavar.comp.ControlUnit;
-import ru.itmo.zavar.exception.ControlUnitException;
 import ru.itmo.zavar.highload.zorthprocessor.client.ZorthTranslatorClient;
 import ru.itmo.zavar.highload.zorthprocessor.dto.outer.request.CompileRequest;
 import ru.itmo.zavar.highload.zorthprocessor.entity.zorth.ProcessorOutEntity;
@@ -21,7 +19,6 @@ import ru.itmo.zavar.highload.zorthprocessor.service.ZorthProcessorService;
 import ru.itmo.zavar.highload.zorthprocessor.util.RoleConstants;
 
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor

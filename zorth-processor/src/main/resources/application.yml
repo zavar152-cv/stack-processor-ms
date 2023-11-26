@@ -1,35 +1,5 @@
-server:
-  port: 0
-  error:
-    include-message: always
-
 spring:
-  webflux:
-    base-path: /api/v1
   application:
     name: zorth-processor
-  r2dbc:
-    url: r2dbc:postgresql://localhost:5432/db-highload
-    username: user_db
-    password: highload
-  jackson:
-    time-zone: Europe/Moscow
-  web:
-    locale: en_US
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
-  instance:
-    instance-id: ${spring.application.name}:${random.value}
-
-reactive:
-  feign:
-    circuit:
-      breaker:
-        enabled: false
-
-logging:
-  level:
-    org.springframework.data.r2dbc: debug
+  config:
+    import: configserver:http://localhost:8888

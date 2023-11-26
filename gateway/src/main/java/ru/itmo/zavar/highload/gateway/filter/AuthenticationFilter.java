@@ -32,9 +32,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
             }
             String jwtToken = authHeader.substring(7);
 
-            // TODO: delete onErrorMap if circuit breaker can handle it
             return authServiceClient.validateToken(new ValidateTokenRequest(jwtToken))
-                    .onErrorMap(IllegalArgumentException.class, e -> new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Unable to find instance for auth"))
                     .flatMap(response -> {
                         exchange.getRequest().mutate()
                                 .header("username", response.username())

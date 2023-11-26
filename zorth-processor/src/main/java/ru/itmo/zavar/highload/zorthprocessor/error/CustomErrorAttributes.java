@@ -21,9 +21,10 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
     @Override
     public Map<String, Object> getErrorAttributes(ServerRequest webRequest, ErrorAttributeOptions options) {
         Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, options);
-        if (getError(webRequest) instanceof WebExchangeBindException ex) {
+        if (getError(webRequest) instanceof WebExchangeBindException e) {
+            /* Добавляем адекватный вывод ошибок валидации */
             Map<String, List<String>> errors = new HashMap<>();
-            ex.getFieldErrors().forEach(fieldError -> {
+            e.getFieldErrors().forEach(fieldError -> {
                 String fieldName = fieldError.getField();
                 String defaultMessage = fieldError.getDefaultMessage();
                 errors.put(fieldName, Arrays.stream(Objects.requireNonNull(defaultMessage).split(","))
@@ -33,9 +34,21 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
             });
             errorAttributes.put("message", "Error during validation of request body");
             errorAttributes.put("errors", errors);
+        } else {
+            /* Убираем "/api/v1" из сообщения, если оно не null. Если оно null, удаляем сообщение. */
+            Object attributeMessage = errorAttributes.get("message");
+            if (attributeMessage != null) {
+                String message = attributeMessage.toString().replace(contextPath, "");
+                errorAttributes.put("message", message);
+            } else {
+                errorAttributes.remove("message");
+            }
         }
+
+        /* Убираем "/api/v1" из пути */
         String path = errorAttributes.get("path").toString().replace(contextPath, "/" + name.split("-")[0]);
         errorAttributes.put("path", path);
+
         return errorAttributes;
     }
 }

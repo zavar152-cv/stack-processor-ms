@@ -2,6 +2,7 @@ package ru.itmo.zavar.highload.authservice.error;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import feign.Request;
 import feign.Response;
 import feign.codec.ErrorDecoder;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,8 @@ public class CustomErrorDecoder implements ErrorDecoder {
             JsonNode message = objectMapper.readTree(inputStream).get("message");
             return new ResponseStatusException(status, message.asText());
         } catch (IOException e) {
-            return new ResponseStatusException(status, "No message available");
+            Request request = response.request();
+            return new ResponseStatusException(status, "No further information executing " + request.httpMethod() + " " + request.url());
         }
     }
 }

@@ -50,7 +50,8 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
         return requestService.save(requestEntity)
                 .flatMap(savedRequestEntity -> saveDebugMessages(savedRequestEntity, debug, translator))
                 .flatMap(savedRequestEntity -> saveCompilerOut(savedRequestEntity, out))
-                .flatMap(savedRequestEntity -> addRequestToUser(savedRequestEntity, username));
+                .flatMap(savedRequestEntity -> addRequestToUser(savedRequestEntity, username))
+                .onErrorResume(e -> requestService.delete(requestEntity).then(Mono.error(e)));
     }
 
     private Mono<RequestEntity> saveDebugMessages(RequestEntity requestEntity, boolean debug, ZorthTranslator translator) {

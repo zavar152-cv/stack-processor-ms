@@ -22,7 +22,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
             JsonNode message = objectMapper.readTree(inputStream).get("message");
             return new ResponseStatusException(status, message.asText());
         } catch (IOException e) {
-            return new ResponseStatusException(status, "No message available");
+            return new ResponseStatusException(status);
         }
     }
 }

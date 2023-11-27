@@ -17,9 +17,9 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME:user_db}
+    password: ${SPRING_DATASOURCE_PASSWORD:highload}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/db-highload}
     driver-class-name: org.postgresql.Driver
   jackson:
     time-zone: Europe/Moscow

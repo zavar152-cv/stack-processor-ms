@@ -17,9 +17,9 @@ spring:
     hibernate:
       ddl-auto: none
   datasource:
-    username: user_db
-    password: highload
-    url: jdbc:postgresql://localhost:5432/db-highload
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: ${SPRING_DATASOURCE_URL}
     driver-class-name: org.postgresql.Driver
   jackson:
     time-zone: Europe/Moscow
@@ -34,5 +34,5 @@ eureka:
     instance-id: ${spring.application.name}:${random.value}
 
 admin:
-  username: admin
-  password: admin
+  username: ${ADMIN_LOGIN:admin}
+  password: ${ADMIN_PASSWORD:admin}

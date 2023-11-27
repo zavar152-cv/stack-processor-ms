@@ -111,21 +111,20 @@ GET http://localhost:8765/user-service/users/vipvip/requests
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDA5MTI5MTEsImV4cCI6MTcwMDkxNDM1MX0.ut7pXTvfyFdcF7lY0AABi634sePkb3OTJqkBPRbHZZc
 
 ### Execute
-POST http://localhost:52968/api/v1/execute
+POST http://localhost:8765/zorth/execute
 Content-Type: application/json
-username: userr
-authorities: ROLE_ADMIN
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTA4MDg1OSwiZXhwIjoxNzAxMDgyMjk5fQ.b7Z67A9SfEsoK6pXO4VvGh_5cIHmg9BiZwvGaaZCjsc
 
 {
   "input": ["k", "2", "3"],
-  "requestId": 3
+  "requestId": 1
 }
 
 ### Pipeline
-POST http://localhost:49695/api/v1/pipeline
+POST http://localhost:8765/zorth/pipeline
 Content-Type: application/json
-username: userr
-authorities: ROLE_USER
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTA4MDg1OSwiZXhwIjoxNzAxMDgyMjk5fQ.b7Z67A9SfEsoK6pXO4VvGh_5cIHmg9BiZwvGaaZCjsc
+
 
 {
   "debug": true,

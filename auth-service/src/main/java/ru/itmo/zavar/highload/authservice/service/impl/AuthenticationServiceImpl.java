@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import ru.itmo.zavar.highload.authservice.client.UserServiceClient;
 import ru.itmo.zavar.highload.authservice.dto.inner.UserDTO;
@@ -24,9 +26,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public String signIn(String username, String password) throws AuthenticationException {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-        ResponseEntity<UserDTO> response = userServiceClient.getUser(username);
-        return jwtService.generateToken(userEntityMapper.fromDTO(response.getBody()));
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        return jwtService.generateToken((UserDetails) authentication.getPrincipal());
     }
 
     @Override

@@ -1,10 +1,8 @@
 package ru.itmo.zavar.highload.authservice.service.impl;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,10 +16,13 @@ import ru.itmo.zavar.highload.authservice.service.JwtService;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
+// TODO: переписать под RestAssured, если это возможно
 @SpringBootTest
 @WireMockTest(httpPort = 7357)
 class AuthenticationServiceImplTest {
@@ -57,17 +58,17 @@ class AuthenticationServiceImplTest {
 
     @Test
     public void signInAsExistingUser() {
-        WireMock.stubFor(WireMock.get(contextPath + "/users/" + username).willReturn(WireMock.aResponse()
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
                 .withBodyFile(responseUserFoundFilename)));
-        when(jwtService.generateToken(Mockito.any())).thenReturn(jwtToken);
+        when(jwtService.generateToken(any())).thenReturn(jwtToken);
         assertEquals(jwtToken, authenticationService.signIn(username, password));
     }
 
     @Test
     public void signInAsNotExistingUser() {
-        WireMock.stubFor(WireMock.get(contextPath + "/users/" + username).willReturn(WireMock.aResponse()
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse()
                 .withStatus(404)
                 .withHeader("Content-type", "application/json")
                 .withBodyFile(responseUserNotFoundFilename)));
@@ -76,17 +77,17 @@ class AuthenticationServiceImplTest {
 
     @Test
     public void signInWithWrongPassword() {
-        WireMock.stubFor(WireMock.get(contextPath + "/users/" + username).willReturn(WireMock.aResponse()
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
                 .withBodyFile(responseUserFoundFilename)));
-        when(jwtService.generateToken(Mockito.any())).thenReturn(jwtToken);
+        when(jwtService.generateToken(any())).thenReturn(jwtToken);
         assertThrows(BadCredentialsException.class, () -> authenticationService.signIn(username, ""));
     }
 
     @Test
     public void validateTokenForExistingUser() {
-        WireMock.stubFor(WireMock.get(contextPath + "/users/" + username).willReturn(WireMock.aResponse()
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
                 .withBodyFile(responseUserFoundFilename)));
@@ -103,7 +104,7 @@ class AuthenticationServiceImplTest {
 
     @Test
     public void validateTokenForNotExistingUser() {
-        WireMock.stubFor(WireMock.get(contextPath + "/users/" + username).willReturn(WireMock.aResponse()
+        stubFor(get(contextPath + "/users/" + username).willReturn(aResponse()
                 .withStatus(404)
                 .withHeader("Content-type", "application/json")
                 .withBodyFile(responseUserNotFoundFilename)));

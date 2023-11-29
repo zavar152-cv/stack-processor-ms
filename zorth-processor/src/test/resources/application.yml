@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: zorth-processor
+  webflux:
+    base-path: /api/v1
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: true
+      client:
+        simple:
+          instances:
+            zorth-translator[0]:
+              uri: http://localhost:7357
+  jackson:
+    time-zone: Europe/Moscow
+  web:
+    locale: en_US
+
+eureka:
+  client:
+    enabled: false
+
+reactive:
+  feign:
+    circuit:
+      breaker:
+        enabled: false
+
+response:
+  get-compiler-out:
+    filename: get_compiler_out_response.json
+  compiler-out-not-found:
+    filename: compiler_out_not_found_response.json
+  get-processor-out:
+    filename: get_processor_out_response.json
+  compile:
+    filename: compile_response.json
+
+user:
+  username: userr
+  authorities: ROLE_USER
+  request-id: 1
+
+vip:
+  username: vipvip
+  authorities: ROLE_VIP
+  request-id: 2
+
+admin:
+  username: admin
+  authorities: ROLE_ADMIN
+  request-id: 3

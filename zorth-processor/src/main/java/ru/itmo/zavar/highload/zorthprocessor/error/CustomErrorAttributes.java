@@ -12,9 +12,6 @@ import java.util.*;
 
 @Component
 public class CustomErrorAttributes extends DefaultErrorAttributes {
-    @Value("${spring.application.name}")
-    private String name;
-
     @Value("${spring.webflux.base-path}")
     private String contextPath;
 
@@ -45,8 +42,8 @@ public class CustomErrorAttributes extends DefaultErrorAttributes {
             }
         }
 
-        /* Убираем "/api/v1" из пути */
-        String path = errorAttributes.get("path").toString().replace(contextPath, "/" + name.split("-")[0]);
+        /* Добавляем zorth в путь */
+        String path = "/zorth" + errorAttributes.get("path");
         errorAttributes.put("path", path);
 
         return errorAttributes;

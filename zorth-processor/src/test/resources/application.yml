@@ -1,3 +1,7 @@
+server:
+  error:
+    include-message: always
+
 spring:
   application:
     name: zorth-processor
@@ -28,13 +32,21 @@ reactive:
       breaker:
         enabled: false
 
+logging:
+  level:
+    io.github.resilience4j: debug
+
 response:
   get-compiler-out:
-    filename: get_compiler_out_response.json
+    filename1: get_compiler_out_response1.json
+    filename2: get_compiler_out_response2.json
+    filename3: get_compiler_out_response3.json
   compiler-out-not-found:
     filename: compiler_out_not_found_response.json
   get-processor-out:
     filename: get_processor_out_response.json
+  get-all-processor-out:
+    filename: get_all_processor_out_response.json
   compile:
     filename: compile_response.json
 

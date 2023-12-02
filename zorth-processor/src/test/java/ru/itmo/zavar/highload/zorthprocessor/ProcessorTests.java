@@ -1,6 +1,7 @@
 package ru.itmo.zavar.highload.zorthprocessor;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
@@ -30,7 +31,7 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WireMockTest(httpPort = 7357)
+@WireMockTest
 public class ProcessorTests {
     @LocalServerPort
     private Integer port;
@@ -95,9 +96,12 @@ public class ProcessorTests {
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest")
             .withInitScript("sql/processor_out.sql");
 
+    private static WireMockRuntimeInfo wireMockRuntimeInfo;
+
     @BeforeAll
-    static void beforeAll() {
+    static void beforeAll(WireMockRuntimeInfo info) {
         postgres.start();
+        wireMockRuntimeInfo = info;
     }
 
     @AfterAll
@@ -116,6 +120,7 @@ public class ProcessorTests {
         registry.add("spring.r2dbc.url", () -> "r2" + postgres.getJdbcUrl().substring(1));
         registry.add("spring.r2dbc.username", postgres::getUsername);
         registry.add("spring.r2dbc.password", postgres::getPassword);
+        registry.add("wiremock.url", wireMockRuntimeInfo::getHttpBaseUrl);
     }
 
     @Test

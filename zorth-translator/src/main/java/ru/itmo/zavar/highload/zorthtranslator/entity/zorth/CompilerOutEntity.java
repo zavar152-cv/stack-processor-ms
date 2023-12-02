@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Data
 @Builder
@@ -20,6 +22,7 @@ public class CompilerOutEntity {
 
     @OneToOne
     @JoinColumn(name = "request_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
     private RequestEntity request;
 

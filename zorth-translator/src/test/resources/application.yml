@@ -1,0 +1,60 @@
+server:
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: zorth-translator
+  webflux:
+    base-path: /api/v1
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: true
+      client:
+        simple:
+          instances:
+            user-service[0]:
+              uri: ${wiremock.url}
+  jackson:
+    time-zone: Europe/Moscow
+  web:
+    locale: en_US
+  jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
+
+eureka:
+  client:
+    enabled: false
+
+reactive:
+  feign:
+    circuit:
+      breaker:
+        enabled: false
+
+response:
+  get-user:
+    filename1: get_user_response1.json
+    filename2: get_user_response2.json
+    filename3: get_user_response3.json
+  get-role:
+    filename: get_role_response.json
+
+admin:
+  username: admin
+  authorities: ROLE_ADMIN
+  request-id: 1
+
+user:
+  username: userr
+  authorities: ROLE_USER
+  request-id: 2
+
+vip:
+  username: vipvip
+  authorities: ROLE_VIP
+  request-id: 3

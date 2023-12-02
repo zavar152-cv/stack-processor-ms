@@ -6,21 +6,6 @@ server:
     context-path: /api/v1
 
 spring:
-  jpa:
-    database: postgresql
-    show-sql: true
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    generate-ddl: false
-    properties:
-      hibernate:
-        show_sql: true
-    hibernate:
-      ddl-auto: none
-  datasource:
-    username: user_db
-    password: highload
-    url: jdbc:postgresql://localhost:5432/db-highload
-    driver-class-name: org.postgresql.Driver
   jackson:
     time-zone: Europe/Moscow
   web:

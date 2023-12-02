@@ -22,7 +22,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
         try (InputStream inputStream = response.body().asInputStream()) {
             JsonNode message = objectMapper.readTree(inputStream).get("message");
             return new ResponseStatusException(status, message.asText());
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             Request request = response.request();
             return new ResponseStatusException(status, "No further information executing " + request.httpMethod() + " " + request.url());
         }

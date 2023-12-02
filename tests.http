@@ -25,33 +25,23 @@ Content-Type: application/json
   "password": "admin"
 }
 
-### ZorthCompile with expired JWT (should fail)
-POST http://localhost:8765/zorth/compile
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDA5MTI5MTEsImV4cCI6MTcwMDkxNDM1MX0.ut7pXTvfyFdcF7lY0AABi634sePkb3OTJqkBPRbHZZc
-
-{
-  "debug": true,
-  "text": "variable p\n3 p\n! p @"
-}
-
 ### ZorthCompile with valid JWT (should be ok)
 POST http://localhost:8765/zorth/compile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMDg2NjQ0NywiZXhwIjoxNzAwODY3ODg3fQ.txZDh2I2Iu3OShtBZPBFagEoDlEsz8sqgOr3N-U4CiU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTI3NzM1NywiZXhwIjoxNzAxMjc4Nzk3fQ.cWNqoP3lMBKOvoUQGyVUOZSnc9mxlh1k06qYtdLebWw
 
 {
   "debug": true,
-  "text": "variable p\n5 p\n! p @"
+  "text": "variable a\n3 a !\na @"
 }
 
 ### Get compiler-outs (should be ok)
-GET http://localhost:8765/zorth/compiler-outs
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDg2ODY1NSwiZXhwIjoxNzAwODcwMDk1fQ.RmosAtqKkmwSfcRXvko9Nf4ZMZRg6Gg6phnnYCBHxCo
+GET http://localhost:8765/zorth/compiler-outs/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTI3OTMwMiwiZXhwIjoxNzAxMjgwNzQyfQ.22kiPb9SJaj5UHV6tg3PV5o-C-h__TDFXiIPpBq6Rlc
 
 ### Get debug-messages (should be ok)
 GET http://localhost:8765/zorth/debug-messages?request-id=11
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDg2ODY1NSwiZXhwIjoxNzAwODcwMDk1fQ.RmosAtqKkmwSfcRXvko9Nf4ZMZRg6Gg6phnnYCBHxCo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTI3NzM1NywiZXhwIjoxNzAxMjc4Nzk3fQ.cWNqoP3lMBKOvoUQGyVUOZSnc9mxlh1k06qYtdLebWw
 
 
 ### AddUser as user (should fail)
@@ -111,21 +101,20 @@ GET http://localhost:8765/user-service/users/vipvip/requests
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDA5MTI5MTEsImV4cCI6MTcwMDkxNDM1MX0.ut7pXTvfyFdcF7lY0AABi634sePkb3OTJqkBPRbHZZc
 
 ### Execute
-POST http://localhost:52968/api/v1/execute
+POST http://localhost:8765/zorth/execute
 Content-Type: application/json
-username: userr
-authorities: ROLE_ADMIN
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTI5NDg0NCwiZXhwIjoxNzAxMjk2Mjg0fQ.9_6wYcp-S1GtWO2uUMwomaZKZIbGJUWQU8KB-8zqvNA
 
 {
   "input": ["k", "2", "3"],
-  "requestId": 3
+  "requestId": 1
 }
 
 ### Pipeline
-POST http://localhost:49695/api/v1/pipeline
+POST http://localhost:8765/zorth/pipeline
 Content-Type: application/json
-username: userr
-authorities: ROLE_USER
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTA4MDg1OSwiZXhwIjoxNzAxMDgyMjk5fQ.b7Z67A9SfEsoK6pXO4VvGh_5cIHmg9BiZwvGaaZCjsc
+
 
 {
   "debug": true,
@@ -134,6 +123,37 @@ authorities: ROLE_USER
 }
 
 ### Get processor-outs
-GET http://localhost:49695/api/v1/processor-outs?request-id=11
-username: vipvip
-authorities: ROLE_VIP
+GET http://localhost:59239/api/v1/processor-outs?request-id=11
+username: admin
+authorities: ROLE_ADMIN
+
+### Get user
+GET http://localhost:55068/api/v1/users/admin
+
+### Get compiler-outs
+GET http://localhost:54676/api/v1/compiler-outs
+username: admin
+authorities: ROLE_ADMIN
+
+### Save user
+PUT http://localhost:55068/api/v1/users
+Content-Type: application/json
+
+{
+  "id": 1,
+  "username": "admin",
+  "password": "$2a$10$l/cgQsAHIKQiWp0TZN.C0OHNgPkPvlN6XS0K0aDxBXAxaLziavsqy",
+  "roles": [
+    {
+      "id": 1,
+      "name": "ROLE_ADMIN"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "text": "variable a\n3 a !\na @",
+      "debug": true
+    }
+  ]
+}

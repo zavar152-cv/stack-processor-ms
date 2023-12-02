@@ -7,9 +7,9 @@ spring:
   webflux:
     base-path: /api/v1
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/db-highload
-    username: user_db
-    password: highload
+    username: ${SPRING_DATASOURCE_USERNAME:user_db}
+    password: ${SPRING_DATASOURCE_PASSWORD:highload}
+    url: ${SPRING_DATASOURCE_URL:r2dbc:postgresql://localhost:5432/db-highload}
   jackson:
     time-zone: Europe/Moscow
   web:

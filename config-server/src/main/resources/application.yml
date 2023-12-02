@@ -11,10 +11,11 @@ spring:
       server:
         native:
           search-locations: classpath:/config
+      fail-fast: false
   datasource:
-    username: user_db
-    password: highload
-    url: jdbc:postgresql://localhost:5432/db-highload
+    username: ${SPRING_DATASOURCE_USERNAME:user_db}
+    password: ${SPRING_DATASOURCE_PASSWORD:highload}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/db-highload}
     driver-class-name: org.postgresql.Driver
   liquibase:
     enabled: true

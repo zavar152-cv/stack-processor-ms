@@ -1,0 +1,43 @@
+[
+    {
+        "id": 1,
+        "input": "[\"k\",\"2\",\"3\"]",
+        "tickLogs": [
+            "",
+            "Tick: 1, TC: 1, Stage: FETCH, CR: 872415232 {NOPE}, IP: 0, AR: 0, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 2, TC: 2, Stage: FETCH, CR: 721420291 {LIT}, IP: 0, AR: 0, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 3, TC: 3, Stage: FETCH, CR: 721420291 {LIT}, IP: 1, AR: 0, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 4, TC: 1, Stage: ADDRESS, CR: 721420291 {LIT}, IP: 1, AR: 3, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 5, TC: 1, Stage: EXECUTE, CR: 721420291 {LIT}, IP: 1, AR: 3, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 6, TC: 2, Stage: EXECUTE, CR: 721420291 {LIT}, IP: 1, AR: 3, TOS: 0, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 7, TC: 3, Stage: EXECUTE, CR: 721420291 {LIT}, IP: 1, AR: 3, TOS: 3, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 8, TC: 1, Stage: FETCH, CR: 721420291 {LIT}, IP: 1, AR: 3, TOS: 3, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 9, TC: 2, Stage: FETCH, CR: 989855748 {ADDR}, IP: 1, AR: 3, TOS: 3, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 10, TC: 3, Stage: FETCH, CR: 989855748 {ADDR}, IP: 2, AR: 3, TOS: 3, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 11, TC: 1, Stage: ADDRESS, CR: 989855748 {ADDR}, IP: 2, AR: 4, TOS: 3, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 12, TC: 1, Stage: EXECUTE, CR: 989855748 {ADDR}, IP: 2, AR: 4, TOS: 3, DS: 3, RS: null, OUT: null, IN: k",
+            "Tick: 13, TC: 2, Stage: EXECUTE, CR: 989855748 {ADDR}, IP: 2, AR: 4, TOS: 4, DS: 3, RS: null, OUT: null, IN: k",
+            "Tick: 14, TC: 1, Stage: FETCH, CR: 989855748 {ADDR}, IP: 2, AR: 4, TOS: 4, DS: 3, RS: null, OUT: null, IN: k",
+            "Tick: 15, TC: 2, Stage: FETCH, CR: 637534208 {ST}, IP: 2, AR: 4, TOS: 4, DS: 3, RS: null, OUT: null, IN: k",
+            "Tick: 16, TC: 3, Stage: FETCH, CR: 637534208 {ST}, IP: 3, AR: 4, TOS: 4, DS: 3, RS: null, OUT: null, IN: k",
+            "Tick: 17, TC: 1, Stage: EXECUTE, CR: 637534208 {ST}, IP: 3, AR: 4, TOS: 4, DS: 3, RS: null, OUT: null, IN: k",
+            "Tick: 18, TC: 2, Stage: EXECUTE, CR: 637534208 {ST}, IP: 3, AR: 4, TOS: 4, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 19, TC: 3, Stage: EXECUTE, CR: 637534208 {ST}, IP: 3, AR: 4, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 20, TC: 1, Stage: FETCH, CR: 637534208 {ST}, IP: 3, AR: 4, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 21, TC: 2, Stage: FETCH, CR: 989855748 {ADDR}, IP: 3, AR: 4, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 22, TC: 3, Stage: FETCH, CR: 989855748 {ADDR}, IP: 4, AR: 4, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 23, TC: 1, Stage: ADDRESS, CR: 989855748 {ADDR}, IP: 4, AR: 4, TOS: 0, DS: null, RS: null, OUT: null, IN: k",
+            "Tick: 24, TC: 1, Stage: EXECUTE, CR: 989855748 {ADDR}, IP: 4, AR: 4, TOS: 0, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 25, TC: 2, Stage: EXECUTE, CR: 989855748 {ADDR}, IP: 4, AR: 4, TOS: 4, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 26, TC: 1, Stage: FETCH, CR: 989855748 {ADDR}, IP: 4, AR: 4, TOS: 4, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 27, TC: 2, Stage: FETCH, CR: 671088640 {FT}, IP: 4, AR: 4, TOS: 4, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 28, TC: 3, Stage: FETCH, CR: 671088640 {FT}, IP: 5, AR: 4, TOS: 4, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 29, TC: 1, Stage: EXECUTE, CR: 671088640 {FT}, IP: 5, AR: 4, TOS: 4, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 30, TC: 2, Stage: EXECUTE, CR: 671088640 {FT}, IP: 5, AR: 4, TOS: 3, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 31, TC: 1, Stage: FETCH, CR: 671088640 {FT}, IP: 5, AR: 4, TOS: 3, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 32, TC: 2, Stage: FETCH, CR: 0 {HALT}, IP: 5, AR: 4, TOS: 3, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 33, TC: 3, Stage: FETCH, CR: 0 {HALT}, IP: 6, AR: 4, TOS: 3, DS: 0, RS: null, OUT: null, IN: k",
+            "Tick: 34, TC: 1, Stage: EXECUTE, CR: 0 {HALT}, IP: 6, AR: 4, TOS: 3, DS: 0, RS: null, OUT: null, IN: k"
+        ]
+    }
+]

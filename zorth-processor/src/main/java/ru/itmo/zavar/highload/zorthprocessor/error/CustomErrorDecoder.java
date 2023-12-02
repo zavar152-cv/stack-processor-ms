@@ -21,7 +21,7 @@ public class CustomErrorDecoder implements ErrorDecoder {
         try (InputStream inputStream = response.body().asInputStream()) {
             JsonNode message = objectMapper.readTree(inputStream).get("message");
             return new ResponseStatusException(status, message.asText());
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             return new ResponseStatusException(status);
         }
     }

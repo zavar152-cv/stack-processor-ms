@@ -103,7 +103,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aXB2aXAiLCJpYXQiOjE3MDA5M
 ### Execute
 POST http://localhost:8765/zorth/execute
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTI4MDk2OSwiZXhwIjoxNzAxMjgyNDA5fQ.ScIo_GZm1He_0V4QQc5bu6HBROmCWDuKfS8Lu85cAWU
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTI5NDg0NCwiZXhwIjoxNzAxMjk2Mjg0fQ.9_6wYcp-S1GtWO2uUMwomaZKZIbGJUWQU8KB-8zqvNA
 
 {
   "input": ["k", "2", "3"],
@@ -123,6 +123,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTA4M
 }
 
 ### Get processor-outs
-GET http://localhost:52926/api/v1/processor-outs?request-id=11
+GET http://localhost:59239/api/v1/processor-outs?request-id=11
+username: admin
+authorities: ROLE_ADMIN
+
+### Get user
+GET http://localhost:59197/api/v1/users/vipvip
+
+### Get compiler-outs
+GET http://localhost:54676/api/v1/compiler-outs
 username: admin
 authorities: ROLE_ADMIN

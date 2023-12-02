@@ -4,7 +4,7 @@ server:
 
 spring:
   application:
-    name: zorth-processor
+    name: zorth-translator
   webflux:
     base-path: /api/v1
   cloud:
@@ -15,12 +15,16 @@ spring:
       client:
         simple:
           instances:
-            zorth-translator[0]:
+            user-service[0]:
               uri: http://localhost:7357
   jackson:
     time-zone: Europe/Moscow
   web:
     locale: en_US
+  jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
 
 eureka:
   client:
@@ -33,18 +37,12 @@ reactive:
         enabled: false
 
 response:
-  get-compiler-out:
-    filename1: get_compiler_out_response1.json
-    filename2: get_compiler_out_response2.json
-    filename3: get_compiler_out_response3.json
-  compiler-out-not-found:
-    filename: compiler_out_not_found_response.json
-  get-processor-out:
-    filename: get_processor_out_response.json
-  get-processor-outs-of-request:
-    filename: get_processor_outs_of_request_response.json
-  compile:
-    filename: compile_response.json
+  get-user:
+    filename1: get_user_response1.json
+    filename2: get_user_response2.json
+    filename3: get_user_response3.json
+  get-role:
+    filename: get_role_response.json
 
 admin:
   username: admin

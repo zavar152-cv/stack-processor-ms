@@ -128,9 +128,32 @@ username: admin
 authorities: ROLE_ADMIN
 
 ### Get user
-GET http://localhost:59197/api/v1/users/vipvip
+GET http://localhost:55068/api/v1/users/admin
 
 ### Get compiler-outs
 GET http://localhost:54676/api/v1/compiler-outs
 username: admin
 authorities: ROLE_ADMIN
+
+### Save user
+PUT http://localhost:55068/api/v1/users
+Content-Type: application/json
+
+{
+  "id": 1,
+  "username": "admin",
+  "password": "$2a$10$l/cgQsAHIKQiWp0TZN.C0OHNgPkPvlN6XS0K0aDxBXAxaLziavsqy",
+  "roles": [
+    {
+      "id": 1,
+      "name": "ROLE_ADMIN"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "text": "variable a\n3 a !\na @",
+      "debug": true
+    }
+  ]
+}

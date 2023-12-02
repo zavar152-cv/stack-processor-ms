@@ -14,7 +14,7 @@ spring:
         simple:
           instances:
             user-service[0]:
-              uri: http://localhost:7357
+              uri: ${wiremock.url}
 
 token:
   expire: 24

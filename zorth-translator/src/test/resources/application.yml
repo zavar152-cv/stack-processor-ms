@@ -16,7 +16,7 @@ spring:
         simple:
           instances:
             user-service[0]:
-              uri: http://localhost:7357
+              uri: ${wiremock.url}
   jackson:
     time-zone: Europe/Moscow
   web:

@@ -1,6 +1,7 @@
 package ru.itmo.zavar.highload.zorthtranslator;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
@@ -8,7 +9,6 @@ import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,9 +40,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
-@Slf4j
+@WireMockTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@WireMockTest(httpPort = 7357)
 public class TranslatorTests {
     @LocalServerPort
     private Integer port;
@@ -122,9 +121,12 @@ public class TranslatorTests {
 
     private static final DatabaseDelegate delegate = new JdbcDatabaseDelegate(postgres, "");
 
+    private static WireMockRuntimeInfo wireMockRuntimeInfo;
+
     @BeforeAll
-    static void beforeAll() {
+    static void beforeAll(WireMockRuntimeInfo info) {
         postgres.start();
+        wireMockRuntimeInfo = info;
     }
 
     @AfterAll
@@ -156,6 +158,7 @@ public class TranslatorTests {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("wiremock.url", wireMockRuntimeInfo::getHttpBaseUrl);
     }
 
     @Test

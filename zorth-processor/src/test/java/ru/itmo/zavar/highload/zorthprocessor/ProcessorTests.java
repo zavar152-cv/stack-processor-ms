@@ -2,6 +2,8 @@ package ru.itmo.zavar.highload.zorthprocessor;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
@@ -17,11 +19,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.web.server.ResponseStatusException;
 import org.testcontainers.containers.PostgreSQLContainer;
+import ru.itmo.zavar.highload.zorthprocessor.client.ZorthTranslatorClient;
 import ru.itmo.zavar.highload.zorthprocessor.dto.outer.request.ExecuteRequest;
 import ru.itmo.zavar.highload.zorthprocessor.dto.outer.request.PipelineRequest;
-import ru.itmo.zavar.highload.zorthprocessor.dto.outer.response.GetProcessorOutResponse;
-import ru.itmo.zavar.highload.zorthprocessor.service.impl.ZorthProcessorServiceImpl;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
@@ -81,11 +83,14 @@ public class ProcessorTests {
     @Value("${response.get-processor-out.filename}")
     private String getProcessorOutResponseFilename;
 
-    @Value("${response.get-all-processor-out.filename}")
-    private String getAllProcessorOutResponseFilename;
+    @Value("${response.get-processor-outs-of-request.filename}")
+    private String getProcessorOutsOfRequestResponseFilename;
 
     @Autowired
     private CircuitBreakerRegistry circuitBreakerRegistry;
+
+    @Autowired
+    private ZorthTranslatorClient zorthTranslatorClient;
 
     private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:latest")
             .withInitScript("sql/processor_out.sql");
@@ -104,7 +109,6 @@ public class ProcessorTests {
     void setUp() {
         RestAssured.baseURI = "http://localhost:" + port + contextPath;
         RestAssured.defaultParser = Parser.JSON;
-        circuitBreakerRegistry.circuitBreaker("ZorthTranslatorClientCB").reset();
     }
 
     @DynamicPropertySource
@@ -153,7 +157,7 @@ public class ProcessorTests {
         stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename1)));
+                .withBodyFile(getCompilerOutResponseFilename2)));
         Response response = given()
                 .header("Content-type", "application/json")
                 .header("username", userUsername)
@@ -194,7 +198,7 @@ public class ProcessorTests {
         stubFor(get(contextPath + "/compiler-outs?request-id=" + vipRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename1)));
+                .withBodyFile(getCompilerOutResponseFilename2)));
         Response response = given()
                 .header("Content-type", "application/json")
                 .header("username", vipUsername)
@@ -235,7 +239,7 @@ public class ProcessorTests {
         stubFor(get(contextPath + "/compiler-outs?request-id=" + adminRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename1)));
+                .withBodyFile(getCompilerOutResponseFilename2)));
         Response response = given()
                 .header("Content-type", "application/json")
                 .header("username", adminUsername)
@@ -260,7 +264,7 @@ public class ProcessorTests {
         stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename1)));
+                .withBodyFile(getCompilerOutResponseFilename2)));
         Response response = given()
                 .header("Content-type", "application/json")
                 .header("username", adminUsername)
@@ -301,10 +305,10 @@ public class ProcessorTests {
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
                 .withBodyFile(compileResponseFilename)));
-        stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
+        stubFor(get(contextPath + "/compiler-outs?request-id=" + adminRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename1)));
+                .withBodyFile(getCompilerOutResponseFilename2)));
         Response response = given()
                 .header("Content-type", "application/json")
                 .header("username", userUsername)
@@ -330,10 +334,10 @@ public class ProcessorTests {
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
                 .withBodyFile(compileResponseFilename)));
-        stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
+        stubFor(get(contextPath + "/compiler-outs?request-id=" + adminRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename1)));
+                .withBodyFile(getCompilerOutResponseFilename2)));
         Response response = given()
                 .header("Content-type", "application/json")
                 .header("username", vipUsername)
@@ -359,10 +363,10 @@ public class ProcessorTests {
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
                 .withBodyFile(compileResponseFilename)));
-        stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
+        stubFor(get(contextPath + "/compiler-outs?request-id=" + adminRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename1)));
+                .withBodyFile(getCompilerOutResponseFilename2)));
         Response response = given()
                 .header("Content-type", "application/json")
                 .header("username", adminUsername)
@@ -382,11 +386,8 @@ public class ProcessorTests {
         );
     }
 
-    @Autowired
-    ZorthProcessorServiceImpl processorService;
-
     @Test
-    public void getProcessorOutOfInvalidRequest() {
+    public void getProcessorOutsOfInvalidRequest() {
         stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
                 .withStatus(404)
                 .withHeader("Content-type", "application/json")
@@ -403,11 +404,11 @@ public class ProcessorTests {
     }
 
     @Test
-    public void getProcessorOutOfExecutedRequest() {
+    public void getProcessorOutsOfExecutedRequest() {
         stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename2)));
+                .withBodyFile(getCompilerOutResponseFilename3)));
         /* Сначала вызовем execute, чтобы занести данные в базу */
         given()
                 .header("Content-type", "application/json")
@@ -425,22 +426,22 @@ public class ProcessorTests {
                 .extract()
                 .response();
         JsonPath successfulJsonPath = new JsonPath(getClass().getClassLoader()
-                .getResourceAsStream("__files/" + getAllProcessorOutResponseFilename));
+                .getResourceAsStream("__files/" + getProcessorOutsOfRequestResponseFilename));
         assertAll(
                 () -> assertEquals(200, response.statusCode(), response.body().prettyPrint()),
-                () -> assertEquals(successfulJsonPath.getList("", GetProcessorOutResponse.class).get(0).input(),
-                        response.body().jsonPath().getList("", GetProcessorOutResponse.class).get(0).input()),
-                () -> assertArrayEquals(successfulJsonPath.getList("", GetProcessorOutResponse.class).get(0).tickLogs(),
-                        response.body().jsonPath().getList("", GetProcessorOutResponse.class).get(0).tickLogs())
+                () -> assertEquals(successfulJsonPath.getString("[0].input"),
+                        response.body().jsonPath().getString("[0].input")),
+                () -> assertEquals(successfulJsonPath.getList("[0].tickLogs"),
+                        response.body().jsonPath().getList("[0].tickLogs"))
         );
     }
 
     @Test
-    public void getProcessorOutOfNotExecutedRequest() {
+    public void getProcessorOutsOfNotExecutedRequest() {
         stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename3)));
+                .withBodyFile(getCompilerOutResponseFilename1)));
         Response response = given()
                 .header("username", userUsername)
                 .header("authorities", userAuthorities)
@@ -451,77 +452,66 @@ public class ProcessorTests {
                 .response();
         assertAll(
                 () -> assertEquals(200, response.statusCode(), response.body().print()),
-                () -> assertEquals("[]", response.body().jsonPath().getString(""))
+                () -> assertEquals("[]", response.body().asString())
         );
     }
 
     @Test
     public void testCircuitBreaker() throws InterruptedException {
+        /* Включаем логирование событий на CB и сбрасываем его */
+        CircuitBreaker cb = circuitBreakerRegistry.circuitBreaker("ZorthTranslatorClientCB");
+        cb.reset();
+        cb.getEventPublisher()
+                .onError(System.out::println)
+                .onSuccess(System.out::println)
+                .onCallNotPermitted(System.out::println)
+                .onStateTransition(System.out::println);
+
         /* Тестируем CLOSED с переходом в OPEN.
          * Переход должен произойти, если 2 вызова из 5 завершатся с ошибкой. */
         stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename3)));
+                .withBodyFile(getCompilerOutResponseFilename1)));
         for (int i = 0; i < 3; i++) {
-            Response response = given()
-                    .header("username", userUsername)
-                    .header("authorities", userAuthorities)
-                    .when()
-                    .get("/processor-outs?request-id=" + userRequestId)
-                    .then()
-                    .extract()
-                    .response();
-            assertEquals(200, response.statusCode(), response.body().print());
+            assertDoesNotThrow(() -> zorthTranslatorClient.getCompilerOutOfRequest(userRequestId, userUsername, userAuthorities).block());
         }
         WireMock.reset(); // сбрасываем для нового stubFor
-        stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
-                .withStatus(503)));
+        stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse().withStatus(503)));
         for (int i = 0; i < 3; i++) {
-            Response response = given()
-                    .header("username", userUsername)
-                    .header("authorities", userAuthorities)
-                    .when()
-                    .get("/processor-outs?request-id=" + userRequestId)
-                    .then()
-                    .extract()
-                    .response();
-            assertEquals(i != 2 ? 503 : 500, response.statusCode(), response.body().print());
+            if (i != 2) {
+                assertThrows(ResponseStatusException.class, () -> zorthTranslatorClient.getCompilerOutOfRequest(userRequestId, userUsername, userAuthorities).block());
+            } else {
+                assertThrows(CallNotPermittedException.class, () -> zorthTranslatorClient.getCompilerOutOfRequest(userRequestId, userUsername, userAuthorities).block());
+            }
         }
 
         /* Тестируем HALF-OPEN c возвратом в OPEN.
          * Он должен произойти тогда, когда оба вызова в состоянии HALF-OPEN не будут успешны. */
+        System.out.println("Sleeping for 10 seconds...");
         Thread.sleep(10000); // спим 10с, чтобы осуществился переход из OPEN в HALF-OPEN
         for (int i = 0; i < 3; i++) {
-            Response response = given()
-                    .header("username", userUsername)
-                    .header("authorities", userAuthorities)
-                    .when()
-                    .get("/processor-outs?request-id=" + userRequestId)
-                    .then()
-                    .extract()
-                    .response();
-            assertEquals(i != 2 ? 503 : 500, response.statusCode(), response.body().print());
+            if (i != 2) {
+                assertThrows(ResponseStatusException.class, () -> zorthTranslatorClient.getCompilerOutOfRequest(userRequestId, userUsername, userAuthorities).block());
+            } else {
+                assertThrows(CallNotPermittedException.class, () -> zorthTranslatorClient.getCompilerOutOfRequest(userRequestId, userUsername, userAuthorities).block());
+            }
         }
 
         /* Тестируем HALF-OPEN c возвратом в CLOSED.
          * Он должен произойти тогда, когда оба вызова в состоянии HALF-OPEN будут успешны. */
+        System.out.println("Sleeping for 10 seconds...");
         Thread.sleep(10000); // спим 10с, чтобы осуществился переход из OPEN в HALF-OPEN
         WireMock.reset(); // сбрасываем для нового stubFor
         stubFor(get(contextPath + "/compiler-outs?request-id=" + userRequestId).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader("Content-type", "application/json")
-                .withBodyFile(getCompilerOutResponseFilename3)));
+                .withBodyFile(getCompilerOutResponseFilename1)));
         for (int i = 0; i < 3; i++) {
-            Response response = given()
-                    .header("username", userUsername)
-                    .header("authorities", userAuthorities)
-                    .when()
-                    .get("/processor-outs?request-id=" + userRequestId)
-                    .then()
-                    .extract()
-                    .response();
-            assertEquals(200, response.statusCode(), response.body().print());
+            assertDoesNotThrow(() -> zorthTranslatorClient.getCompilerOutOfRequest(userRequestId, userUsername, userAuthorities).block());
         }
+
+        /* Сбрасываем CB */
+        cb.reset();
     }
 }

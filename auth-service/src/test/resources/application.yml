@@ -1,0 +1,39 @@
+server:
+  servlet:
+    context-path: /api/v1
+
+spring:
+  application:
+    name: auth
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: true
+      client:
+        simple:
+          instances:
+            user-service[0]:
+              uri: ${wiremock.url}
+
+token:
+  expire: 24
+  signing:
+    key: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351
+
+eureka:
+  client:
+    enabled: false
+
+test:
+  id: 0
+  username: test
+  password: test
+  encrypted-password: $2y$10$Q7T5uXHm1z44bUqan0rtruPSs2Zj0XUZF3/SotMth3q.9nkJCbnnW
+  jwt: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0IiwiaWF0IjoxNzAxMTIxOTI0LCJleHAiOjE3MDExMjMzNjR9.TEA-S9YEk53iFg1GQL1_pimcoXciroMdLEZJBu7GSAo
+
+response:
+  user-found:
+    filename: user_found.json
+  user-not-found:
+    filename: user_not_found.json

@@ -1,0 +1,28 @@
+server:
+  port: 0
+  error:
+    include-message: always
+  servlet:
+    context-path: /api/v1
+
+spring:
+  jackson:
+    time-zone: Europe/Moscow
+  web:
+    locale: en_US
+
+token:
+  expire: 24
+  signing:
+    key: 413F4428472B4B6250655368566D5970337336763979244226452948404D6351
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+
+logging:
+  level:
+    io.github.resilience4j: debug

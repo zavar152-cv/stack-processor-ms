@@ -1,0 +1,33 @@
+server:
+  port: 0
+  error:
+    include-message: always
+
+spring:
+  webflux:
+    base-path: /api/v1
+  r2dbc:
+    username: ${SPRING_DATASOURCE_USERNAME:user_db}
+    password: ${SPRING_DATASOURCE_PASSWORD:highload}
+    url: ${SPRING_DATASOURCE_URL:r2dbc:postgresql://localhost:5432/db-highload}
+  jackson:
+    time-zone: Europe/Moscow
+  web:
+    locale: en_US
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    instance-id: ${spring.application.name}:${random.value}
+
+reactive:
+  feign:
+    circuit:
+      breaker:
+        enabled: false
+
+logging:
+  level:
+    org.springframework.data.r2dbc: debug

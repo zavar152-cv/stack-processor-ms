@@ -1,0 +1,44 @@
+server:
+  error:
+    include-message: always
+  servlet:
+    context-path: /api/v1
+
+spring:
+  application:
+    name: user-service
+  cloud:
+    config:
+      enabled: false
+  jackson:
+    time-zone: Europe/Moscow
+  web:
+    locale: en_US
+  jpa:
+    hibernate:
+      ddl-auto: create
+    generate-ddl: true
+
+eureka:
+  client:
+    enabled: false
+
+response:
+  get-role:
+    filename: get_role_response.json
+
+admin:
+  id: 1
+  username: admin
+  password: admin
+  authorities: ROLE_ADMIN
+
+user:
+  username: userr
+  password: Us3r----
+  authorities: ROLE_USER
+
+vip:
+  username: vipvip
+  password: V1p-----
+  authorities: ROLE_VIP

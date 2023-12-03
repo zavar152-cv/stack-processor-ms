@@ -1,0 +1,24 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/config
+      fail-fast: false
+  datasource:
+    username: ${SPRING_DATASOURCE_USERNAME:user_db}
+    password: ${SPRING_DATASOURCE_PASSWORD:highload}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/db-highload}
+    driver-class-name: org.postgresql.Driver
+  liquibase:
+    enabled: true
+    drop-first: false
+    change-log: classpath:db/changelog/master-changelog.xml
+    default-schema: public

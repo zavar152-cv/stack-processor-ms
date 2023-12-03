@@ -1,0 +1,18 @@
+{
+  "id": 3,
+  "username": "vipvip",
+  "password": "$2a$10$l/cgQsAHIKQiWp0TZN.C0OHNgPkPvlN6XS0K0aDxBXAxaLziavsqy",
+  "roles": [
+    {
+      "id": 3,
+      "name": "ROLE_VIP"
+    }
+  ],
+  "requests": [
+    {
+      "id": 3,
+      "text": "variable a\n3 a !\na @",
+      "debug": true
+    }
+  ]
+}

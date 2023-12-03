@@ -1,0 +1,65 @@
+server:
+  port: 8765
+  error:
+    include-message: always
+
+context-path: /api/v1
+
+spring:
+  jackson:
+    time-zone: Europe/Moscow
+  cloud:
+    gateway:
+      default-filters:
+        - StripPrefix=1
+        - RewritePath=/(?<path>.*), ${context-path}/$\{path}
+      routes:
+        - id: auth
+          uri: lb://auth
+          predicates:
+            - Path=/auth/sign-in
+
+        - id: add-user
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/users
+            - Method=POST
+          filters:
+            - AuthenticationFilter
+
+        - id: user
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/users/*/requests,/user-service/users/*/roles
+          filters:
+            - AuthenticationFilter
+
+        - id: translator
+          uri: lb://zorth-translator
+          predicates:
+            - Path=/zorth/compile,/zorth/compiler-outs/**,/zorth/debug-messages/**
+          filters:
+            - AuthenticationFilter
+
+        - id: processor
+          uri: lb://zorth-processor
+          predicates:
+            - Path=/zorth/pipeline,/zorth/execute,/zorth/processor-outs/**
+          filters:
+            - AuthenticationFilter
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
+reactive:
+  feign:
+    circuit:
+      breaker:
+        enabled: false
+
+logging:
+  level:
+    org.springframework.cloud.gateway.handler.RoutePredicateHandlerMapping: trace
+    io.github.resilience4j: debug

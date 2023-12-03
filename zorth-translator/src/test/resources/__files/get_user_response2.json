@@ -1,0 +1,18 @@
+{
+  "id": 2,
+  "username": "user",
+  "password": "$2a$10$l/cgQsAHIKQiWp0TZN.C0OHNgPkPvlN6XS0K0aDxBXAxaLziavsqy",
+  "roles": [
+    {
+      "id": 2,
+      "name": "ROLE_USER"
+    }
+  ],
+  "requests": [
+    {
+      "id": 2,
+      "text": "variable a\n3 a !\na @",
+      "debug": true
+    }
+  ]
+}

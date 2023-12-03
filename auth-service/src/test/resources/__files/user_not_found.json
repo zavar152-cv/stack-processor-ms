@@ -1,0 +1,7 @@
+{
+  "timestamp": "2023-11-26T22:10:34.762+03:00",
+  "status": 404,
+  "error": "Not Found",
+  "message": "User not found",
+  "path": "/user-service/users/test"
+}

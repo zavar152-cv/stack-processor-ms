@@ -5,13 +5,14 @@ stages:
 build:
   stage: build
   only:
+    - ci
     - dev
     - merge_requests
     - master
   except:
     - tags
   script:
-    - 'mvn compile'
+    - mvn compile
   cache:
     paths:
       - ./target
@@ -26,7 +27,7 @@ test:
   except:
     - tags
   script:
-    - 'mvn test'
+    - mvn test
   cache:
     paths:
       - ./target

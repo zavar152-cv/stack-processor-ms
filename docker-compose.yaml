@@ -17,7 +17,6 @@ services:
       - "5432:5432"
 
   config:
-    hostname: config
     image: justdan777/config:0.0.1-SNAPSHOT
     ports:
       - "8888:8888"
@@ -30,7 +29,6 @@ services:
       - postgres
 
   eureka:
-    hostname: eureka
     image: justdan777/eureka:0.0.1-SNAPSHOT
     ports:
       - "8761:8761"
@@ -45,9 +43,8 @@ services:
       - config
 
   user:
-    hostname: user
     deploy:
-      replicas: 2
+      replicas: 3
     image: justdan777/user:0.0.1-SNAPSHOT
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db-highload
@@ -62,7 +59,6 @@ services:
   auth:
     deploy:
       replicas: 1
-    hostname: auth
     image: justdan777/auth:0.0.1-SNAPSHOT
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db-highload
@@ -75,7 +71,6 @@ services:
       - user
 
   translator:
-    hostname: translator
     deploy:
       replicas: 2
     image: justdan777/translator:0.0.1-SNAPSHOT
@@ -90,7 +85,6 @@ services:
       - user
 
   processor:
-    hostname: processor
     deploy:
       replicas: 2
     image: justdan777/processor:0.0.1-SNAPSHOT
@@ -105,7 +99,6 @@ services:
       - user
 
   gateway:
-    hostname: gateway
     image: justdan777/gateway:0.0.1-SNAPSHOT
     ports:
       - "8765:8765"

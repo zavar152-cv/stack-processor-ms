@@ -1,0 +1,33 @@
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  only:
+    - dev
+    - merge_requests
+    - master
+  except:
+    - tags
+  script:
+    - 'mvn compile'
+  cache:
+    paths:
+      - ./target
+      - ./.m2
+
+test:
+  stage: test
+  only:
+    - dev
+    - merge_requests
+    - master
+  except:
+    - tags
+  script:
+    - 'mvn test'
+  cache:
+    paths:
+      - ./target
+      - ./.m2

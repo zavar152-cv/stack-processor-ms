@@ -22,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy on Odin via ssh
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
@@ -33,4 +33,4 @@ jobs:
             git checkout master
             git pull
             mvn clean install -DskipTests
-            docker-compose up -d
+            docker compose up -d

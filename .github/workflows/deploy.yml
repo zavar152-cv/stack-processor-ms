@@ -29,6 +29,8 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            echo -e "export M2_HOME=/opt/maven\nexport PATH=\${M2_HOME}/bin:\${PATH}" | sudo tee /etc/profile.d/maven.sh
+            source /etc/profile.d/maven.sh
             cd ${{ secrets.PROJECT_FOLDER }};
             git checkout master
             git pull

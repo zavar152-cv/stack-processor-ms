@@ -9,6 +9,9 @@ spring:
   jackson:
     time-zone: Europe/Moscow
   cloud:
+    loadbalancer:
+      cache:
+        enabled: false
     gateway:
       default-filters:
         - StripPrefix=1
@@ -50,6 +53,7 @@ spring:
 
 eureka:
   client:
+    registryFetchIntervalSeconds: 5
     service-url:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
 

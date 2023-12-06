@@ -22,15 +22,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy on Odin via ssh
-        uses: appleboy/ssh-action@v0.1.4
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            echo -e "export M2_HOME=/opt/maven\nexport PATH=\${M2_HOME}/bin:\${PATH}" | sudo tee /etc/profile.d/maven.sh
+            source /etc/profile.d/maven.sh
             cd ${{ secrets.PROJECT_FOLDER }};
             git checkout master
             git pull
             mvn clean install -DskipTests
-            docker-compose up -d
+            docker compose up -d

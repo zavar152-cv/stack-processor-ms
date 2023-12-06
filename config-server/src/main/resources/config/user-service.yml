@@ -25,9 +25,14 @@ spring:
     time-zone: Europe/Moscow
   web:
     locale: en_US
+  cloud:
+    loadbalancer:
+      cache:
+        enabled: false
 
 eureka:
   client:
+    registryFetchIntervalSeconds: 5
     service-url:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
   instance:

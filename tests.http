@@ -28,7 +28,7 @@ Content-Type: application/json
 ### ZorthCompile with valid JWT (should be ok)
 POST http://localhost:8765/zorth/compile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTI3NzM1NywiZXhwIjoxNzAxMjc4Nzk3fQ.cWNqoP3lMBKOvoUQGyVUOZSnc9mxlh1k06qYtdLebWw
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjA3MTg1NSwiZXhwIjoxNzAyMDczMjk1fQ.u5onbJLChJrRqQN9qRNKCbtVwBvepiZ8oqGN9-TrV2E
 
 {
   "debug": true,
@@ -59,7 +59,7 @@ authorities: ROLE_ADMIN
 ### Add user as admin (should be ok)
 POST http://localhost:8765/user-service/users
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMDg1ODU5NiwiZXhwIjoxNzAwODYwMDM2fQ.58UAlAaMdU8bPUyw43W4468ADuFqZ7N78GK16uC0HrQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjE0NTI5MCwiZXhwIjoxNzAyMTQ2NzMwfQ.DLHGVytVTLQpQpbwOemEnt953Q3qy7t58XEOpjmvTcA
 
 {
   "username": "userr",
@@ -113,7 +113,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTI5N
 ### Pipeline
 POST http://localhost:8765/zorth/pipeline
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTA4MDg1OSwiZXhwIjoxNzAxMDgyMjk5fQ.b7Z67A9SfEsoK6pXO4VvGh_5cIHmg9BiZwvGaaZCjsc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMTgxMzQ0MywiZXhwIjoxNzAxODE0ODgzfQ.GBuwtqUjgpYS7A5-w8Oo5i7o103O2xr4B0Wfj_9V9RY
 
 
 {
@@ -157,3 +157,18 @@ Content-Type: application/json
     }
   ]
 }
+
+###
+POST http://localhost:8765/file-service/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMjE0NTc5MiwiZXhwIjoxNzAyMTQ3MjMyfQ.3kBhioUXjQxifLqlkDCyJIWbr11fDbV8PfOdgUOUbfA
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="name2.txt"
+Content-Type: text/plain
+
+15523423423423423
+
+###
+GET http://localhost:8765/file-service/files/info/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMjE0NTc5MiwiZXhwIjoxNzAyMTQ3MjMyfQ.3kBhioUXjQxifLqlkDCyJIWbr11fDbV8PfOdgUOUbfA

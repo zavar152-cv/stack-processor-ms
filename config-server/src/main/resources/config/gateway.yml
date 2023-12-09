@@ -22,6 +22,21 @@ spring:
           predicates:
             - Path=/auth/sign-in
 
+        - id: file-upload
+          uri: lb://file-service
+          predicates:
+            - Path=/file-service/upload
+            - Method=POST
+          filters:
+            - AuthenticationFilter
+
+        - id: file
+          uri: lb://file-service
+          predicates:
+            - Path=/file-service/files, /file-service/files/**, /file-service/download/**
+          filters:
+            - AuthenticationFilter
+
         - id: add-user
           uri: lb://user-service
           predicates:

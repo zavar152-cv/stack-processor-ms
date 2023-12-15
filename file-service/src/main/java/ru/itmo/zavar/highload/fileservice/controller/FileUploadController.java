@@ -1,5 +1,7 @@
 package ru.itmo.zavar.highload.fileservice.controller;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -31,7 +33,7 @@ public class FileUploadController {
 
     @GetMapping("/files/info/{id}")
     @PreAuthorize("@databaseStorageService.isOwnedByUser(authentication.name, #id)")
-    public ResponseEntity<FileInfoResponse> getFileInfoById(@PathVariable Long id) {
+    public ResponseEntity<FileInfoResponse> getFileInfoById(@PathVariable @Positive @NotNull Long id) {
         try {
             FileInfoResponse fileInfoResponse = storageService.loadInfoById(id);
             return ResponseEntity.ok(fileInfoResponse);
@@ -42,7 +44,7 @@ public class FileUploadController {
 
     @GetMapping("/files/content/{id}")
     @PreAuthorize("@databaseStorageService.isOwnedByUser(authentication.name, #id)")
-    public ResponseEntity<FileContentResponse> getFileContentById(@PathVariable Long id) {
+    public ResponseEntity<FileContentResponse> getFileContentById(@PathVariable @Positive @NotNull Long id) {
         try {
             FileContentResponse fileContentResponse = storageService.loadContentById(id);
             return ResponseEntity.ok(fileContentResponse);

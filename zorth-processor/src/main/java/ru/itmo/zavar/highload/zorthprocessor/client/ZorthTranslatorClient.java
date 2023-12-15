@@ -11,7 +11,7 @@ import ru.itmo.zavar.highload.zorthprocessor.dto.outer.response.CompileResponse;
 import ru.itmo.zavar.highload.zorthprocessor.dto.outer.request.CompileRequest;
 
 @Component
-@ReactiveFeignClient(name = "zorth-translator", path = "${spring.webflux.base-path}", configuration = FeignConfiguration.class)
+@ReactiveFeignClient(name = "zorth-translator-service", path = "${spring.webflux.base-path}", configuration = FeignConfiguration.class)
 public interface ZorthTranslatorClient {
     @PostMapping("/compile")
     @CircuitBreaker(name = "ZorthTranslatorClientCB")

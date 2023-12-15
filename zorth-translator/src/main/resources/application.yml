@@ -1,5 +1,7 @@
 spring:
   application:
-    name: zorth-translator
+    name: zorth-translator-service
   config:
     import: configserver:${CONFIGSERVER_URI:http://localhost:8888}
+  main:
+    web-application-type: reactive

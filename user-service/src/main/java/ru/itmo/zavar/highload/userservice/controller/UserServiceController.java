@@ -78,7 +78,7 @@ public class UserServiceController {
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Role was successfully changed", content = @Content),
-            @ApiResponse(responseCode = "400", description = "Bad request: request body isn't valid",
+            @ApiResponse(responseCode = "400", description = "Bad request: path variable or request body isn't valid",
                     content = {@Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = SpringWebErrorModel.class)
@@ -117,6 +117,12 @@ public class UserServiceController {
                     content = {@Content(
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = GetRequestsResponse.class))
+                    )}
+            ),
+            @ApiResponse(responseCode = "400", description = "Bad request: path variable isn't valid",
+                    content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SpringWebErrorModel.class)
                     )}
             ),
             @ApiResponse(responseCode = "403", description = "Forbidden: only administrators or VIPs (for their own requests) can use this method",

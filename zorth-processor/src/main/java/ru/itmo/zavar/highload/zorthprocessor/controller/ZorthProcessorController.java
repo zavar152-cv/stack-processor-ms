@@ -87,6 +87,10 @@ public class ZorthProcessorController {
                 .map(processorOutEntityMapper::toDTO);
     }
 
+    @Operation(
+            summary = "Get processor output of request",
+            description = "This method finds all processor output of a certain request. Can be called by non-admin users (for own requests) and admins."
+    )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Processor output of request was successfully obtained",
                     content = {@Content(
@@ -94,7 +98,7 @@ public class ZorthProcessorController {
                             array = @ArraySchema(schema = @Schema(implementation = GetProcessorOutResponse.class))
                     )}
             ),
-            @ApiResponse(responseCode = "400", description = "Bad request: request body isn't valid",
+            @ApiResponse(responseCode = "400", description = "Bad request: request parameter isn't valid",
                     content = {@Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = SpringWebFluxErrorModel.class)

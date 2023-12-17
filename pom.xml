@@ -21,5 +21,6 @@
         <module>zorth-processor</module>
         <module>gateway</module>
         <module>file-service</module>
+        <module>ws-service</module>
     </modules>
 </project>

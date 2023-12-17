@@ -3,6 +3,8 @@ server:
     include-message: always
 
 spring:
+  main:
+    web-application-type: reactive
   application:
     name: zorth-processor
   webflux:

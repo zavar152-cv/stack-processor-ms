@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -18,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+import ru.itmo.zavar.highload.zorthtranslator.dto.outer.request.CompileFromFileRequest;
 import ru.itmo.zavar.highload.zorthtranslator.dto.outer.request.CompileRequest;
 import ru.itmo.zavar.highload.zorthtranslator.dto.outer.response.CompileResponse;
 import ru.itmo.zavar.highload.zorthtranslator.dto.outer.response.GetCompilerOutResponse;
@@ -67,6 +69,21 @@ public class ZorthTranslatorController {
     public Mono<CompileResponse> compile(@Valid @RequestBody CompileRequest compileRequest, Authentication authentication) {
         return zorthTranslatorService.compileAndLinkage(compileRequest.debug(), compileRequest.text(), authentication.getName())
                 .map(requestEntityMapper::toDTO);
+    }
+
+
+    @PostMapping("/compileFromFile")
+    public Mono<CompileResponse> compileFromFile(@Valid @RequestBody CompileFromFileRequest compileRequest, Authentication authentication) {
+        try {
+            return zorthTranslatorService.compileAndLinkageFromFile(compileRequest.debug(), authentication.getName(), compileRequest.fileId())
+                    .map(requestEntityMapper::toDTO);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @Operation(

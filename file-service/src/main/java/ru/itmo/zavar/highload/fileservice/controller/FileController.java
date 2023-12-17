@@ -16,17 +16,18 @@ import ru.itmo.zavar.highload.fileservice.dto.response.FileContentResponse;
 import ru.itmo.zavar.highload.fileservice.dto.response.FileInfoResponse;
 import ru.itmo.zavar.highload.fileservice.exception.StorageException;
 import ru.itmo.zavar.highload.fileservice.service.StorageService;
+import ru.itmo.zavar.highload.fileservice.util.RoleConstants;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
-public class FileUploadController {
+public class FileController {
     private final StorageService storageService;
 
     @GetMapping("/files")
+    @PreAuthorize("hasRole('" + RoleConstants.ADMIN + "')")
     public ResponseEntity<List<FileInfoResponse>> listUploadedFiles() {
         return ResponseEntity.ok(storageService.listAll());
     }

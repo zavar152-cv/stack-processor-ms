@@ -31,6 +31,10 @@ spring:
     change-log: classpath:db/changelog/master-changelog.xml
     default-schema: public
 
+ws-server: ws://localhost:6666/highload-ws
+destination-topic: /queue/responses
+subscribe-topic: /topic/requests
+
 eureka:
   client:
     service-url:

@@ -20,5 +20,6 @@
         <module>zorth-translator</module>
         <module>zorth-processor</module>
         <module>gateway</module>
+        <module>file-service</module>
     </modules>
 </project>

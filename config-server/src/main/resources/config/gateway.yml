@@ -1,4 +1,5 @@
 server:
+  forward-headers-strategy: framework
   port: 8765
   error:
     include-message: always
@@ -17,10 +18,50 @@ spring:
         - StripPrefix=1
         - RewritePath=/(?<path>.*), ${context-path}/$\{path}
       routes:
-        - id: auth
-          uri: lb://auth
+        - id: user-openapi
+          uri: lb://user-service
           predicates:
-            - Path=/auth/sign-in
+            - Path=/user-service/v3/api-docs, /user-service/swagger-ui/**
+
+        - id: auth-openapi
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth-service/v3/api-docs, /auth-service/swagger-ui/**
+
+        - id: file-upload-openapi
+          uri: lb://file-service
+          predicates:
+            - Path=/file-service/v3/api-docs, /file-service/swagger-ui/**
+
+        - id: zorth-translator-openapi
+          uri: lb://zorth-translator-service
+          predicates:
+            - Path=/zorth-translator-service/v3/api-docs
+
+        - id: zorth-processor-openapi
+          uri: lb://zorth-processor-service
+          predicates:
+            - Path=/zorth-processor-service/v3/api-docs
+
+        - id: auth
+          uri: lb://auth-service
+          predicates:
+            - Path=/auth-service/sign-in
+
+        - id: file-upload
+          uri: lb://file-service
+          predicates:
+            - Path=/file-service/upload
+            - Method=POST
+          filters:
+            - AuthenticationFilter
+
+        - id: file
+          uri: lb://file-service
+          predicates:
+            - Path=/file-service/files, /file-service/files/**, /file-service/download/**
+          filters:
+            - AuthenticationFilter
 
         - id: add-user
           uri: lb://user-service
@@ -38,16 +79,16 @@ spring:
             - AuthenticationFilter
 
         - id: translator
-          uri: lb://zorth-translator
+          uri: lb://zorth-translator-service
           predicates:
-            - Path=/zorth/compile,/zorth/compiler-outs/**,/zorth/debug-messages/**
+            - Path=/zorth-translator-service/compile,/zorth-translator-service/compiler-outs/**,/zorth-translator-service/debug-messages/**
           filters:
             - AuthenticationFilter
 
         - id: processor
-          uri: lb://zorth-processor
+          uri: lb://zorth-processor-service
           predicates:
-            - Path=/zorth/pipeline,/zorth/execute,/zorth/processor-outs/**
+            - Path=/zorth-processor-service/pipeline,/zorth-processor-service/execute,/zorth-processor-service/processor-outs/**
           filters:
             - AuthenticationFilter
 

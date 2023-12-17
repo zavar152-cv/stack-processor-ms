@@ -1,13 +1,12 @@
 package ru.itmo.zavar.highload.gateway.controller;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springdoc.core.AbstractSwaggerUiConfigProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.v3.oas.annotations.Hidden;
 
 import java.net.URI;
 import java.net.URISyntaxException;

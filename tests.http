@@ -17,7 +17,7 @@ Content-Type: application/json
 }
 
 ### sign-in as admin (should be ok)
-POST http://localhost:8765/auth/sign-in
+POST http://localhost:8765/auth-service/sign-in
 Content-Type: application/json
 
 {
@@ -26,13 +26,13 @@ Content-Type: application/json
 }
 
 ### ZorthCompile with valid JWT (should be ok)
-POST http://localhost:8765/zorth/compile
+POST http://localhost:8765/zorth-translator-service/compileFromFile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjA3MTg1NSwiZXhwIjoxNzAyMDczMjk1fQ.u5onbJLChJrRqQN9qRNKCbtVwBvepiZ8oqGN9-TrV2E
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjgzOTEzNiwiZXhwIjoxNzAyODQwNTc2fQ.o5md82j6Sw6y4JVUgSTvAoiVzB4db8SrtKL__UdQpOI
 
 {
   "debug": true,
-  "text": "variable a\n3 a !\na @"
+  "fileId": 3
 }
 
 ### Get compiler-outs (should be ok)
@@ -161,13 +161,15 @@ Content-Type: application/json
 ###
 POST http://localhost:8765/file-service/upload
 Content-Type: multipart/form-data; boundary=WebAppBoundary
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMjE0NTc5MiwiZXhwIjoxNzAyMTQ3MjMyfQ.3kBhioUXjQxifLqlkDCyJIWbr11fDbV8PfOdgUOUbfA
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjgzODYzMCwiZXhwIjoxNzAyODQwMDcwfQ.bPaT19fFqL4g59TzviHqjV7CiIIRLPAabHlw6e5NWMI
 
 --WebAppBoundary
-Content-Disposition: form-data; name="file"; filename="name2.txt"
+Content-Disposition: form-data; name="file"; filename="testProg.txt"
 Content-Type: text/plain
 
-15523423423423423
+variable a
+3 a !
+a @
 
 ###
 GET http://localhost:8765/file-service/files/info/2

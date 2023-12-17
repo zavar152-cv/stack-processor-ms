@@ -22,7 +22,7 @@ public class SecurityConfiguration {
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         http.csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/compile", "/compiler-outs/**", "/debug-messages/**").authenticated()
+                        .pathMatchers("/compile", "/compileFromFile","/compiler-outs/**", "/debug-messages/**").authenticated()
                         .anyExchange().permitAll())
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance()) // STATELESS
                 .addFilterBefore(filter, SecurityWebFiltersOrder.AUTHENTICATION);

@@ -1,12 +1,27 @@
 package ru.itmo.zavar.highload.zorthtranslator.service.impl;
 
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PreDestroy;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandler;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.socket.client.WebSocketClient;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 import reactor.core.publisher.Mono;
 import ru.itmo.zavar.highload.zorthtranslator.client.UserServiceClient;
 import ru.itmo.zavar.highload.zorthtranslator.entity.security.RoleEntity;
@@ -20,22 +35,63 @@ import ru.itmo.zavar.highload.zorthtranslator.service.DebugMessagesService;
 import ru.itmo.zavar.highload.zorthtranslator.service.RequestService;
 import ru.itmo.zavar.highload.zorthtranslator.service.ZorthTranslatorService;
 import ru.itmo.zavar.highload.zorthtranslator.util.RoleConstants;
+import ru.itmo.zavar.highload.zorthtranslator.util.WsFileRequestMessage;
+import ru.itmo.zavar.highload.zorthtranslator.util.WsFileResponseMessage;
 import ru.itmo.zavar.zorth.ProgramAndDataDto;
 import ru.itmo.zavar.zorth.ZorthTranslator;
 
+import java.io.FileNotFoundException;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
 
 @Service
 @RequiredArgsConstructor
-public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
+@Slf4j
+public class ZorthTranslatorServiceImpl implements ZorthTranslatorService, StompSessionHandler {
     private final RequestService requestService;
     private final CompilerOutService compilerOutService;
     private final DebugMessagesService debugMessagesService;
 
+    @Value("${ws-server}")
+    private String wsServerUrl;
+    @Value("${destination-topic}")
+    private String destinationTopic;
+    @Value("${subscribe-topic}")
+    private String subscribeTopic;
+    private StompSession stompSession;
+    private WsFileResponseMessage wsFileResponseMessage;
+    private CountDownLatch countDownLatch = new CountDownLatch(1);
+
     private final UserServiceClient userServiceClient;
     private final UserEntityMapper userEntityMapper;
     private final RoleEntityMapper roleEntityMapper;
+
+    @EventListener(value = ApplicationReadyEvent.class)
+    public void connect() {
+        WebSocketClient client = new StandardWebSocketClient();
+        WebSocketStompClient stompClient = new WebSocketStompClient(client);
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        try {
+            stompSession = stompClient.connectAsync(wsServerUrl, this).get();
+        } catch (Exception e) {
+            log.error("Connection to WS server failed", e);
+        }
+    }
+
+    @Override
+    public Mono<RequestEntity> compileAndLinkageFromFile(boolean debug, String username, Long fileId) throws InterruptedException, EntityNotFoundException, IllegalArgumentException {
+        WsFileRequestMessage wsFileRequestMessage = new WsFileRequestMessage(stompSession.getSessionId(), username, fileId);
+        stompSession.send(destinationTopic, wsFileRequestMessage);
+        countDownLatch.await(); //waiting for file-service response, bruh
+        if(!wsFileResponseMessage.getExists())
+            throw new EntityNotFoundException("File not found");
+        if(!wsFileResponseMessage.getOwned())
+            throw new IllegalArgumentException("You don't have permissions to access this file");
+        String text = wsFileResponseMessage.getContent();
+        return compileAndLinkage(debug, text, username);
+    }
 
     @Override
     public Mono<RequestEntity> compileAndLinkage(boolean debug, String text, String username) {
@@ -107,5 +163,51 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService {
                     .onErrorMap(NoSuchElementException.class, e -> new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage()));
         }
         return Mono.just(false);
+    }
+
+    @Override
+    public void afterConnected(@Nullable StompSession session, @Nullable StompHeaders connectedHeaders) {
+        log.info("Connection to STOMP server established.\n" +
+                "Session: " + session + "\n" +
+                "Headers: " + connectedHeaders + "\n");
+        subscribe(subscribeTopic + "/" + stompSession.getSessionId());
+    }
+
+    public void subscribe(String topicId) {
+        log.info("Subscribing to topic: {}", topicId);
+        stompSession.subscribe(topicId, this);
+    }
+
+    @Override
+    public void handleFrame(@Nullable StompHeaders headers, Object payload) {
+        WsFileResponseMessage p = (WsFileResponseMessage) payload;
+        log.info("Received message:" + p);
+        wsFileResponseMessage = p;
+        countDownLatch.countDown();
+        countDownLatch = new CountDownLatch(1);
+    }
+
+    @Override
+    public void handleException(@Nullable StompSession session, StompCommand command, @Nullable StompHeaders headers, @Nullable byte[] payload, @Nullable Throwable exception) {
+    }
+
+    @Override
+    public void handleTransportError(StompSession session, @Nullable Throwable exception) {
+        log.error("Retrieved a transport error:", exception);
+        if (!session.isConnected()) {
+            connect();
+        }
+    }
+
+    @Override
+    public Type getPayloadType(@Nullable StompHeaders headers) {
+        return WsFileResponseMessage.class;
+    }
+
+    @PreDestroy
+    void onShutDown() {
+        if (stompSession != null) {
+            stompSession.disconnect();
+        }
     }
 }

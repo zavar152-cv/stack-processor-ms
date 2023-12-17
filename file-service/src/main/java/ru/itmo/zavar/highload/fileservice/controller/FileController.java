@@ -18,13 +18,12 @@ import ru.itmo.zavar.highload.fileservice.exception.StorageException;
 import ru.itmo.zavar.highload.fileservice.service.StorageService;
 import ru.itmo.zavar.highload.fileservice.util.RoleConstants;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
 @RequiredArgsConstructor
-public class FileUploadController {
+public class FileController {
     private final StorageService storageService;
 
     @GetMapping("/files")

@@ -89,9 +89,6 @@ public class WebSocketController implements StompSessionHandler {
     @Override
     public void handleTransportError(StompSession session, @Nullable Throwable exception) {
         log.error("Retrieved a transport error:", exception);
-        if (!session.isConnected()) {
-            connect();
-        }
     }
 
     @Override

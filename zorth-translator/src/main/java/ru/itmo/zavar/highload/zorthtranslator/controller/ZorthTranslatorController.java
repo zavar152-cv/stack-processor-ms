@@ -2,6 +2,7 @@ package ru.itmo.zavar.highload.zorthtranslator.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -69,15 +70,38 @@ public class ZorthTranslatorController {
     }
 
     @Operation(
-            operationId = "getAllCompilerOut",
-            summary = "Get compiler output of all requests",
-            description = "This method finds all compiler outputs (if called by administrator)."
+            summary = "Get compiler output of all requests / Get compiler output of request",
+            description = """
+                    If __only__ `offset` and `limit` parameters are present or there are __no parameters__, this method finds all compiler outputs.\\
+                    \\
+                    If __only__ `requestId` parameter is present, this method finds compiler output of a certain request.\\
+                    \\
+                    Can be called only by administrator.
+                    """
     )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Compiler outputs were successfully obtained",
+            @ApiResponse(responseCode = "200", description = "Compiler output(s) was(were) successfully obtained",
                     content = {@Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = Page.class)
+                            schema = @Schema(oneOf = {Page.class, GetCompilerOutResponse.class}),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Page<GetCompilerOutResponse>",
+                                            description = "Page of compiler outputs"
+                                    ),
+                                    @ExampleObject(
+                                            name = "GetCompilerOutResponse",
+                                            description = "Compiler output for one request",
+                                            value = """
+                                                    {
+                                                        "id": 1,
+                                                        "requestId": 1,
+                                                        "program": [721420291,989855748,637534208,989855748,671088640,0],
+                                                        "data": [0,0,0,3,0]
+                                                    }
+                                                    """
+                                    )
+                            }
                     )}
             ),
             @ApiResponse(responseCode = "400", description = "Bad request: request parameters aren't valid",
@@ -101,40 +125,14 @@ public class ZorthTranslatorController {
                 .map(page -> page.map(compilerOutEntityMapper::toDTO));
     }
 
-    @Operation(
-            operationId = "getCompilerOutOfRequest",
-            summary = "Get compiler output of request",
-            description = "This method finds all compiler output of a certain request. Can be called by VIPs (for own requests) and admins."
-    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Compiler output of request was successfully obtained",
-                    content = {@Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = GetCompilerOutResponse.class)
-                    )}
-            ),
-            @ApiResponse(responseCode = "400", description = "Bad request: path variable isn't valid",
-                    content = {@Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = SpringWebFluxErrorModel.class)
-                    )}
-            ),
-            @ApiResponse(responseCode = "403", description = "Forbidden: only administrators or VIPs (for their own requests) can use this method",
-                    content = {@Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = SpringWebFluxErrorModel.class)
-                    )}
-            ),
-            @ApiResponse(responseCode = "404", description = "Request doesn't exist",
-                    content = {@Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = SpringWebFluxErrorModel.class)
-                    )}
+            @ApiResponse(responseCode = "200", description = "Compiler output(s) was(were) successfully obtained",
+                    content = {@Content(mediaType = "application/json")}
             )
     })
     @GetMapping(value = "/compiler-outs", params = "request-id")
     @PreAuthorize("@zorthTranslatorServiceImpl.checkRequestOwnedByUser(authentication, #requestId)")
-    public Mono<GetCompilerOutResponse> getCompilerOutOfRequest(@RequestParam("request-id") Long requestId) {
+    public Mono<GetCompilerOutResponse> getCompilerOutOfRequest(@RequestParam(value = "request-id", required = false) Long requestId) {
         return compilerOutService.findByRequestId(requestId)
                 .map(compilerOutEntityMapper::toDTO)
                 .onErrorMap(NoSuchElementException.class, e -> new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage()));
@@ -179,14 +177,37 @@ public class ZorthTranslatorController {
     }
 
     @Operation(
-            summary = "Get debug messages of all requests",
-            description = "This method finds all debug messages (if called by administrator)."
+            summary = "Get debug messages of all requests / Get debug messages of request",
+            description = """
+                    If __only__ `offset` and `limit` parameters are present or there are __no parameters__, this method finds all debug messages.\\
+                    \\
+                    If __only__ `requestId` parameter is present, this method finds debug messages of a certain request.\\
+                    \\
+                    Can be called only by administrator.
+                    """
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Debug messages were successfully obtained",
                     content = {@Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = Page.class)
+                            schema = @Schema(oneOf = {Page.class, GetDebugMessagesResponse.class}),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Page<GetDebugMessagesResponse>",
+                                            description = "Page of debug messages"
+                                    ),
+                                    @ExampleObject(
+                                            name = "GetDebugMessagesResponse",
+                                            description = "Debug messages for one request",
+                                            value = """
+                                                    {
+                                                        "id": 1,
+                                                        "requestId": 1,
+                                                        "text": ["","Tick: 1, TC: 1, Stage: FETCH, CR: 872415232 {NOPE}, IP: 0, AR: 0, TOS: 0, DS: null, RS: null, OUT: null, IN: k"]
+                                                    }
+                                                    """
+                                    )
+                            }
                     )}
             ),
             @ApiResponse(responseCode = "400", description = "Bad request: request parameters aren't valid",
@@ -210,39 +231,14 @@ public class ZorthTranslatorController {
                 .map(page -> page.map(debugMessagesEntityMapper::toDTO));
     }
 
-    @Operation(
-            summary = "Get debug messages of request",
-            description = "This method finds all debug messages of a certain request. Can be called by VIPs (for own requests) and admins."
-    )
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Debug messages of request were successfully obtained",
-                    content = {@Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = GetDebugMessagesResponse.class)
-                    )}
-            ),
-            @ApiResponse(responseCode = "400", description = "Bad request: request parameter isn't valid",
-                    content = {@Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = SpringWebFluxErrorModel.class)
-                    )}
-            ),
-            @ApiResponse(responseCode = "403", description = "Forbidden: only administrators or VIPs (for their own requests) can use this method",
-                    content = {@Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = SpringWebFluxErrorModel.class)
-                    )}
-            ),
-            @ApiResponse(responseCode = "404", description = "Request doesn't exist",
-                    content = {@Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = SpringWebFluxErrorModel.class)
-                    )}
+            @ApiResponse(responseCode = "200", description = "Debug messages were successfully obtained",
+                    content = {@Content(mediaType = "application/json")}
             )
     })
     @GetMapping(value = "/debug-messages", params = "request-id")
     @PreAuthorize("@zorthTranslatorServiceImpl.checkRequestOwnedByUser(authentication, #requestId)")
-    public Mono<GetDebugMessagesResponse> getDebugMessagesOfRequest(@RequestParam("request-id") Long requestId) {
+    public Mono<GetDebugMessagesResponse> getDebugMessagesOfRequest(@RequestParam(value = "request-id", required = false) Long requestId) {
         return debugMessagesService.findByRequestId(requestId)
                 .map(debugMessagesEntityMapper::toDTO)
                 .onErrorMap(NoSuchElementException.class, e -> new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage()));

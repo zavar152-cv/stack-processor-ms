@@ -81,7 +81,7 @@ spring:
         - id: translator
           uri: lb://zorth-translator-service
           predicates:
-            - Path=/zorth-translator-service/compile,/zorth-translator-service/compileFromFile,/zorth-translator-service/compiler-outs/**,/zorth-translator-service/debug-messages/**
+            - Path=/zorth-translator-service/compile,/zorth-translator-service/compile-from-file,/zorth-translator-service/compiler-outs/**,/zorth-translator-service/debug-messages/**
           filters:
             - AuthenticationFilter
 

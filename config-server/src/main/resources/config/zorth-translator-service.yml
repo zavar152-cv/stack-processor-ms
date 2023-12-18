@@ -3,7 +3,7 @@ server:
   error:
     include-message: always
 
-ws-server: ws://localhost:6666/highload-ws
+ws-server: ${WS_SERVER_URI:ws://localhost:6666/highload-ws}
 destination-topic: /topic/requests
 subscribe-topic: /queue/responses
 

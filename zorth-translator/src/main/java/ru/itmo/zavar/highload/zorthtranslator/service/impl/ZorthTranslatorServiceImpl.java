@@ -78,8 +78,9 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService, Stomp
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         try {
             stompSession = stompClient.connectAsync(wsServerUrl, this).get();
+            log.info("Connected to WS server");
         } catch (Exception e) {
-            log.error("Connection to WS server failed", e);
+            log.error("Connection to WS server failed {}", e.getMessage());
         }
     }
 
@@ -105,7 +106,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService, Stomp
         ProgramAndDataDto out = translator.getCompiledProgramAndDataInBytes();
 
         kafkaTemplate.send("notification", new NotificationRequest(email, "Compilation completed",
-                "Compilation completed for: " + text));
+                "Compilation completed for:\n" + text));
 
         /* Сохраняем всё в бд */
         RequestEntity requestEntity = RequestEntity.builder().debug(debug).text(text).build();
@@ -229,7 +230,7 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService, Stomp
 
     @Override
     public void handleTransportError(StompSession session, @Nullable Throwable exception) {
-        log.error("Retrieved a transport error:", exception);
+        log.error("Retrieved a transport error: {}", exception == null ? "" : exception.getMessage());
     }
 
     @Override

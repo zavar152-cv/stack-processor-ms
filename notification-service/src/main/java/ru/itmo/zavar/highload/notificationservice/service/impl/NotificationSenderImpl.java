@@ -16,7 +16,7 @@ public class NotificationSenderImpl implements NotificationSender {
 
     private final JavaMailSender emailSender;
 
-    @KafkaListener(topics = "notification", groupId = "mail")
+    @KafkaListener(topics = "notification", groupId = "mail", containerFactory = "notificationRequestKafkaListenerContainerFactory")
     @Override
     public void sendSimpleMessage(NotificationRequest notificationRequest) {
         SimpleMailMessage message = new SimpleMailMessage();

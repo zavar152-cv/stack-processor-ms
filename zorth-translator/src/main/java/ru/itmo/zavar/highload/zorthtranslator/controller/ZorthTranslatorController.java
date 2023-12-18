@@ -34,6 +34,7 @@ import ru.itmo.zavar.highload.zorthtranslator.util.RoleConstants;
 import ru.itmo.zavar.highload.zorthtranslator.util.SpringWebFluxErrorModel;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Tag(name = "Zorth Translator Service Controller")
 @RestController
@@ -66,9 +67,10 @@ public class ZorthTranslatorController {
             )
     })
     @PostMapping("/compile")
-    public Mono<CompileResponse> compile(@Valid @RequestBody CompileRequest compileRequest, Authentication authentication) {
-        return zorthTranslatorService.compileAndLinkage(compileRequest.debug(), compileRequest.text(), authentication.getName())
-                .map(requestEntityMapper::toDTO);
+    public Mono<CompileResponse> compile(@Valid @RequestBody CompileRequest compileRequest, @RequestParam Optional<String> email, Authentication authentication) {
+        return email.map(s -> zorthTranslatorService.compileAndLinkage(compileRequest.debug(), compileRequest.text(), authentication.getName(), s)
+                .map(requestEntityMapper::toDTO)).orElseGet(() -> zorthTranslatorService.compileAndLinkage(compileRequest.debug(), compileRequest.text(), authentication.getName())
+                .map(requestEntityMapper::toDTO));
     }
 
     @Operation(
@@ -96,10 +98,15 @@ public class ZorthTranslatorController {
             )
     })
     @PostMapping("/compile-from-file")
-    public Mono<CompileResponse> compileFromFile(@Valid @RequestBody CompileFromFileRequest compileRequest, Authentication authentication) {
+    public Mono<CompileResponse> compileFromFile(@Valid @RequestBody CompileFromFileRequest compileRequest, @RequestParam Optional<String> email, Authentication authentication) {
         try {
-            return zorthTranslatorService.compileAndLinkageFromFile(compileRequest.debug(), authentication.getName(), compileRequest.fileId())
-                    .map(requestEntityMapper::toDTO);
+            if(email.isPresent()) {
+                return zorthTranslatorService.compileAndLinkageFromFile(compileRequest.debug(), authentication.getName(), compileRequest.fileId(), email.get())
+                        .map(requestEntityMapper::toDTO);
+            } else {
+                return zorthTranslatorService.compileAndLinkageFromFile(compileRequest.debug(), authentication.getName(), compileRequest.fileId())
+                        .map(requestEntityMapper::toDTO);
+            }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (IllegalArgumentException e) {

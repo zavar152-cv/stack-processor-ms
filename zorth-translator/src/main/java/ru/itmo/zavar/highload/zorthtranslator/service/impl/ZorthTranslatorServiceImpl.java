@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.http.HttpStatus;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -28,6 +29,7 @@ import ru.itmo.zavar.highload.zorthtranslator.entity.security.RoleEntity;
 import ru.itmo.zavar.highload.zorthtranslator.entity.zorth.CompilerOutEntity;
 import ru.itmo.zavar.highload.zorthtranslator.entity.zorth.DebugMessagesEntity;
 import ru.itmo.zavar.highload.zorthtranslator.entity.zorth.RequestEntity;
+import ru.itmo.zavar.highload.zorthtranslator.kafka.dto.NotificationRequest;
 import ru.itmo.zavar.highload.zorthtranslator.mapper.RoleEntityMapper;
 import ru.itmo.zavar.highload.zorthtranslator.mapper.UserEntityMapper;
 import ru.itmo.zavar.highload.zorthtranslator.service.CompilerOutService;
@@ -40,7 +42,6 @@ import ru.itmo.zavar.highload.zorthtranslator.util.WsFileResponseMessage;
 import ru.itmo.zavar.zorth.ProgramAndDataDto;
 import ru.itmo.zavar.zorth.ZorthTranslator;
 
-import java.io.FileNotFoundException;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -64,6 +65,8 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService, Stomp
     private WsFileResponseMessage wsFileResponseMessage;
     private CountDownLatch countDownLatch = new CountDownLatch(1);
 
+    private final KafkaTemplate<String, NotificationRequest> kafkaTemplate;
+
     private final UserServiceClient userServiceClient;
     private final UserEntityMapper userEntityMapper;
     private final RoleEntityMapper roleEntityMapper;
@@ -78,6 +81,39 @@ public class ZorthTranslatorServiceImpl implements ZorthTranslatorService, Stomp
         } catch (Exception e) {
             log.error("Connection to WS server failed", e);
         }
+    }
+
+    @Override
+    public Mono<RequestEntity> compileAndLinkageFromFile(boolean debug, String username, Long fileId, String email) throws InterruptedException, EntityNotFoundException, IllegalArgumentException {
+        WsFileRequestMessage wsFileRequestMessage = new WsFileRequestMessage(stompSession.getSessionId(), username, fileId);
+        stompSession.send(destinationTopic, wsFileRequestMessage);
+        countDownLatch.await(); //waiting for file-service response, bruh
+        if(!wsFileResponseMessage.getExists())
+            throw new EntityNotFoundException("File not found");
+        if(!wsFileResponseMessage.getOwned())
+            throw new IllegalArgumentException("You don't have permissions to access this file");
+        String text = wsFileResponseMessage.getContent();
+        return compileAndLinkage(debug, text, username, email);
+    }
+
+    @Override
+    public Mono<RequestEntity> compileAndLinkage(boolean debug, String text, String username, String email) {
+        /* Вызываем транслятор */
+        ZorthTranslator translator = new ZorthTranslator(null, null, true);
+        translator.compileFromString(debug, text);
+        translator.linkage(debug);
+        ProgramAndDataDto out = translator.getCompiledProgramAndDataInBytes();
+
+        kafkaTemplate.send("notification", new NotificationRequest(email, "Compilation completed",
+                "Compilation completed for: " + text));
+
+        /* Сохраняем всё в бд */
+        RequestEntity requestEntity = RequestEntity.builder().debug(debug).text(text).build();
+        return requestService.save(requestEntity)
+                .flatMap(savedRequestEntity -> saveDebugMessages(savedRequestEntity, debug, translator))
+                .flatMap(savedRequestEntity -> saveCompilerOut(savedRequestEntity, out))
+                .flatMap(savedRequestEntity -> addRequestToUser(savedRequestEntity, username))
+                .onErrorResume(e -> requestService.delete(requestEntity).then(Mono.error(e)));
     }
 
     @Override

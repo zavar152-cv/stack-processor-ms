@@ -1,5 +1,5 @@
 spring:
   application:
-    name: file-service
+    name: notification-service
   config:
     import: configserver:${CONFIGSERVER_URI:http://localhost:8888}

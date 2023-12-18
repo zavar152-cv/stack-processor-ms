@@ -103,7 +103,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <repository>justdan777/user</repository>
+                    <repository>justdan777/file</repository>
                     <tag>${project.version}</tag>
                     <buildArgs>
                         <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>

@@ -26,9 +26,9 @@ Content-Type: application/json
 }
 
 ### ZorthCompile with valid JWT (should be ok)
-POST http://localhost:8765/zorth-translator-service/compileFromFile
+POST http://localhost:8765/zorth-translator-service/compile-from-file?email=yarusking@mail.ru
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjgzOTEzNiwiZXhwIjoxNzAyODQwNTc2fQ.o5md82j6Sw6y4JVUgSTvAoiVzB4db8SrtKL__UdQpOI
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjkwOTY0NiwiZXhwIjoxNzAyOTExMDg2fQ.G5UYJnDyg27tG4AzuE-pTCi77d5lX7vh4nUKhBH-WNE
 
 {
   "debug": true,

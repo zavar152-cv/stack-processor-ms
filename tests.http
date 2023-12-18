@@ -28,7 +28,7 @@ Content-Type: application/json
 ### ZorthCompile with valid JWT (should be ok)
 POST http://localhost:8765/zorth-translator-service/compile-from-file?email=yarusking@mail.ru
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjkxMTMzMywiZXhwIjoxNzAyOTEyNzczfQ.sDa_3dTPxnyIJ29NPoXHIeLOJnX8vMB8rL8ekdvUEbo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjkzMzcxNiwiZXhwIjoxNzAyOTM1MTU2fQ.pj2pIlkDe_-JTfgil2hcMwczziFFdLNUKYR69HuiF9I
 
 {
   "debug": true,
@@ -172,5 +172,5 @@ variable a
 a @
 
 ###
-GET http://localhost:8765/file-service/files/info/2
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyciIsImlhdCI6MTcwMjE0NTc5MiwiZXhwIjoxNzAyMTQ3MjMyfQ.3kBhioUXjQxifLqlkDCyJIWbr11fDbV8PfOdgUOUbfA
+GET http://localhost:8765/file-service/files
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTcwMjkzNzExMSwiZXhwIjoxNzAyOTM4NTUxfQ.ajc55xWRqDXjGnQsCIy_meO37lbfkAiyibNFT_xzQBc

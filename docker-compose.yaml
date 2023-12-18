@@ -93,6 +93,9 @@ services:
   file:
     image: justdan777/file:0.0.1-SNAPSHOT
     environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db-highload
+      - SPRING_DATASOURCE_USERNAME=user_db
+      - SPRING_DATASOURCE_PASSWORD=highload
       - EUREKA_URI=http://eureka:8761/eureka
       - CONFIGSERVER_URI=http://config:8888
       - WS_SERVER_URI=ws://ws:6666/highload-ws

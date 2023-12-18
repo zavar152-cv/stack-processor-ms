@@ -22,5 +22,6 @@
         <module>gateway</module>
         <module>file-service</module>
         <module>ws-service</module>
+        <module>notification-service</module>
     </modules>
 </project>

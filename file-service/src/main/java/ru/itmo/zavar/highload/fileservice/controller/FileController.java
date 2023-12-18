@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import ru.itmo.zavar.highload.fileservice.util.SpringWebErrorModel;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+@Tag(name = "File Service Controller")
 @RestController
 @RequiredArgsConstructor
 public class FileController {
@@ -198,7 +200,7 @@ public class FileController {
                     )}
             )
     })
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public ResponseEntity<?> handleFileUpload(@RequestParam("file") MultipartFile file, Authentication authentication) {
         try {
             storageService.store(file, authentication.getName());

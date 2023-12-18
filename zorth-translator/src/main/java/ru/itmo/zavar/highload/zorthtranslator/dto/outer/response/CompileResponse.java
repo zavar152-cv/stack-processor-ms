@@ -1,7 +1,9 @@
 package ru.itmo.zavar.highload.zorthtranslator.dto.outer.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
 @Builder
-public record CompileResponse(Long id, String text, Boolean debug) {
+public record CompileResponse(@Schema(example = "1") Long id, @Schema(example = "variable a\n3 a !\na @") String text,
+                              @Schema(example = "true") Boolean debug) {
 }

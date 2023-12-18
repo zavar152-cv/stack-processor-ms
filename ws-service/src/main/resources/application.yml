@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: ws-service
+  config:
+    import: configserver:${CONFIGSERVER_URI:http://localhost:8888}
+
+logging:
+  level:
+    root: trace

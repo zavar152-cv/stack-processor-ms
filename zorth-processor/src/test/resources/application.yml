@@ -3,6 +3,8 @@ server:
     include-message: always
 
 spring:
+  main:
+    web-application-type: reactive
   application:
     name: zorth-processor
   webflux:
@@ -15,7 +17,7 @@ spring:
       client:
         simple:
           instances:
-            zorth-translator[0]:
+            zorth-translator-service[0]:
               uri: ${wiremock.url}
   jackson:
     time-zone: Europe/Moscow

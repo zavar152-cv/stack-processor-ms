@@ -1,0 +1,43 @@
+server:
+  port: 0
+  error:
+    include-message: always
+  servlet:
+    context-path: /api/v1
+
+spring:
+  jpa:
+    database: postgresql
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+    properties:
+      hibernate:
+        show_sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    username: ${SPRING_DATASOURCE_USERNAME:user_db}
+    password: ${SPRING_DATASOURCE_PASSWORD:highload}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/db-highload}
+    driver-class-name: org.postgresql.Driver
+  jackson:
+    time-zone: Europe/Moscow
+  web:
+    locale: en_US
+  liquibase:
+    enabled: true
+    drop-first: false
+    change-log: classpath:db/changelog/master-changelog.xml
+    default-schema: public
+
+ws-server: ${WS_SERVER_URI:ws://localhost:6666/highload-ws}
+destination-topic: /queue/responses
+subscribe-topic: /topic/requests
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+  instance:
+    instance-id: ${spring.application.name}:${random.value}

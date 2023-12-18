@@ -3,3 +3,9 @@ spring:
     name: gateway
   config:
     import: configserver:${CONFIGSERVER_URI:http://localhost:8888}
+  main:
+    web-application-type: reactive
+
+logging:
+  level:
+    web: trace

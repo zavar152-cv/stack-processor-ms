@@ -3,7 +3,13 @@ server:
   error:
     include-message: always
 
+ws-server: ${WS_SERVER_URI:ws://localhost:6666/highload-ws}
+destination-topic: /topic/requests
+subscribe-topic: /queue/responses
+
 spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_URI:http://localhost:29092}
   webflux:
     base-path: /api/v1
   jpa:

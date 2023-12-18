@@ -2,7 +2,19 @@ server:
   error:
     include-message: always
 
+ws-server: ws://localhost:6666/highload-ws
+destination-topic: /topic/requests
+subscribe-topic: /queue/responses
+
 spring:
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_URI:http://localhost:29092}
+    listener:
+      auto-startup: false
+    streams:
+      auto-startup: false
+  main:
+    web-application-type: reactive
   application:
     name: zorth-translator
   webflux:

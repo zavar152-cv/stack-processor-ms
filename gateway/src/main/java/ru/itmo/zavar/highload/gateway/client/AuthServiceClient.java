@@ -11,7 +11,7 @@ import ru.itmo.zavar.highload.gateway.dto.inner.request.ValidateTokenRequest;
 import ru.itmo.zavar.highload.gateway.dto.inner.response.ValidateTokenResponse;
 
 @Component
-@ReactiveFeignClient(name = "auth", path = "${context-path}", configuration = FeignConfiguration.class)
+@ReactiveFeignClient(name = "auth-service", path = "${context-path}", configuration = FeignConfiguration.class)
 public interface AuthServiceClient {
     @PostMapping("/token/validate")
     @CircuitBreaker(name = "AuthServiceClientCB")

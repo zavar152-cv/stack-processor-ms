@@ -1,6 +1,13 @@
 package ru.itmo.zavar.highload.authservice.controller;
 
 import io.jsonwebtoken.JwtException;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,12 +25,44 @@ import ru.itmo.zavar.highload.authservice.dto.outer.request.SignInRequest;
 import ru.itmo.zavar.highload.authservice.dto.outer.response.SignInResponse;
 import ru.itmo.zavar.highload.authservice.entity.security.UserEntity;
 import ru.itmo.zavar.highload.authservice.service.AuthenticationService;
+import ru.itmo.zavar.highload.authservice.util.SpringWebErrorModel;
 
+@Tag(name = "Auth Service Controller")
 @RestController
 @RequiredArgsConstructor
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
+    @Operation(
+            summary = "Sign in",
+            description = "This method returns new JWT-token (which user needs to get into the system)."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Successful sign in",
+                    content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SignInResponse.class)
+                    )}
+            ),
+            @ApiResponse(responseCode = "400", description = "Bad request: request body isn't valid",
+                    content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SpringWebErrorModel.class)
+                    )}
+            ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: bad credentials",
+                    content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SpringWebErrorModel.class)
+                    )}
+            ),
+            @ApiResponse(responseCode = "404", description = "User doesn't exist",
+                    content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SpringWebErrorModel.class)
+                    )}
+            )
+    })
     @PostMapping("/sign-in")
     public ResponseEntity<SignInResponse> signIn(@Valid @RequestBody SignInRequest request) throws Exception {
         try {
@@ -36,6 +75,7 @@ public class AuthenticationController {
         }
     }
 
+    @Hidden
     @PostMapping("/token/validate")
     public ResponseEntity<ValidateTokenResponse> validateToken(@Valid @RequestBody ValidateTokenRequest request) {
         try {

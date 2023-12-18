@@ -16,6 +16,33 @@ services:
     ports:
       - "5432:5432"
 
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    depends_on:
+      - postgres
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    hostname: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
   config:
     image: justdan777/config:0.0.1-SNAPSHOT
     ports:
@@ -26,7 +53,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=highload
     restart: always
     depends_on:
-      - postgres
+      - kafka
 
   eureka:
     image: justdan777/eureka:0.0.1-SNAPSHOT
@@ -42,6 +69,40 @@ services:
     depends_on:
       - config
 
+  ws:
+    image: justdan777/ws:0.0.1-SNAPSHOT
+    ports:
+      - "6666:6666"
+    environment:
+      - EUREKA_URI=http://eureka:8761/eureka
+      - CONFIGSERVER_URI=http://config:8888
+    restart: always
+    depends_on:
+      - eureka
+
+  notification:
+    image: justdan777/notification:0.0.1-SNAPSHOT
+    environment:
+      - EUREKA_URI=http://eureka:8761/eureka
+      - CONFIGSERVER_URI=http://config:8888
+      - KAFKA_BOOTSTRAP_URI=http://kafka:29092
+    restart: always
+    depends_on:
+      - ws
+
+  file:
+    image: justdan777/file:0.0.1-SNAPSHOT
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db-highload
+      - SPRING_DATASOURCE_USERNAME=user_db
+      - SPRING_DATASOURCE_PASSWORD=highload
+      - EUREKA_URI=http://eureka:8761/eureka
+      - CONFIGSERVER_URI=http://config:8888
+      - WS_SERVER_URI=ws://ws:6666/highload-ws
+    restart: always
+    depends_on:
+      - notification
+
   user:
     deploy:
       replicas: 3
@@ -54,7 +115,7 @@ services:
       - CONFIGSERVER_URI=http://config:8888
     restart: always
     depends_on:
-      - eureka
+      - file
 
   auth:
     deploy:
@@ -80,6 +141,8 @@ services:
       - SPRING_DATASOURCE_PASSWORD=highload
       - EUREKA_URI=http://eureka:8761/eureka
       - CONFIGSERVER_URI=http://config:8888
+      - KAFKA_BOOTSTRAP_URI=http://kafka:29092
+      - WS_SERVER_URI=ws://ws:6666/highload-ws
     restart: always
     depends_on:
       - user

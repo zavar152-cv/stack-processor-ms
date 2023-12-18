@@ -47,8 +47,9 @@ public class WebSocketController implements StompSessionHandler {
         stompClient.setMessageConverter(new MappingJackson2MessageConverter());
         try {
             stompSession = stompClient.connectAsync(wsServerUrl, this).get();
+            log.info("Connected to WS server");
         } catch (Exception e) {
-            log.error("Connection to WS server failed", e);
+            log.error("Connection to WS server failed {}", e.getMessage());
         }
     }
 
@@ -88,7 +89,7 @@ public class WebSocketController implements StompSessionHandler {
 
     @Override
     public void handleTransportError(StompSession session, @Nullable Throwable exception) {
-        log.error("Retrieved a transport error:", exception);
+        log.error("Retrieved a transport error: {}", exception == null ? "" : exception.getMessage());
     }
 
     @Override

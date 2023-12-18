@@ -55,7 +55,7 @@ public class ZorthTranslatorController {
             @ApiResponse(responseCode = "200", description = "Request was successfully compiled",
                     content = {@Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = GetCompilerOutResponse.class)
+                            schema = @Schema(implementation = CompileResponse.class)
                     )}
             ),
             @ApiResponse(responseCode = "400", description = "Bad request: request body isn't valid",
@@ -71,8 +71,31 @@ public class ZorthTranslatorController {
                 .map(requestEntityMapper::toDTO);
     }
 
-
-    @PostMapping("/compileFromFile")
+    @Operation(
+            summary = "Compile from file",
+            description = "This method compiles a request from file that belongs to user."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Request was successfully compiled",
+                    content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = CompileResponse.class)
+                    )}
+            ),
+            @ApiResponse(responseCode = "400", description = "Bad request: request body isn't valid or file doesn't belong to the caller",
+                    content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SpringWebFluxErrorModel.class)
+                    )}
+            ),
+            @ApiResponse(responseCode = "404", description = "File doesn't exist",
+                    content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SpringWebFluxErrorModel.class)
+                    )}
+            )
+    })
+    @PostMapping("/compile-from-file")
     public Mono<CompileResponse> compileFromFile(@Valid @RequestBody CompileFromFileRequest compileRequest, Authentication authentication) {
         try {
             return zorthTranslatorService.compileAndLinkageFromFile(compileRequest.debug(), authentication.getName(), compileRequest.fileId())

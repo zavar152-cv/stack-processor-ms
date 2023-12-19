@@ -30,7 +30,6 @@ services:
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
-    hostname: kafka
     depends_on:
       - zookeeper
     ports:
@@ -85,7 +84,7 @@ services:
     environment:
       - EUREKA_URI=http://eureka:8761/eureka
       - CONFIGSERVER_URI=http://config:8888
-      - KAFKA_BOOTSTRAP_URI=http://kafka:29092
+      - KAFKA_BOOTSTRAP_URI=http://kafka:9092
     restart: always
     depends_on:
       - ws
@@ -141,7 +140,7 @@ services:
       - SPRING_DATASOURCE_PASSWORD=highload
       - EUREKA_URI=http://eureka:8761/eureka
       - CONFIGSERVER_URI=http://config:8888
-      - KAFKA_BOOTSTRAP_URI=http://kafka:29092
+      - KAFKA_BOOTSTRAP_URI=http://kafka:9092
       - WS_SERVER_URI=ws://ws:6666/highload-ws
     restart: always
     depends_on:

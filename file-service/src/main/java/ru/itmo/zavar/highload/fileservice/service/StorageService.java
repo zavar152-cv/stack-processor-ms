@@ -22,7 +22,7 @@ public interface StorageService {
 
     FileInfoResponse loadInfoByName(String filename) throws NoSuchElementException;
 
-    List<FileInfoResponse> listAll();
+    List<FileInfoResponse> listAll(String ownername);
 
     Resource loadAsResource(String filename) throws NoSuchElementException;
 

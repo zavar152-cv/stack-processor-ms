@@ -23,7 +23,6 @@ import ru.itmo.zavar.highload.fileservice.dto.response.FileContentResponse;
 import ru.itmo.zavar.highload.fileservice.dto.response.FileInfoResponse;
 import ru.itmo.zavar.highload.fileservice.exception.StorageException;
 import ru.itmo.zavar.highload.fileservice.service.StorageService;
-import ru.itmo.zavar.highload.fileservice.util.RoleConstants;
 import ru.itmo.zavar.highload.fileservice.util.SpringWebErrorModel;
 
 import java.util.List;
@@ -45,18 +44,11 @@ public class FileController {
                             mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = FileInfoResponse.class))
                     )}
-            ),
-            @ApiResponse(responseCode = "403", description = "Forbidden: only administrators can use this method",
-                    content = {@Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = SpringWebErrorModel.class)
-                    )}
             )
     })
     @GetMapping("/files")
-    @PreAuthorize("hasRole('" + RoleConstants.ADMIN + "')")
-    public ResponseEntity<List<FileInfoResponse>> listUploadedFiles() {
-        return ResponseEntity.ok(storageService.listAll());
+    public ResponseEntity<List<FileInfoResponse>> listUploadedFiles(Authentication authentication) {
+        return ResponseEntity.ok(storageService.listAll(authentication.getName()));
     }
 
     @Operation(

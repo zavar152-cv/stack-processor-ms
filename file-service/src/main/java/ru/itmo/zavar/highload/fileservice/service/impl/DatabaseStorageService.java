@@ -78,12 +78,14 @@ public class DatabaseStorageService implements StorageService {
     }
 
     @Override
-    public List<FileInfoResponse> listAll() {
+    public List<FileInfoResponse> listAll(String ownername) {
         Iterable<FileEntity> iterable = fileRepository.findAll();
         List<FileInfoResponse> all = new ArrayList<>();
         iterable.forEach(fileEntity -> {
-            all.add(new FileInfoResponse(fileEntity.getId(),
-                    fileEntity.getName(), fileEntity.getOwnerName()));
+            if(fileEntity.getOwnerName().equals(ownername)) {
+                all.add(new FileInfoResponse(fileEntity.getId(),
+                        fileEntity.getName(), fileEntity.getOwnerName()));
+            }
         });
         return all;
     }

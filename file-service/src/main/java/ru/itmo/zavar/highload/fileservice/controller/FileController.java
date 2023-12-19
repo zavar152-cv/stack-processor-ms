@@ -48,7 +48,7 @@ public class FileController {
     })
     @GetMapping("/files")
     public ResponseEntity<List<FileInfoResponse>> listUploadedFiles(Authentication authentication) {
-        return ResponseEntity.ok(storageService.listAll(authentication.getName()));
+        return ResponseEntity.ok(storageService.listAll("LIST"));
     }
 
     @Operation(

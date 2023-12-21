@@ -1,6 +1,6 @@
-FROM openjdk:17-jdk-alpine
+FROM openjdk:17-jdk
 VOLUME /tmp
 ADD target/*.jar app.jar
-RUN apk --no-cache add curl
+RUN microdnf install curl
 ENV JAVA_OPTS=""
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -jar /app.jar" ]

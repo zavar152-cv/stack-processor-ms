@@ -5,6 +5,12 @@ services:
   postgres:
     hostname: postgres
     image: postgres:latest
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user_db -d db-highload" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     environment:
       POSTGRES_DB: db-highload
       POSTGRES_USER: user_db
@@ -19,17 +25,22 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
-    depends_on:
-      - postgres
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      ZOO_4LW_COMMANDS_WHITELISTL: ruok
     ports:
       - 22181:2181
 
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
+    healthcheck:
+      test: "nc -z localhost 9092 || exit -1"
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
     depends_on:
       - zookeeper
     ports:
@@ -51,8 +62,17 @@ services:
       - SPRING_DATASOURCE_USERNAME=user_db
       - SPRING_DATASOURCE_PASSWORD=highload
     restart: always
+    healthcheck:
+      test: "curl --fail --silent localhost:8888/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     depends_on:
-      - kafka
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
 
   eureka:
     image: justdan777/eureka:0.0.1-SNAPSHOT
@@ -65,8 +85,15 @@ services:
       - EUREKA_URI=http://eureka:8761/eureka
       - CONFIGSERVER_URI=http://config:8888
     restart: always
+    healthcheck:
+      test: "curl --fail --silent localhost:8761/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     depends_on:
-      - config
+      config:
+        condition: service_healthy
 
   ws:
     image: justdan777/ws:0.0.1-SNAPSHOT
@@ -77,7 +104,8 @@ services:
       - CONFIGSERVER_URI=http://config:8888
     restart: always
     depends_on:
-      - eureka
+      eureka:
+        condition: service_healthy
 
   notification:
     image: justdan777/notification:0.0.1-SNAPSHOT
@@ -87,7 +115,8 @@ services:
       - KAFKA_BOOTSTRAP_URI=http://kafka:9092
     restart: always
     depends_on:
-      - ws
+      eureka:
+        condition: service_healthy
 
   file:
     image: justdan777/file:0.0.1-SNAPSHOT
@@ -100,7 +129,8 @@ services:
       - WS_SERVER_URI=ws://ws:6666/highload-ws
     restart: always
     depends_on:
-      - notification
+      eureka:
+        condition: service_healthy
 
   user:
     deploy:
@@ -114,7 +144,8 @@ services:
       - CONFIGSERVER_URI=http://config:8888
     restart: always
     depends_on:
-      - file
+      eureka:
+        condition: service_healthy
 
   auth:
     deploy:
@@ -128,7 +159,8 @@ services:
       - CONFIGSERVER_URI=http://config:8888
     restart: always
     depends_on:
-      - user
+      eureka:
+        condition: service_healthy
 
   translator:
     deploy:
@@ -144,7 +176,8 @@ services:
       - WS_SERVER_URI=ws://ws:6666/highload-ws
     restart: always
     depends_on:
-      - user
+      eureka:
+        condition: service_healthy
 
   processor:
     deploy:
@@ -158,7 +191,8 @@ services:
       - CONFIGSERVER_URI=http://config:8888
     restart: always
     depends_on:
-      - user
+      eureka:
+        condition: service_healthy
 
   gateway:
     image: justdan777/gateway:0.0.1-SNAPSHOT
@@ -172,6 +206,7 @@ services:
       - CONFIGSERVER_URI=http://config:8888
     restart: always
     depends_on:
-      - user
+      eureka:
+        condition: service_healthy
 volumes:
   rdb-data:

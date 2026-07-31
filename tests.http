@@ -1,0 +1,176 @@
+### sign-in as vip (should be ok)
+POST http://localhost:8765/auth/sign-in
+Content-Type: application/json
+
+{
+  "username": "vipvip",
+  "password": "V1p-----"
+}
+
+### sign-in as user (should be ok)
+POST http://localhost:8765/auth/sign-in
+Content-Type: application/json
+
+{
+  "username": "userr",
+  "password": "Us3r----"
+}
+
+### sign-in as admin (should be ok)
+POST http://localhost:8765/auth-service/sign-in
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+### ZorthCompile with valid JWT (should be ok)
+POST http://localhost:8765/zorth-translator-service/compile-from-file?email=yarusking@mail.ru
+Content-Type: application/json
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+{
+  "debug": true,
+  "fileId": 3
+}
+
+### Get compiler-outs (should be ok)
+GET http://localhost:8765/zorth/compiler-outs/2
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+### Get debug-messages (should be ok)
+GET http://localhost:8765/zorth/debug-messages?request-id=11
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+
+### AddUser as user (should fail)
+POST http://localhost:8765/user/add
+Content-Type: application/json
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+username: admin
+authorities: ROLE_ADMIN
+
+{
+  "username": "adminnn",
+  "password": "Adm1n---"
+}
+
+### Add user as admin (should be ok)
+POST http://localhost:8765/user-service/users
+Content-Type: application/json
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+{
+  "username": "userr",
+  "password": "Us3r----"
+}
+
+### Add vip as admin (should be ok)
+POST http://localhost:8765/user-service/users
+Content-Type: application/json
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+{
+  "username": "vipvip",
+  "password": "V1p-----"
+}
+
+### AddUser (should fail)
+POST http://localhost:8765/user/api/v1/add
+Content-Type: application/json
+username: admin
+authorities: ROLE_ADMIN
+
+{
+  "username": "adminnn",
+  "password": "Adm1n---"
+}
+
+### ChangeRole as admin (should be ok)
+PUT http://localhost:8765/user-service/users/vipvip/roles
+Content-Type: application/json
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+{
+  "role": "ROLE_VIP"
+}
+
+### Get requests of self as vip (should be ok)
+GET http://localhost:8765/user-service/users/vipvip/requests
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+### Execute
+POST http://localhost:8765/zorth/execute
+Content-Type: application/json
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+{
+  "input": ["k", "2", "3"],
+  "requestId": 1
+}
+
+### Pipeline
+POST http://localhost:8765/zorth/pipeline
+Content-Type: application/json
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+
+{
+  "debug": true,
+  "text": "variable p\n5 p\n! p @",
+  "input": ["k", "2", "3"]
+}
+
+### Get processor-outs
+GET http://localhost:59239/api/v1/processor-outs?request-id=11
+username: admin
+authorities: ROLE_ADMIN
+
+### Get user
+GET http://localhost:55068/api/v1/users/admin
+
+### Get compiler-outs
+GET http://localhost:54676/api/v1/compiler-outs
+username: admin
+authorities: ROLE_ADMIN
+
+### Save user
+PUT http://localhost:55068/api/v1/users
+Content-Type: application/json
+
+{
+  "id": 1,
+  "username": "admin",
+  "password": "$2a$10$l/cgQsAHIKQiWp0TZN.C0OHNgPkPvlN6XS0K0aDxBXAxaLziavsqy",
+  "roles": [
+    {
+      "id": 1,
+      "name": "ROLE_ADMIN"
+    }
+  ],
+  "requests": [
+    {
+      "id": 1,
+      "text": "variable a\n3 a !\na @",
+      "debug": true
+    }
+  ]
+}
+
+###
+POST http://localhost:8765/file-service/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="testProg.txt"
+Content-Type: text/plain
+
+variable a
+3 a !
+a @
+
+###
+GET http://localhost:8765/file-service/files
+Authorization: Bearer REPLACE_WITH_JWT_TOKEN
